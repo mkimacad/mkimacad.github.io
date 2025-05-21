@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Cavity gradient -->
+    <linearGradient id="cavity_grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#adb5bd;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#495057;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <!-- Atom gradient -->
+    <radialGradient id="atom_grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" style="stop-color:#f8c291;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e55039;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Photon gradient -->
+    <radialGradient id="photon_grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3498db;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Atom glow -->
+    <filter id="atom_glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="glow"/>
+      <feBlend in="SourceGraphic" in2="glow" mode="normal"/>
+    </filter>
+    
+    <!-- Photon glow -->
+    <filter id="photon_glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.2  0 0 0 0 0.5  0 0 1 0 1  0 0 0 20 -7" result="glow"/>
+      <feBlend in="SourceGraphic" in2="glow" mode="normal"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg_grad)"/>
+  
+  <!-- Main title -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">Atoms/Qubits escaping optical cavity/BH sequentially</text>
+  <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle">N Random Photons in Cavity</text>
+  
+  <!-- Optical cavity -->
+  <g transform="translate(100, 200)">
+    <!-- Cavity body -->
+    <rect x="0" y="-100" width="300" height="200" rx="5" ry="5" fill="url(#cavity_grad)" stroke="#343a40" stroke-width="3"/>
+    
+    <!-- Mirror on left -->
+    <rect x="-10" y="-110" width="20" height="220" rx="2" ry="2" fill="#495057" stroke="#343a40" stroke-width="2"/>
+    
+    <!-- Semi-transparent mirror on right (output coupler) -->
+    <rect x="290" y="-110" width="20" height="220" rx="2" ry="2" fill="#6c757d" stroke="#343a40" stroke-width="2" opacity="0.7"/>
+    
+    <!-- N random photons inside cavity -->
+    <!-- Photon 1 -->
+    <circle cx="30" cy="-40" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 2 -->
+    <circle cx="70" cy="20" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 3 -->
+    <circle cx="120" cy="-60" r="12" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 4 -->
+    <circle cx="160" cy="50" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 5 -->
+    <circle cx="190" cy="-20" r="11" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 6 -->
+    <circle cx="230" cy="30" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 7 -->
+    <circle cx="260" cy="-50" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 8 -->
+    <circle cx="100" cy="40" r="7" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <!-- Photon 9 -->
+    <circle cx="220" cy="-30" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    
+    <!-- Cavity label -->
+    <text x="150" y="130" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">BH/Optical cavity (field)</text>
+    <text x="150" y="155" font-family="Arial" font-size="14" text-anchor="middle" fill="#343a40">|N⟩ (Fock space)</text>
+  </g>
+  
+  <!-- Atom Trajectory and escaping atoms removed -->
+
+  
+  <!-- Atom 3 - topmost -->
+  <g transform="translate(430, 120)">
+    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₁</text>
+    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  </g>
+  
+  <!-- Atom 4 -->
+  <g transform="translate(430, 180)">
+    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₂</text>
+    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  </g>
+  
+  <!-- Atom 5 -->
+  <g transform="translate(430, 240)">
+    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₃</text>
+    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  </g>
+  
+  <!-- Atom 6 -->
+  <g transform="translate(430, 300)">
+    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₄</text>
+    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  </g>
+</svg>
