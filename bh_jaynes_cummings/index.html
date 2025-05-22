@@ -75,6 +75,109 @@
             cursor: default;
         }
         
+        .download-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+        
+        .download-button:hover {
+            background: #229954;
+        }
+        
+        .file-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .view-button {
+            background: #8e44ad;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .view-button:hover {
+            background: #7d3c98;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .close-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .close-button:hover {
+            background: #c0392b;
+        }
+        
+        .file-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .download-all-button {
+            background: #e67e22;
+            margin-left: 10px;
+        }
+        
+        .download-all-button:hover {
+            background: #d35400;
+        }
+        
         .file-info {
             flex-grow: 1;
         }
@@ -200,6 +303,7 @@
             <input type="text" id="repoInput" placeholder="username/repository-name" value="">
             <button onclick="loadRepository()">Load Repository</button>
             <button onclick="loadCurrentRepo()">Auto-detect Current Repo</button>
+            <button class="download-all-button" onclick="downloadAllFiles()" id="downloadAllBtn" style="display: none;">Download All Files</button>
         </div>
         
         <div id="breadcrumb" class="breadcrumb" style="display: none;"></div>
@@ -215,12 +319,24 @@
         <div id="emptyFolder" class="empty-folder" style="display: none;">
             This folder is empty
         </div>
+        
+        <!-- File Preview Modal -->
+        <div id="fileModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">File Preview</h3>
+                    <button class="close-button" onclick="closeModal()">Close</button>
+                </div>
+                <div id="filePreview" class="file-preview"></div>
+            </div>
+        </div>
     </div>
     
     <script>
         let currentRepo = '';
         let currentPath = '';
         let pathHistory = [];
+        let currentFiles = []; // Store current directory files for bulk download
         
         // Try to auto-detect repository from current URL
         function getCurrentRepo() {
@@ -373,14 +489,20 @@
         function displayFiles(files) {
             const fileList = document.getElementById('fileList');
             const emptyFolder = document.getElementById('emptyFolder');
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
             
             fileList.innerHTML = '';
+            currentFiles = files || [];
             
             if (!files || files.length === 0) {
                 emptyFolder.style.display = 'block';
+                downloadAllBtn.style.display = 'none';
                 return;
             } else {
                 emptyFolder.style.display = 'none';
+                // Show download all button if there are files (not just directories)
+                const hasFiles = files.some(file => file.type === 'file');
+                downloadAllBtn.style.display = hasFiles ? 'inline-block' : 'none';
             }
             
             // Sort files: directories first, then files alphabetically
@@ -394,6 +516,14 @@
             files.forEach(file => {
                 const li = document.createElement('li');
                 li.className = `file-item ${file.type === 'dir' ? 'directory' : 'file'}`;
+                
+                const actionsHTML = file.type === 'file' ? `
+                    <div class="file-actions">
+                        <span class="file-type">${getFileExtension(file.name)}</span>
+                        <button class="view-button" onclick="previewFile('${file.download_url}', '${file.name}')">Preview</button>
+                        <button class="download-button" onclick="downloadFile('${file.download_url}', '${file.name}')">Download</button>
+                    </div>
+                ` : `<span class="file-type directory-type">Directory</span>`;
                 
                 if (file.type === 'dir') {
                     li.onclick = () => {
@@ -412,13 +542,99 @@
                         </div>
                         ${file.size ? `<div class="file-size">${formatFileSize(file.size)}</div>` : ''}
                     </div>
-                    <span class="file-type ${file.type === 'dir' ? 'directory-type' : ''}">
-                        ${file.type === 'dir' ? 'Directory' : getFileExtension(file.name)}
-                    </span>
+                    ${actionsHTML}
                 `;
                 
                 fileList.appendChild(li);
             });
+        }
+        
+        // Download individual file
+        async function downloadFile(downloadUrl, filename) {
+            try {
+                const response = await fetch(downloadUrl);
+                const blob = await response.blob();
+                
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                showError(`Error downloading file: ${error.message}`);
+            }
+        }
+        
+        // Preview file content
+        async function previewFile(downloadUrl, filename) {
+            try {
+                const modal = document.getElementById('fileModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const filePreview = document.getElementById('filePreview');
+                
+                modalTitle.textContent = `Preview: ${filename}`;
+                filePreview.textContent = 'Loading...';
+                modal.style.display = 'block';
+                
+                const response = await fetch(downloadUrl);
+                const text = await response.text();
+                
+                // Limit preview size for performance
+                const maxPreviewSize = 10000; // 10KB
+                const previewText = text.length > maxPreviewSize 
+                    ? text.substring(0, maxPreviewSize) + '\n\n... (file truncated for preview)'
+                    : text;
+                
+                filePreview.textContent = previewText;
+                
+            } catch (error) {
+                document.getElementById('filePreview').textContent = `Error loading file: ${error.message}`;
+            }
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('fileModal').style.display = 'none';
+        }
+        
+        // Download all files in current directory
+        async function downloadAllFiles() {
+            const files = currentFiles.filter(file => file.type === 'file');
+            if (files.length === 0) {
+                showError('No files to download in current directory');
+                return;
+            }
+            
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            const originalText = downloadAllBtn.textContent;
+            downloadAllBtn.textContent = `Downloading ${files.length} files...`;
+            downloadAllBtn.disabled = true;
+            
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    downloadAllBtn.textContent = `Downloading ${i + 1}/${files.length}: ${file.name}`;
+                    await downloadFile(file.download_url, file.name);
+                    // Small delay to prevent overwhelming the browser
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            } catch (error) {
+                showError(`Error during bulk download: ${error.message}`);
+            } finally {
+                downloadAllBtn.textContent = originalText;
+                downloadAllBtn.disabled = false;
+            }
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('fileModal');
+            if (event.target === modal) {
+                closeModal();
+            }
         }
         
         // Try to auto-load on page load
