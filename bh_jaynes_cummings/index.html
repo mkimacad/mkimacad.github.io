@@ -296,7 +296,7 @@
         <h1>📁 Repository File Explorer</h1>
         
         <div class="github-note">
-            <strong>Note:</strong> This uses the GitHub API to fetch repository contents. Click on directories to browse them.
+            <strong>Auto-Loading:</strong> This page automatically detects and loads your GitHub repository contents. For manual loading, enter a repository in the format: username/repository-name
         </div>
         
         <div class="controls">
@@ -346,8 +346,22 @@
             if (hostname.includes('github.io')) {
                 const parts = hostname.split('.');
                 const username = parts[0];
-                const repoName = pathname.split('/')[1] || username + '.github.io';
-                return `${username}/${repoName}`;
+                // For GitHub Pages, the repo is always username.github.io
+                return `${username}/${username}.github.io`;
+            }
+            return '';
+        }
+        
+        // Get the initial path within the repository
+        function getInitialPath() {
+            const hostname = window.location.hostname;
+            const pathname = window.location.pathname;
+            
+            if (hostname.includes('github.io')) {
+                // Remove leading slash and get path segments
+                const pathSegments = pathname.replace(/^\/+|\/+$/g, '').split('/').filter(segment => segment);
+                // For username.github.io/project, the project folder is the initial path
+                return pathSegments.length > 0 ? pathSegments.join('/') : '';
             }
             return '';
         }
@@ -356,7 +370,10 @@
             const repo = getCurrentRepo();
             if (repo) {
                 document.getElementById('repoInput').value = repo;
-                loadRepository();
+                const initialPath = getInitialPath();
+                currentRepo = repo;
+                currentPath = initialPath;
+                loadDirectory(initialPath);
             } else {
                 showError('Could not auto-detect repository. Please enter manually.');
             }
@@ -642,8 +659,11 @@
             const repo = getCurrentRepo();
             if (repo) {
                 document.getElementById('repoInput').value = repo;
-                // Uncomment the next line to auto-load on page load
-                // loadRepository();
+                // Auto-load the repository and navigate to the current path
+                const initialPath = getInitialPath();
+                currentRepo = repo;
+                currentPath = initialPath;
+                loadDirectory(initialPath);
             }
         };
         
