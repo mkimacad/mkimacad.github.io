@@ -41,6 +41,7 @@
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
+            white-space: pre-line;
         }
         
         .file-list {
@@ -252,10 +253,17 @@
             showLoading();
             
             try {
-                const response = await fetch(`https://api.github.com/repos/${repoInput}/contents`);
+                const apiUrl = `https://api.github.com/repos/${repoInput}/contents`;
+                console.log('Fetching:', apiUrl); // Debug log
+                
+                const response = await fetch(apiUrl);
                 
                 if (!response.ok) {
-                    throw new Error(`GitHub API Error: ${response.status} ${response.statusText}`);
+                    let errorMsg = `GitHub API Error: ${response.status} ${response.statusText}`;
+                    if (response.status === 404) {
+                        errorMsg += `\n\nPossible causes:\n• Repository name is incorrect (format: username/repo-name)\n• Repository is private\n• Repository doesn't exist\n\nTrying to access: ${repoInput}`;
+                    }
+                    throw new Error(errorMsg);
                 }
                 
                 const files = await response.json();
