@@ -71,12 +71,20 @@
         
         .project-image {
             max-width: 100%;
+            width: 100%; /* Force images to use full container width */
             height: auto;
             border: 2px solid #ecf0f1;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer; /* Add pointer cursor to indicate clickability */
+        }
+        
+        /* Specific handling for SVG images to ensure they scale properly */
+        .project-image[src$=".svg"] {
+            width: 100%;
+            min-width: 400px; /* Minimum size for SVG images */
+            max-width: 540px; /* Maximum size matching container */
         }
         
         .project-image:hover {
@@ -465,8 +473,7 @@
             
             <!-- Project Description -->
             <div class="project-description">
-                Description soon to be posted. 
-                Main simulation python file: jaynes_improved.py. Main parameters at the end: M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced). 
+                Description soon to be posted
             </div>
             
             <!-- Second set of images -->
