@@ -109,8 +109,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 95%; /* Increased from 90% */
+            max-height: 95%; /* Increased from 90% */
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -121,6 +121,13 @@
             width: 100%;
             height: auto;
             display: block;
+            min-width: 600px; /* Ensure modal images are larger than page images */
+        }
+        
+        /* Make SVG images in modal even larger */
+        .image-modal img[src$=".svg"] {
+            min-width: 800px; /* Much larger than the 540px on page */
+            max-width: 1200px; /* Allow very large SVG display */
         }
         
         .image-modal-caption {
@@ -162,15 +169,16 @@
         }
         
         .project-description {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
+            background: transparent; /* Remove background box */
+            padding: 0; /* Remove padding */
+            border-radius: 0; /* Remove border radius */
             margin: 30px 0;
             text-align: center;
-            font-size: 1.1em;
-            color: #666;
-            font-style: italic;
-            border-left: 4px solid #3498db;
+            font-size: 1.2em; /* Slightly larger text */
+            color: #555; /* Darker color for better readability */
+            font-style: normal; /* Remove italic */
+            border-left: none; /* Remove left border */
+            font-weight: 500; /* Add slight weight for emphasis */
         }
         
         .file-explorer-section {
@@ -472,8 +480,12 @@
             </div>
             
             <!-- Project Description -->
+            <div class="description-to-be-posted">
+                Description soon to be posted.
+            </div>
+            <br>
             <div class="project-description">
-                Description soon to be posted
+                Main simulation python file: jaynes_improved.py. Main parameters at the end: M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced). 
             </div>
             
             <!-- Second set of images -->
