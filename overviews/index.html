@@ -186,7 +186,7 @@
                     throw new Error('Unable to determine repository information from URL');
                 }
                 
-                const textUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/overviews/main.txt`;
+                const textUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/main.txt`;
                 
                 const response = await fetch(textUrl);
                 if (!response.ok) {
@@ -230,7 +230,7 @@
                     // Extract image filename
                     const imageName = line.substring(4).trim();
                     if (imageName) {
-                        const imageUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/overviews/${imageName}`;
+                        const imageUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/${imageName}`;
                         htmlContent += `<img src="${imageUrl}" alt="${escapeHtml(imageName)}" loading="lazy">\n`;
                         htmlContent += `<div class="image-caption">${escapeHtml(imageName)}</div>\n`;
                     }
