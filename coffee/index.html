@@ -62,10 +62,35 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
+        .brewers-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .brewer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .brewer-label {
+            color: #d4a574;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: none;
+        }
+
         .hario-switch {
-            width: 200px;
-            height: 300px;
-            margin: 0 auto 2rem;
+            width: 150px;
+            height: 220px;
             position: relative;
             background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 50%, #b8b8b8 100%);
             border-radius: 15px 15px 50px 50px;
@@ -75,26 +100,62 @@
         .hario-switch::before {
             content: '';
             position: absolute;
-            top: 20px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 150px;
-            height: 200px;
+            width: 110px;
+            height: 150px;
             background: linear-gradient(45deg, rgba(139,69,19,0.3) 0%, rgba(160,82,45,0.2) 100%);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 2px solid #8b4513;
         }
 
         .hario-switch::after {
             content: '';
             position: absolute;
-            top: 230px;
+            top: 170px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 60px;
+            width: 60px;
+            height: 45px;
             background: #8b4513;
-            border-radius: 0 0 40px 40px;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .external-brewer {
+            width: 150px;
+            height: 220px;
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .external-brewer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            /* Blend with background using mix-blend-mode */
+            mix-blend-mode: multiply;
+            filter: brightness(1.1) contrast(1.1) sepia(0.3) hue-rotate(20deg);
+        }
+
+        /* Alternative background blending approach */
+        .external-brewer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(44, 24, 16, 0.3) 0%, 
+                rgba(74, 44, 26, 0.2) 50%, 
+                rgba(107, 62, 42, 0.3) 100%);
+            border-radius: 15px;
+            pointer-events: none;
+            z-index: 1;
         }
 
         .coffee-cup {
@@ -205,14 +266,67 @@
             animation-delay: 1s;
         }
 
+        .brewer-steam {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 25px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+            border-radius: 2px;
+            animation: steam 2.5s ease-in-out infinite;
+        }
+
+        .brewer-steam:nth-child(2) {
+            left: 45%;
+            animation-delay: 0.7s;
+        }
+
+        .brewer-steam:nth-child(3) {
+            left: 55%;
+            animation-delay: 1.4s;
+        }
+
         @keyframes steam {
             0%, 100% { opacity: 0; transform: translateX(-50%) translateY(0px); }
             50% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
         }
 
+        .image-upload-area {
+            border: 2px dashed #d4a574;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            color: #b8956d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .image-upload-area:hover {
+            border-color: #f5f0e8;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .image-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-text {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .brewers-container {
+                flex-direction: column;
+                align-items: center;
                 gap: 2rem;
             }
             
@@ -250,19 +364,33 @@
     <div class="container">
         <header>
             <h1>Coffee Ideas & Brewing Notes</h1>
-            <p class="subtitle">Exploring the art of coffee through Hario Switch-like machines?!</p>
+            <p class="subtitle">Exploring the art of coffee through various brewing methods</p>
         </header>
 
         <div class="main-content">
             <div class="coffee-visual">
-                <div class="hario-switch">
-                    <div class="steam"></div>
-                    <div class="steam"></div>
-                    <div class="steam"></div>
-                </div>
-                <div class="coffee-cup">
-                    <div class="steam"></div>
-                    <div class="steam"></div>
+                <div class="brewers-container">
+                    <div class="brewer-item">
+                        <div class="hario-switch">
+                            <div class="brewer-steam"></div>
+                            <div class="brewer-steam"></div>
+                            <div class="brewer-steam"></div>
+                        </div>
+                        <div class="coffee-cup">
+                            <div class="steam"></div>
+                            <div class="steam"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="brewer-item">
+                        <div class="external-brewer" id="external-brewer">
+                            <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                                <div>📷</div>
+                                <div class="upload-text">Click to add brewer image</div>
+                            </div>
+                            <input type="file" id="imageInput" accept="image/*" onchange="loadBrewerImage(event)">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -276,6 +404,35 @@
     </div>
 
     <script>
+        // Function to load brewer image
+        function loadBrewerImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const brewerContainer = document.getElementById('external-brewer');
+                    brewerContainer.innerHTML = `
+                        <img src="${e.target.result}" alt="Coffee Brewer" />
+                        <div class="brewer-steam"></div>
+                        <div class="brewer-steam"></div>
+                        <div class="brewer-steam"></div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // You can also set a default image by uncommenting and modifying this:
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const brewerContainer = document.getElementById('external-brewer');
+        //     brewerContainer.innerHTML = `
+        //         <img src="path/to/your/brewer-image.jpg" alt="Coffee Brewer" />
+        //         <div class="brewer-steam"></div>
+        //         <div class="brewer-steam"></div>
+        //         <div class="brewer-steam"></div>
+        //     `;
+        // });
+
         async function loadComments() {
             const commentsContainer = document.getElementById('comments-container');
             
