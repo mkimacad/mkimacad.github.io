@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background gradient -->
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definitions remain unchanged -->
   <defs>
     <linearGradient id="bg_grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
     </linearGradient>
-    
     <linearGradient id="cavity_grad" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="stop-color:#adb5bd;stop-opacity:0.8" />
       <stop offset="100%" style="stop-color:#495057;stop-opacity:0.8" />
     </linearGradient>
-    
     <radialGradient id="atom_grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
       <stop offset="0%" style="stop-color:#f8c291;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#e55039;stop-opacity:1" />
     </radialGradient>
-    
     <radialGradient id="photon_grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#3498db;stop-opacity:1" />
     </radialGradient>
-    
     <filter id="atom_glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
       <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="glow"/>
       <feBlend in="SourceGraphic" in2="glow" mode="normal"/>
     </filter>
-    
     <filter id="photon_glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
       <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.2  0 0 0 0 0.5  0 0 1 0 1  0 0 0 20 -7" result="glow"/>
@@ -36,64 +31,59 @@
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="500" fill="url(#bg_grad)"/>
+  <rect width="800" height="600" fill="url(#bg_grad)"/>
 
-  <!-- Main title -->
-  <text x="400" y="40" font-family="Arial" font-size="20" text-anchor="middle" font-weight="bold">
+  <!-- Titles -->
+  <text x="400" y="40" font-family="Arial" font-size="22" text-anchor="middle" font-weight="bold">
     Approximately completely degenerate system Hamiltonian case
   </text>
-  <text x="400" y="65" font-family="Arial" font-size="15" text-anchor="middle">
+  <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle">
     Classical search g(x)=1 for every classical state x
   </text>
-  <text x="400" y="90" font-family="Arial" font-size="14" text-anchor="middle">
+  <text x="400" y="95" font-family="Arial" font-size="14" text-anchor="middle">
     System Hamiltonian H_S(x) ≈ ∑ₓ g(x)|x⟩⟨x| = ∑ₓ |x⟩⟨x|
   </text>
 
-  <!-- Optical cavity -->
-  <g transform="translate(100, 200)">
-    <!-- Cavity body -->
+  <!-- Optical cavity and photons (shifted down and centered) -->
+  <g transform="translate(250, 170)">
     <rect x="0" y="-100" width="300" height="200" rx="5" ry="5" fill="url(#cavity_grad)" stroke="#343a40" stroke-width="3"/>
-    
-    <!-- Mirror on left -->
     <rect x="-10" y="-110" width="20" height="220" rx="2" ry="2" fill="#495057" stroke="#343a40" stroke-width="2"/>
-    
-    <!-- Semi-transparent mirror on right -->
     <rect x="290" y="-110" width="20" height="220" rx="2" ry="2" fill="#6c757d" stroke="#343a40" stroke-width="2" opacity="0.7"/>
     
-    <!-- Aligned photons at the same y-position (horizon) -->
-    <circle cx="30" cy="50" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="70" cy="50" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="120" cy="50" r="12" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="160" cy="50" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="190" cy="50" r="11" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="230" cy="50" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="260" cy="50" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="100" cy="50" r="7" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="220" cy="50" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    
-    <!-- Cavity label replaced -->
+    <!-- Aligned photons along same y-level (horizon) -->
+    <circle cx="30" cy="0" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="70" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="120" cy="0" r="12" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="160" cy="0" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="190" cy="0" r="11" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="230" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="260" cy="0" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="100" cy="0" r="7" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="220" cy="0" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+
+    <!-- New cavity label -->
     <text x="150" y="130" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Hamiltonian H_S</text>
   </g>
 
-  <!-- Atoms with updated captions -->
-  <g transform="translate(430, 120)">
+  <!-- Atoms (shifted down and left-aligned labels) -->
+  <g transform="translate(430, 310)">
     <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
     <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₁</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">Temperature T_{BH}</text>
+    <text x="-40" y="35" font-family="Arial" font-size="12" text-anchor="start" fill="#343a40">Temperature T_{BH}</text>
   </g>
-  <g transform="translate(430, 180)">
+  <g transform="translate(430, 370)">
     <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
     <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₂</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">Temperature T_{BH}</text>
+    <text x="-40" y="35" font-family="Arial" font-size="12" text-anchor="start" fill="#343a40">Temperature T_{BH}</text>
   </g>
-  <g transform="translate(430, 240)">
+  <g transform="translate(430, 430)">
     <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
     <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₃</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">Temperature T_{BH}</text>
+    <text x="-40" y="35" font-family="Arial" font-size="12" text-anchor="start" fill="#343a40">Temperature T_{BH}</text>
   </g>
-  <g transform="translate(430, 300)">
+  <g transform="translate(430, 490)">
     <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
     <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₄</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">Temperature T_{BH}</text>
+    <text x="-40" y="35" font-family="Arial" font-size="12" text-anchor="start" fill="#343a40">Temperature T_{BH}</text>
   </g>
 </svg>
