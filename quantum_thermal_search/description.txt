@@ -1,3 +1,5 @@
+header:Published in Quantum Information Processing
+(https://doi.org/10.1007/s11128-024-04413-x)
 header:Soon to be updated
 soon.. $|test\rangle$ aaa $\frac{1}{2}|testing\rangle$ bb
 soon.. $|test2\rangle$ aaa $$\frac{1}{3}$$ bb
