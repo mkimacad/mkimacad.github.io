@@ -383,12 +383,11 @@
                     </div>
                     
                     <div class="brewer-item">
-                        <div class="external-brewer" id="external-brewer">
-                            <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
-                                <div>📷</div>
-                                <div class="upload-text">Click to add brewer image</div>
-                            </div>
-                            <input type="file" id="imageInput" accept="image/*" onchange="loadBrewerImage(event)">
+                        <div class="external-brewer">
+                            <img src="img/switch.webp" alt="Coffee Brewer" />
+                            <div class="brewer-steam"></div>
+                            <div class="brewer-steam"></div>
+                            <div class="brewer-steam"></div>
                         </div>
                     </div>
                 </div>
@@ -404,34 +403,11 @@
     </div>
 
     <script>
-        // Function to load brewer image
-        function loadBrewerImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const brewerContainer = document.getElementById('external-brewer');
-                    brewerContainer.innerHTML = `
-                        <img src="${e.target.result}" alt="Coffee Brewer" />
-                        <div class="brewer-steam"></div>
-                        <div class="brewer-steam"></div>
-                        <div class="brewer-steam"></div>
-                    `;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // You can also set a default image by uncommenting and modifying this:
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     const brewerContainer = document.getElementById('external-brewer');
-        //     brewerContainer.innerHTML = `
-        //         <img src="path/to/your/brewer-image.jpg" alt="Coffee Brewer" />
-        //         <div class="brewer-steam"></div>
-        //         <div class="brewer-steam"></div>
-        //         <div class="brewer-steam"></div>
-        //     `;
-        // });
+        // Set default image for second brewer
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image is now directly embedded in HTML
+            console.log('Second brewer image loaded from img/switch.webp');
+        });
 
         async function loadComments() {
             const commentsContainer = document.getElementById('comments-container');
