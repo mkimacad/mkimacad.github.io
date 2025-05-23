@@ -51,15 +51,15 @@
     <rect x="250" y="-60" width="20" height="220" rx="2" ry="2" fill="#6c757d" stroke="#343a40" stroke-width="2" opacity="0.7"/>
     
     <!-- Aligned photons along same y-level (horizon) -->
-    <circle cx="30" cy="0" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="10" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="30" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="50" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
     <circle cx="70" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="120" cy="0" r="12" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="160" cy="0" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="190" cy="0" r="11" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="230" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="260" cy="0" r="10" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="100" cy="0" r="7" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="220" cy="0" r="9" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="90" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="110" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="130" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="150" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="170" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
 
     <!-- New cavity label -->
     <text x="110" y="170" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Hamiltonian H_S</text>
