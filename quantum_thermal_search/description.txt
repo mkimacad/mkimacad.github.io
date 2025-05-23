@@ -1,6 +1,8 @@
 header:Soon to be updated
 soon..
 latex:[[|0\rangle|testing\rangle]]
+latex:[|0\rangle|testing\rangle]
+latex:$|0\rangle|testing\rangle$
 latex:\(|0\rangle|testing\rangle\)
 latex:|0\rangle|testing\rangle
 latex:$$\frac{1}{2}|testing\rangle$$
