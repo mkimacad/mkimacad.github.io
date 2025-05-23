@@ -1,0 +1,4 @@
+header:Published in Fortschritte der Physik - Progress of Physics
+https://doi.org/10.1002/prop.202400194
+header:Updates coming soon..
+updates coming soon.. some additional remarks about AdS-Rindler paradoxes that could be resolved within the crossed-product construction. But updates yet needed.
