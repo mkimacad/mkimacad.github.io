@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minseong Kim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .github-info {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .username-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .username-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .username-input input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+
+        .username-input button {
+            padding: 12px 24px;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .username-input button:hover {
+            background: #005a99;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #007acc;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .project-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .project-language {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .project-stars {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .project-link {
+            flex: 1;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .github-link {
+            background: #333;
+            color: white;
+        }
+
+        .github-link:hover {
+            background: #555;
+        }
+
+        .pages-link {
+            background: #007acc;
+            color: white;
+        }
+
+        .pages-link:hover {
+            background: #005a99;
+        }
+
+        .no-projects {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            margin-top: 50px;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #d32f2f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .username-input {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Minseong Kim's github.io page</h1>
+        </div>
+
+        <div class="github-info">
+            <div class="username-input">
+                <input type="text" id="usernameInput" placeholder="Enter GitHub username..." />
+                <button onclick="loadProjects()">Load Projects</button>
+            </div>
+            <div id="loadingIndicator" class="loading" style="display: none;">
+                Loading projects...
+            </div>
+            <div id="errorMessage" class="error" style="display: none;"></div>
+        </div>
+
+        <div id="projectsContainer" class="projects-grid"></div>
+        <div id="noProjects" class="no-projects" style="display: none;">
+            No projects with GitHub Pages found.
+        </div>
+    </div>
+
+    <script>
+        let currentUsername = '';
+
+        // Auto-detect username from URL if this is username.github.io
+        function detectUsername() {
+            const hostname = window.location.hostname;
+            if (hostname.endsWith('.github.io')) {
+                const username = hostname.split('.')[0];
+                document.getElementById('usernameInput').value = username;
+                currentUsername = username;
+                loadProjects();
+            }
+        }
+
+        async function loadProjects() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (!username) {
+                showError('Please enter a GitHub username.');
+                return;
+            }
+
+            currentUsername = username;
+            showLoading(true);
+            hideError();
+            clearProjects();
+
+            try {
+                // Fetch user's repositories
+                const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`);
+                
+                if (!reposResponse.ok) {
+                    throw new Error(`GitHub API error: ${reposResponse.status}`);
+                }
+
+                const repos = await reposResponse.json();
+                
+                // Filter repos that might have GitHub Pages
+                const projectRepos = [];
+                
+                for (const repo of repos) {
+                    // Check if repo has pages enabled
+                    try {
+                        const pagesResponse = await fetch(`https://api.github.com/repos/${username}/${repo.name}/pages`);
+                        if (pagesResponse.ok) {
+                            const pagesData = await pagesResponse.json();
+                            projectRepos.push({
+                                ...repo,
+                                pages_url: pagesData.html_url
+                            });
+                        }
+                    } catch (e) {
+                        // If pages endpoint fails, check if it's username.github.io repo
+                        if (repo.name === `${username}.github.io`) {
+                            projectRepos.push({
+                                ...repo,
+                                pages_url: `https://${username}.github.io`
+                            });
+                        }
+                    }
+                }
+
+                showLoading(false);
+                displayProjects(projectRepos, username);
+
+            } catch (error) {
+                showLoading(false);
+                showError(`Error loading projects: ${error.message}`);
+            }
+        }
+
+        function displayProjects(repos, username) {
+            const container = document.getElementById('projectsContainer');
+            const noProjectsDiv = document.getElementById('noProjects');
+
+            if (repos.length === 0) {
+                noProjectsDiv.style.display = 'block';
+                return;
+            }
+
+            noProjectsDiv.style.display = 'none';
+            
+            container.innerHTML = repos.map(repo => `
+                <div class="project-card">
+                    <div class="project-title">${repo.name}</div>
+                    <div class="project-description">
+                        ${repo.description || 'No description available'}
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-language">
+                            ${repo.language || 'Unknown'}
+                        </div>
+                        <div class="project-stars">
+                            ⭐ ${repo.stargazers_count}
+                        </div>
+                    </div>
+                    <div class="project-links">
+                        <a href="${repo.html_url}" target="_blank" class="project-link github-link">
+                            GitHub
+                        </a>
+                        <a href="${repo.pages_url}" target="_blank" class="project-link pages-link">
+                            Live Site
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function clearProjects() {
+            document.getElementById('projectsContainer').innerHTML = '';
+            document.getElementById('noProjects').style.display = 'none';
+        }
+
+        // Handle Enter key in input
+        document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadProjects();
+            }
+        });
+
+        // Auto-detect username on page load
+        detectUsername();
+    </script>
+</body>
+</html>
