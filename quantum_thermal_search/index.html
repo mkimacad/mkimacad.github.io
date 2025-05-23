@@ -420,32 +420,24 @@
             renderMathJax();
         }
         
-        // Render MathJax with proper error handling
+        // Render MathJax with proper error handling and async support
         function renderMathJax() {
+            // Wait for MathJax to be fully loaded
             if (window.MathJax && window.MathJax.typesetPromise) {
-                MathJax.typesetPromise(['#projectDescription']).then(() => {
-                    console.log('MathJax rendering completed');
-                }).catch((err) => {
-                    console.error('MathJax error:', err);
-                });
-            } else if (window.MathJax && window.MathJax.startup && window.MathJax.startup.promise) {
-                window.MathJax.startup.promise.then(() => {
-                    return MathJax.typesetPromise(['#projectDescription']);
-                }).then(() => {
-                    console.log('MathJax rendering completed');
-                }).catch((err) => {
-                    console.error('MathJax error:', err);
+                const descriptionContainer = document.getElementById('projectDescription');
+                MathJax.typesetPromise([descriptionContainer]).catch(function (err) {
+                    console.log('MathJax typeset error: ' + err.message);
                 });
             } else {
-                // Try again in 300ms
-                setTimeout(renderMathJax, 300);
+                // MathJax not ready yet, try again after a short delay
+                setTimeout(renderMathJax, 200);
             }
         }
         
         // Process inline LaTeX in regular text
         function processInlineLaTeX(text) {
-            // Handle inline math delimited by $ ... $
-            return text.replace(/\$([^$]+)\$/g, '<span class="latex-inline">$$$1$$</span>');
+            // Handle inline math delimited by $ ... $ - convert to \(...\)
+            return text.replace(/\$([^$]+)\$/g, '<span class="latex-inline">\\($1\\)</span>');
         }
         
         // Open image modal
