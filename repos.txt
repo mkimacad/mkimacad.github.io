@@ -1,7 +1,14 @@
+Overview
 overviews
+Modified Janyes-Cummings model of black holes
 bh_jaynes_cummings
+Investigations of Karch-Randall braneworld, small corrections theorem and the toy qudit model of black holes
 braneworld
+Quantum Thermal Search
 quantum_thermal_search
+Black hole singularities can be beneficial
 philsci_time
+Imaginary-time deep learning
 imaginary_time_DL
+Coffee (not serious)
 coffee
