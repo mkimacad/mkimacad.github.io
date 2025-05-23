@@ -250,9 +250,9 @@
                     return {
                         name: cleanRepoName,
                         displayName: cleanRepoName.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                        description: `Web project: ${cleanRepoName}`,
+                        description: `Project: ${cleanRepoName}`,
                         url: `https://${username}.github.io/${cleanRepoName}`,
-                        github_url: `https://github.com/${username}/${cleanRepoName}`
+                        github_url: `https://github.com/${username}/${username}.github.io/${cleanRepoName}`
                     };
                 });
 
