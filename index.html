@@ -291,23 +291,28 @@
                 let mainRepoHasPages = false;
                 let mainRepoUrl = '';
                 
-                try {
-                    const pagesResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/pages`);
-                    if (pagesResponse.ok) {
-                        const pagesData = await pagesResponse.json();
+                // First, assume username.github.io repos have pages enabled
+                if (repoName === `${username}.github.io`) {
+                    mainRepoHasPages = true;
+                    mainRepoUrl = `https://${username}.github.io`;
+                } else {
+                    // For other repos, try to detect GitHub Pages
+                    try {
+                        const pagesResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/pages`);
+                        if (pagesResponse.ok) {
+                            const pagesData = await pagesResponse.json();
+                            mainRepoHasPages = true;
+                            mainRepoUrl = pagesData.html_url;
+                        } else {
+                            // Try the common GitHub Pages URL pattern
+                            mainRepoHasPages = true;
+                            mainRepoUrl = `https://${username}.github.io/${repoName}`;
+                        }
+                    } catch (e) {
+                        // Assume GitHub Pages exists at the standard URL
                         mainRepoHasPages = true;
-                        mainRepoUrl = pagesData.html_url;
+                        mainRepoUrl = `https://${username}.github.io/${repoName}`;
                     }
-                } catch (e) {
-                    // If it's username.github.io repo, assume it has pages
-                    if (repoName === `${username}.github.io`) {
-                        mainRepoHasPages = true;
-                        mainRepoUrl = `https://${username}.github.io`;
-                    }
-                }
-
-                if (!mainRepoHasPages) {
-                    throw new Error(`Repository ${username}/${repoName} does not have GitHub Pages enabled`);
                 }
 
                 // Get repository contents to look for sub-project directories
@@ -340,9 +345,8 @@
                             
                             if (hasWebFiles) {
                                 // Construct the GitHub Pages URL for the sub-project
-                                const subProjectUrl = repoName === `${username}.github.io` 
-                                    ? `https://${username}.github.io/${dir.name}`
-                                    : `https://${username}.github.io/${repoName}/${dir.name}`;
+                                // Sub-projects are always subdirectories of username.github.io
+                                const subProjectUrl = `https://${username}.github.io/${dir.name}`;
                                 
                                 subProjects.push({
                                     name: dir.name,
