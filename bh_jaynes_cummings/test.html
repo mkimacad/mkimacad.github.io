@@ -355,8 +355,9 @@
             
             try {
                 // Construct the API URL for description.txt
-                const apiPath = initialPath ? `/${initialPath}/description.txt` : '/description.txt';
-                const response = await fetch(`https://api.github.com/repos/${repo}/contents${apiPath}`);
+                const textUrl = `https://raw.githubusercontent.com/mkimacad/mkimacad.github.io/main/bh_jaynes_cummings/description.txt`;
+                
+                const response = await fetch(textUrl);
                 
                 if (!response.ok) {
                     throw new Error(`Description file not found (${response.status})`);
