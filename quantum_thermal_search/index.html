@@ -405,7 +405,7 @@
                         html += `<div class="latex-equation">$$${latexContent.slice(2, -2)}$$</div>`;
                     } else if (latexContent.startsWith('$') && latexContent.endsWith('$')) {
                         // Inline math
-                        html += `<span class="latex-inline">\\$${latexContent.slice(1, -1)}\\$</span>`;
+                        html += '<span class="latex-inline">' + '$' + latexContent.slice(1, -1) + '$' + '</span>';
                     } else {
                         // Default to display math if no delimiters
                         html += `<div class="latex-equation">$$${latexContent}$$</div>`;
