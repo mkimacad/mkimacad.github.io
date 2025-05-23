@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minseong Kim</title>
+    <title>My GitHub Projects</title>
     <style>
         * {
             margin: 0;
@@ -222,12 +222,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Minseong Kim's github.io page</h1>
+            <h1>GitHub Projects Portfolio</h1>
         </div>
 
         <div class="github-info">
             <div class="username-input">
-                <input type="text" id="usernameInput" placeholder="Enter GitHub username..." />
+                <input type="text" id="usernameInput" placeholder="Enter repository (e.g., username/username.github.io)..." />
                 <button onclick="loadProjects()">Load Projects</button>
             </div>
             <div id="loadingIndicator" class="loading" style="display: none;">
@@ -250,61 +250,104 @@
             const hostname = window.location.hostname;
             if (hostname.endsWith('.github.io')) {
                 const username = hostname.split('.')[0];
-                document.getElementById('usernameInput').value = username;
+                document.getElementById('usernameInput').value = `${username}/${username}.github.io`;
                 currentUsername = username;
                 loadProjects();
             }
         }
 
         async function loadProjects() {
-            const username = document.getElementById('usernameInput').value.trim();
-            if (!username) {
-                showError('Please enter a GitHub username.');
+            const input = document.getElementById('usernameInput').value.trim();
+            if (!input) {
+                showError('Please enter a repository in format username/username.github.io');
                 return;
             }
 
+            // Parse the input to extract username and repo name
+            const parts = input.split('/');
+            if (parts.length !== 2) {
+                showError('Please use format: username/repository-name');
+                return;
+            }
+
+            const [username, repoName] = parts;
             currentUsername = username;
+            
             showLoading(true);
             hideError();
             clearProjects();
 
             try {
-                // Fetch user's repositories
+                // First, verify the main repository exists
+                const mainRepoResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
+                
+                if (!mainRepoResponse.ok) {
+                    throw new Error(`Repository ${username}/${repoName} not found`);
+                }
+
+                const mainRepo = await mainRepoResponse.json();
+
+                // Fetch all user's repositories to find sub-projects
                 const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`);
                 
                 if (!reposResponse.ok) {
                     throw new Error(`GitHub API error: ${reposResponse.status}`);
                 }
 
-                const repos = await reposResponse.json();
+                const allRepos = await reposResponse.json();
                 
-                // Filter repos that might have GitHub Pages
+                // Filter repos that have GitHub Pages (excluding the main repo)
                 const projectRepos = [];
                 
-                for (const repo of repos) {
-                    // Check if repo has pages enabled
+                // Add the main repo if it has pages
+                try {
+                    const pagesResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/pages`);
+                    if (pagesResponse.ok) {
+                        const pagesData = await pagesResponse.json();
+                        projectRepos.push({
+                            ...mainRepo,
+                            pages_url: pagesData.html_url,
+                            isMain: true
+                        });
+                    } else if (repoName === `${username}.github.io`) {
+                        projectRepos.push({
+                            ...mainRepo,
+                            pages_url: `https://${username}.github.io`,
+                            isMain: true
+                        });
+                    }
+                } catch (e) {
+                    // If main repo is username.github.io, assume it has pages
+                    if (repoName === `${username}.github.io`) {
+                        projectRepos.push({
+                            ...mainRepo,
+                            pages_url: `https://${username}.github.io`,
+                            isMain: true
+                        });
+                    }
+                }
+                
+                // Check other repos for GitHub Pages
+                for (const repo of allRepos) {
+                    if (repo.name === repoName) continue; // Skip main repo, already handled
+                    
                     try {
                         const pagesResponse = await fetch(`https://api.github.com/repos/${username}/${repo.name}/pages`);
                         if (pagesResponse.ok) {
                             const pagesData = await pagesResponse.json();
                             projectRepos.push({
                                 ...repo,
-                                pages_url: pagesData.html_url
+                                pages_url: pagesData.html_url,
+                                isMain: false
                             });
                         }
                     } catch (e) {
-                        // If pages endpoint fails, check if it's username.github.io repo
-                        if (repo.name === `${username}.github.io`) {
-                            projectRepos.push({
-                                ...repo,
-                                pages_url: `https://${username}.github.io`
-                            });
-                        }
+                        // Ignore repos without pages
                     }
                 }
 
                 showLoading(false);
-                displayProjects(projectRepos, username);
+                displayProjects(projectRepos, username, repoName);
 
             } catch (error) {
                 showLoading(false);
@@ -312,7 +355,7 @@
             }
         }
 
-        function displayProjects(repos, username) {
+        function displayProjects(repos, username, mainRepoName) {
             const container = document.getElementById('projectsContainer');
             const noProjectsDiv = document.getElementById('noProjects');
 
@@ -323,9 +366,18 @@
 
             noProjectsDiv.style.display = 'none';
             
-            container.innerHTML = repos.map(repo => `
+            // Sort projects with main repo first
+            const sortedRepos = repos.sort((a, b) => {
+                if (a.isMain) return -1;
+                if (b.isMain) return 1;
+                return 0;
+            });
+            
+            container.innerHTML = sortedRepos.map(repo => `
                 <div class="project-card">
-                    <div class="project-title">${repo.name}</div>
+                    <div class="project-title">
+                        ${repo.name}${repo.isMain ? ' (Main)' : ''}
+                    </div>
                     <div class="project-description">
                         ${repo.description || 'No description available'}
                     </div>
