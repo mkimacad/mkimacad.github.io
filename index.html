@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minseong Kim</title>
+    <title>My GitHub Projects</title>
     <style>
         * {
             margin: 0;
@@ -181,8 +181,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Minseong Kim</h1>
-            <p>Overview, research projects and others</p>
+            <h1>My Projects</h1>
+            <p>Explore my web development portfolio</p>
         </div>
 
         <div id="loadingIndicator" class="loading pulse" style="display: block;">
@@ -194,7 +194,7 @@
         <div id="projectsContainer" class="projects-grid"></div>
         
         <div id="noProjects" class="no-projects" style="display: none;">
-            No projects found. Add repository names to repos.txt file.
+            No projects found. Add project names and repository names to repos.txt file (two lines per project).
         </div>
     </div>
 
@@ -234,33 +234,43 @@
                 
                 const reposText = await response.text();
                 
-                // Parse repository names (one per line, ignore empty lines and comments)
-                const repoNames = reposText
+                // Parse projects (two lines each: project name, then repo name)
+                const lines = reposText
                     .split('\n')
                     .map(line => line.trim())
                     .filter(line => line && !line.startsWith('#'))
                     .filter(line => line.length > 0);
 
-                console.log('Found repositories:', repoNames);
+                console.log('Found lines:', lines);
 
-                if (repoNames.length === 0) {
+                if (lines.length === 0) {
                     showNoProjects();
                     return;
                 }
 
-                // Create project objects for each repository
-                const projects = repoNames.map(repoName => {
+                if (lines.length % 2 !== 0) {
+                    throw new Error('repos.txt must have an even number of lines (project name followed by repo name)');
+                }
+
+                // Create project objects from pairs of lines
+                const projects = [];
+                for (let i = 0; i < lines.length; i += 2) {
+                    const projectName = lines[i];
+                    const repoName = lines[i + 1];
+                    
                     // Clean up repo name (remove any extra characters)
                     const cleanRepoName = repoName.replace(/[^a-zA-Z0-9\-_.]/g, '');
                     
-                    return {
+                    projects.push({
                         name: cleanRepoName,
-                        displayName: cleanRepoName.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                        description: `Project: ${cleanRepoName}`,
+                        displayName: projectName,
+                        description: `Project: ${projectName}`,
                         url: `https://${username}.github.io/${cleanRepoName}`,
                         github_url: `https://github.com/${username}/${cleanRepoName}`
-                    };
-                });
+                    });
+                }
+
+                console.log('Created projects:', projects);
 
                 showLoading(false);
                 displayProjects(projects);
@@ -269,7 +279,7 @@
                 console.error('Error loading projects:', error);
                 showLoading(false);
                 if (error.message.includes('repos.txt') || error.message.includes('404')) {
-                    showError('repos.txt file not found. Please create a repos.txt file with your repository names (one per line).');
+                    showError('repos.txt file not found. Please create a repos.txt file with project names and repository names (two lines per project).');
                 } else {
                     showError(`Error loading projects: ${error.message}`);
                 }
