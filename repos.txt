@@ -10,5 +10,7 @@ Black hole singularities can be beneficial
 philsci_time
 Imaginary-time deep learning
 imaginary_time_DL
-Coffee (not serious)
+Coffee (not necessarily research)
 coffee
+Music (not necessarily research)
+music
