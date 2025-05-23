@@ -9,10 +9,17 @@
     <script>
         window.MathJax = {
             tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
             }
-        }
+        };
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     
     <style>
         body {
@@ -227,6 +234,7 @@
             border-radius: 8px;
             border-left: 4px solid #3498db;
             overflow-x: auto;
+            text-align: center;
         }
         
         .latex-inline {
@@ -304,7 +312,7 @@
         <!-- Project Header -->
         <div class="project-header">
             <h1 class="project-title">Quantum thermal search</h1>
-            <p class="project-subtitle">leveraeing power of classical query oracles forming different Hamiltonians? (by Minseong Kim)</p>
+            <p class="project-subtitle">leveraging power of classical query oracles forming different Hamiltonians? (by Minseong Kim)</p>
             
             <!-- First set of images -->
             <div class="project-images">
@@ -383,54 +391,54 @@
             }
         }
         
-        // Parse description content with header:, img:, and latex: commands
+        // Parse description content with header:, img:, and LaTeX handling
         function parseDescription(content) {
-          const descriptionContainer = document.getElementById('projectDescription');
-          const lines = content.split('\n');
-          let html = '';
-        
-          // regex to find “latex:” followed by either $$…$$, $…$, or a bare chunk
-          const latexTagRe = /latex:(\$\$[\s\S]*?\$\$|\$[^$]+\$|[^\s]+)/g;
-        
-          for (let line of lines) {
-            const trimmed = line.trim();
-        
-            if (trimmed.startsWith('header:')) {
-              const text = trimmed.slice(7).trim();
-              html += `<div class="description-header">${text}</div>`;
-        
-            } else if (trimmed.startsWith('img:')) {
-              const img = trimmed.slice(4).trim();
-              html += `<img src="${img}" alt="${img}" class="description-image"
-                            onclick="openImageModal(this,'${img}')"
-                            onerror="this.style.display='none'">`;
-        
-            } else if (trimmed === '') {
-              html += '<br>';
-        
-            } else {
-              // Process any “latex:…” tags inline, leaving other text alone
-              const processed = trimmed.replace(latexTagRe, (_, tagContent) => {
-                // strip leading/trailing $ if present
-                if (tagContent.startsWith('$$') && tagContent.endsWith('$$')) {
-                  return `<div class="latex-equation">$$${tagContent.slice(2, -2)}$$</div>`;
-                } else if (tagContent.startsWith('$') && tagContent.endsWith('$')) {
-                  return `<span class="latex-inline">$${tagContent.slice(1, -1)}$</span>`;
+            const descriptionContainer = document.getElementById('projectDescription');
+            const lines = content.split('\n');
+            let html = '';
+            
+            for (let line of lines) {
+                const trimmed = line.trim();
+                
+                if (trimmed.startsWith('header:')) {
+                    const text = trimmed.slice(7).trim();
+                    html += `<div class="description-header">${text}</div>`;
+                    
+                } else if (trimmed.startsWith('img:')) {
+                    const img = trimmed.slice(4).trim();
+                    html += `<img src="${img}" alt="${img}" class="description-image"
+                                 onclick="openImageModal(this,'${img}')"
+                                 onerror="this.style.display='none'">`;
+                    
+                } else if (trimmed === '') {
+                    html += '<br>';
+                    
                 } else {
-                  // no delimiters → treat as display math
-                  return `<div class="latex-equation">$$${tagContent}$$</div>`;
+                    // Process LaTeX in the line
+                    const processedText = processLaTeX(trimmed);
+                    html += `<p>${processedText}</p>`;
                 }
-              });
-        
-              // you can still run your existing inline-$…$ detector too, if you like:
-              const finalText = processInlineLaTeX(processed);
-        
-              html += `<p>${finalText}</p>`;
             }
-          }
+            
+            descriptionContainer.innerHTML = html || '<p>No description content found.</p>';
+            
+            // Render MathJax after content is loaded
+            renderMathJax();
+        }
         
-          descriptionContainer.innerHTML = html || '<p>No description content found.</p>';
-          renderMathJax();
+        // Process LaTeX math expressions with proper dollar sign handling
+        function processLaTeX(text) {
+            // First handle display math ($$...$$)
+            text = text.replace(/\$\$([^$]+?)\$\$/g, function(match, mathContent) {
+                return `<div class="latex-equation">$$${mathContent}$$</div>`;
+            });
+            
+            // Then handle inline math ($...$) - but avoid double processing
+            text = text.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, function(match, mathContent) {
+                return `<span class="latex-inline">$${mathContent}$</span>`;
+            });
+            
+            return text;
         }
         
         // Render MathJax with proper error handling and async support
@@ -445,14 +453,8 @@
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub, "projectDescription"]);
             } else {
                 // MathJax not ready yet, try again after a short delay
-                setTimeout(renderMathJax, 100);
+                setTimeout(renderMathJax, 200);
             }
-        }
-        
-        // Process inline LaTeX in regular text
-        function processInlineLaTeX(text) {
-            // Handle inline math delimited by $ ... $
-            return text.replace(/\$([^$]+)\$/g, '<span class="latex-inline">$$$1$$</span>');
         }
         
         // Open image modal
@@ -484,7 +486,7 @@
         // Initialize page - wait for MathJax to be ready
         window.onload = function() {
             // Wait a bit for MathJax to fully initialize before loading description
-            setTimeout(loadDescription, 300);
+            setTimeout(loadDescription, 500);
         };
     </script>
 </body>
