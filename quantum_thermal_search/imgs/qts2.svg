@@ -35,13 +35,13 @@
 
   <!-- Titles -->
   <text x="400" y="40" font-family="Arial" font-size="22" text-anchor="middle" font-weight="bold">
-    'One ground state, rest approximately degenerate and excited states' system Hamiltonian case
+    'One ground state, rest excited states' system Hamiltonian case
   </text>
   <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle">
     Classical search g(x_0)=0 for particular x_0, rest g(x)=1
   </text>
   <text x="400" y="95" font-family="Arial" font-size="14" text-anchor="middle">
-    System Hamiltonian H_S ≈ ∑ₓ g(x)|x⟩⟨x| != ∑ₓ |x⟩⟨x
+    System Hamiltonian H_S ≈ ∑ₓ g(x)|x⟩⟨x| != ∑ₓ |x⟩⟨x|
   </text>
 
   <!-- Optical cavity and photons (shifted down and centered) -->
