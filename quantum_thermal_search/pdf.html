@@ -117,6 +117,19 @@
             font-size: 0.9em;
             color: #666;
             max-width: 500px;
+            margin-bottom: 20px;
+        }
+        
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.8em;
+            text-align: left;
+            max-width: 600px;
         }
         
         .download-link {
@@ -133,12 +146,23 @@
         .download-link:hover {
             background: #2980b9;
         }
+
+        .file-input-section {
+            background: #ecf0f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .file-input {
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <div class="pdf-container">
         <div class="pdf-header">
-            <div class="pdf-title">📄 qts_AcceptedManuscript.pdf</div>
+            <div class="pdf-title">📄 PDF Viewer</div>
             <div class="pdf-controls">
                 <button class="control-button" onclick="downloadPDF()">⬇ Download</button>
                 <button class="control-button" onclick="openInNewTab()">🔗 Open in New Tab</button>
@@ -153,11 +177,19 @@
         <div id="errorContainer" class="error-container" style="display: none;">
             <div class="error-icon">📄❌</div>
             <div class="error-message">Unable to load PDF</div>
-            <div class="error-details">
-                The PDF file "qts_AcceptedManuscript.pdf" could not be found or loaded. 
-                Please ensure the file exists in the repository.
+            <div class="error-details" id="errorDetails">
+                The PDF file could not be found or loaded.
             </div>
-            <a href="pdf/qts_AcceptedManuscript.pdf" class="download-link" download>
+            
+            <div class="debug-info" id="debugInfo"></div>
+            
+            <div class="file-input-section">
+                <h3>Alternative: Load a local PDF file</h3>
+                <input type="file" id="fileInput" accept=".pdf" class="file-input">
+                <button class="control-button" onclick="loadLocalFile()">Load Selected File</button>
+            </div>
+            
+            <a href="#" id="downloadLink" class="download-link" download style="display: none;">
                 Try Direct Download
             </a>
         </div>
@@ -166,56 +198,111 @@
     </div>
     
     <script>
-        const pdfFilename = 'pdf/qts_AcceptedManuscript.pdf';
+        // Try multiple possible paths for the PDF
+        const possiblePaths = [
+            'pdf/qts_AcceptedManuscript.pdf',
+            'qts_AcceptedManuscript.pdf',
+            './pdf/qts_AcceptedManuscript.pdf',
+            './qts_AcceptedManuscript.pdf'
+        ];
+        
         const pdfViewer = document.getElementById('pdfViewer');
         const loadingContainer = document.getElementById('loadingContainer');
         const errorContainer = document.getElementById('errorContainer');
+        const debugInfo = document.getElementById('debugInfo');
+        const errorDetails = document.getElementById('errorDetails');
+        const downloadLink = document.getElementById('downloadLink');
+        
+        let currentPdfPath = '';
         
         // Check if PDF exists and load it
         async function loadPDF() {
-            try {
-                // First, try to check if the PDF exists
-                const response = await fetch(pdfFilename, { method: 'HEAD' });
-                
-                if (response.ok) {
-                    // PDF exists, load it in the iframe
-                    pdfViewer.src = pdfFilename;
+            let debugText = 'Checking PDF paths:\n';
+            
+            for (const path of possiblePaths) {
+                try {
+                    debugText += `Trying: ${path} ... `;
+                    const response = await fetch(path, { method: 'HEAD' });
                     
-                    // Wait for iframe to load
-                    pdfViewer.onload = function() {
-                        loadingContainer.style.display = 'none';
-                        pdfViewer.style.display = 'block';
-                    };
-                    
-                    // Handle loading errors
-                    pdfViewer.onerror = function() {
-                        showError();
-                    };
-                } else {
-                    throw new Error('PDF not found');
+                    if (response.ok) {
+                        debugText += '✅ Found!\n';
+                        currentPdfPath = path;
+                        
+                        // PDF exists, load it in the iframe
+                        pdfViewer.src = path;
+                        
+                        // Wait for iframe to load
+                        pdfViewer.onload = function() {
+                            loadingContainer.style.display = 'none';
+                            pdfViewer.style.display = 'block';
+                        };
+                        
+                        // Handle loading errors
+                        pdfViewer.onerror = function() {
+                            showError(`Found PDF at ${path} but failed to load in iframe`);
+                        };
+                        
+                        return; // Success, exit function
+                    } else {
+                        debugText += `❌ Status: ${response.status}\n`;
+                    }
+                } catch (error) {
+                    debugText += `❌ Error: ${error.message}\n`;
                 }
-            } catch (error) {
-                console.error('Error loading PDF:', error);
-                showError();
+            }
+            
+            // If we get here, none of the paths worked
+            debugText += '\nCurrent page URL: ' + window.location.href;
+            debugInfo.textContent = debugText;
+            showError('PDF file not found in any of the expected locations');
+        }
+        
+        function showError(message = 'PDF file could not be found or loaded') {
+            loadingContainer.style.display = 'none';
+            errorContainer.style.display = 'flex';
+            errorDetails.textContent = message;
+            
+            if (currentPdfPath) {
+                downloadLink.href = currentPdfPath;
+                downloadLink.style.display = 'inline-block';
             }
         }
         
-        function showError() {
-            loadingContainer.style.display = 'none';
-            errorContainer.style.display = 'flex';
-        }
-        
         function downloadPDF() {
-            const link = document.createElement('a');
-            link.href = pdfFilename;
-            link.download = pdfFilename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (currentPdfPath) {
+                const link = document.createElement('a');
+                link.href = currentPdfPath;
+                link.download = currentPdfPath.split('/').pop();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         }
         
         function openInNewTab() {
-            window.open(pdfFilename, '_blank');
+            if (currentPdfPath) {
+                window.open(currentPdfPath, '_blank');
+            }
+        }
+        
+        function loadLocalFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (file && file.type === 'application/pdf') {
+                const fileURL = URL.createObjectURL(file);
+                pdfViewer.src = fileURL;
+                currentPdfPath = fileURL;
+                
+                loadingContainer.style.display = 'none';
+                errorContainer.style.display = 'none';
+                pdfViewer.style.display = 'block';
+                
+                // Update title
+                document.querySelector('.pdf-title').textContent = `📄 ${file.name}`;
+            } else {
+                alert('Please select a valid PDF file');
+            }
         }
         
         // Initialize
