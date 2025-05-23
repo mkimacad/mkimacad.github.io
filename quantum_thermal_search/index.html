@@ -385,48 +385,52 @@
         
         // Parse description content with header:, img:, and latex: commands
         function parseDescription(content) {
-            const descriptionContainer = document.getElementById('projectDescription');
-            const lines = content.split('\n');
-            let html = '';
-            
-            for (const line of lines) {
-                const trimmedLine = line.trim();
-                
-                if (trimmedLine.startsWith('header:')) {
-                    // Extract header text
-                    const headerText = trimmedLine.substring(7).trim();
-                    html += `<div class="description-header">${headerText}</div>`;
-                } else if (trimmedLine.startsWith('img:')) {
-                    // Extract image filename
-                    const imgFile = trimmedLine.substring(4).trim();
-                    html += `<img src="${imgFile}" alt="${imgFile}" class="description-image" onclick="openImageModal(this, '${imgFile}')" onerror="this.style.display='none';">`;
-                } else if (trimmedLine.startsWith('latex:')) {
-                    // Extract LaTeX content
-                    const latexContent = trimmedLine.substring(6).trim();
-                    if (latexContent.startsWith('$$') && latexContent.endsWith('$$')) {
-                        // Display math (block)
-                        html += `<div class="latex-equation">$$${latexContent.slice(2, -2)}$$</div>`;
-                    } else if (latexContent.startsWith('$') && latexContent.endsWith('$')) {
-                        // Inline math
-                        html += '<span class="latex-inline">' + '$' + latexContent.slice(1, -1) + '$' + '</span>';
-                    } else {
-                        // Default to display math if no delimiters
-                        html += `<div class="latex-equation">$$${latexContent}$$</div>`;
-                    }
-                } else if (trimmedLine === '') {
-                    // Empty line becomes <br>
-                    html += '<br>';
+          const descriptionContainer = document.getElementById('projectDescription');
+          const lines = content.split('\n');
+          let html = '';
+        
+          // regex to find “latex:” followed by either $$…$$, $…$, or a bare chunk
+          const latexTagRe = /latex:(\$\$[\s\S]*?\$\$|\$[^$]+\$|[^\s]+)/g;
+        
+          for (let line of lines) {
+            const trimmed = line.trim();
+        
+            if (trimmed.startsWith('header:')) {
+              const text = trimmed.slice(7).trim();
+              html += `<div class="description-header">${text}</div>`;
+        
+            } else if (trimmed.startsWith('img:')) {
+              const img = trimmed.slice(4).trim();
+              html += `<img src="${img}" alt="${img}" class="description-image"
+                            onclick="openImageModal(this,'${img}')"
+                            onerror="this.style.display='none'">`;
+        
+            } else if (trimmed === '') {
+              html += '<br>';
+        
+            } else {
+              // Process any “latex:…” tags inline, leaving other text alone
+              const processed = trimmed.replace(latexTagRe, (_, tagContent) => {
+                // strip leading/trailing $ if present
+                if (tagContent.startsWith('$$') && tagContent.endsWith('$$')) {
+                  return `<div class="latex-equation">$$${tagContent.slice(2, -2)}$$</div>`;
+                } else if (tagContent.startsWith('$') && tagContent.endsWith('$')) {
+                  return `<span class="latex-inline">$${tagContent.slice(1, -1)}$</span>`;
                 } else {
-                    // Regular text content - also check for inline LaTeX in regular text
-                    const processedText = processInlineLaTeX(trimmedLine);
-                    html += `<p>${processedText}</p>`;
+                  // no delimiters → treat as display math
+                  return `<div class="latex-equation">$$${tagContent}$$</div>`;
                 }
+              });
+        
+              // you can still run your existing inline-$…$ detector too, if you like:
+              const finalText = processInlineLaTeX(processed);
+        
+              html += `<p>${finalText}</p>`;
             }
-            
-            descriptionContainer.innerHTML = html || '<p>No description content found.</p>';
-            
-            // Re-render MathJax after content is added - with proper async handling
-            renderMathJax();
+          }
+        
+          descriptionContainer.innerHTML = html || '<p>No description content found.</p>';
+          renderMathJax();
         }
         
         // Render MathJax with proper error handling and async support
