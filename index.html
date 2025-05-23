@@ -287,67 +287,94 @@
 
                 const mainRepo = await mainRepoResponse.json();
 
-                // Fetch all user's repositories to find sub-projects
-                const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`);
+                // Check if main repo has GitHub Pages enabled
+                let mainRepoHasPages = false;
+                let mainRepoUrl = '';
                 
-                if (!reposResponse.ok) {
-                    throw new Error(`GitHub API error: ${reposResponse.status}`);
-                }
-
-                const allRepos = await reposResponse.json();
-                
-                // Filter repos that have GitHub Pages (excluding the main repo)
-                const projectRepos = [];
-                
-                // Add the main repo if it has pages
                 try {
                     const pagesResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/pages`);
                     if (pagesResponse.ok) {
                         const pagesData = await pagesResponse.json();
-                        projectRepos.push({
-                            ...mainRepo,
-                            pages_url: pagesData.html_url,
-                            isMain: true
-                        });
-                    } else if (repoName === `${username}.github.io`) {
-                        projectRepos.push({
-                            ...mainRepo,
-                            pages_url: `https://${username}.github.io`,
-                            isMain: true
-                        });
+                        mainRepoHasPages = true;
+                        mainRepoUrl = pagesData.html_url;
                     }
                 } catch (e) {
-                    // If main repo is username.github.io, assume it has pages
+                    // If it's username.github.io repo, assume it has pages
                     if (repoName === `${username}.github.io`) {
-                        projectRepos.push({
-                            ...mainRepo,
-                            pages_url: `https://${username}.github.io`,
-                            isMain: true
-                        });
-                    }
-                }
-                
-                // Check other repos for GitHub Pages
-                for (const repo of allRepos) {
-                    if (repo.name === repoName) continue; // Skip main repo, already handled
-                    
-                    try {
-                        const pagesResponse = await fetch(`https://api.github.com/repos/${username}/${repo.name}/pages`);
-                        if (pagesResponse.ok) {
-                            const pagesData = await pagesResponse.json();
-                            projectRepos.push({
-                                ...repo,
-                                pages_url: pagesData.html_url,
-                                isMain: false
-                            });
-                        }
-                    } catch (e) {
-                        // Ignore repos without pages
+                        mainRepoHasPages = true;
+                        mainRepoUrl = `https://${username}.github.io`;
                     }
                 }
 
+                if (!mainRepoHasPages) {
+                    throw new Error(`Repository ${username}/${repoName} does not have GitHub Pages enabled`);
+                }
+
+                // Get repository contents to look for sub-project directories
+                const contentsResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents`);
+                
+                if (!contentsResponse.ok) {
+                    throw new Error(`Cannot access repository contents`);
+                }
+
+                const contents = await contentsResponse.json();
+                
+                // Filter for directories (potential sub-projects)
+                const directories = contents.filter(item => item.type === 'dir');
+                
+                // Check each directory for index.html or other web files
+                const subProjects = [];
+                
+                for (const dir of directories) {
+                    try {
+                        const dirContentsResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${dir.name}`);
+                        if (dirContentsResponse.ok) {
+                            const dirContents = await dirContentsResponse.json();
+                            
+                            // Check if directory contains web files
+                            const hasWebFiles = dirContents.some(file => 
+                                file.name.toLowerCase() === 'index.html' ||
+                                file.name.toLowerCase().endsWith('.html') ||
+                                file.name.toLowerCase() === 'readme.md'
+                            );
+                            
+                            if (hasWebFiles) {
+                                // Construct the GitHub Pages URL for the sub-project
+                                const subProjectUrl = repoName === `${username}.github.io` 
+                                    ? `https://${username}.github.io/${dir.name}`
+                                    : `https://${username}.github.io/${repoName}/${dir.name}`;
+                                
+                                subProjects.push({
+                                    name: dir.name,
+                                    path: dir.path,
+                                    url: subProjectUrl,
+                                    github_url: `https://github.com/${username}/${repoName}/tree/main/${dir.name}`,
+                                    type: 'sub-project'
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        // Skip directories we can't access
+                        continue;
+                    }
+                }
+
+                // Add the main repository
+                const allProjects = [
+                    {
+                        name: repoName,
+                        description: mainRepo.description,
+                        language: mainRepo.language,
+                        stargazers_count: mainRepo.stargazers_count,
+                        url: mainRepoUrl,
+                        github_url: mainRepo.html_url,
+                        type: 'main'
+                    },
+                    ...subProjects
+                ];
+
                 showLoading(false);
-                displayProjects(projectRepos, username, repoName);
+                displayProjects(allProjects, username, repoName);
 
             } catch (error) {
                 showLoading(false);
@@ -355,50 +382,74 @@
             }
         }
 
-        function displayProjects(repos, username, mainRepoName) {
+        function displayProjects(projects, username, mainRepoName) {
             const container = document.getElementById('projectsContainer');
             const noProjectsDiv = document.getElementById('noProjects');
 
-            if (repos.length === 0) {
+            if (projects.length === 0) {
                 noProjectsDiv.style.display = 'block';
                 return;
             }
 
             noProjectsDiv.style.display = 'none';
             
-            // Sort projects with main repo first
-            const sortedRepos = repos.sort((a, b) => {
-                if (a.isMain) return -1;
-                if (b.isMain) return 1;
-                return 0;
-            });
-            
-            container.innerHTML = sortedRepos.map(repo => `
-                <div class="project-card">
-                    <div class="project-title">
-                        ${repo.name}${repo.isMain ? ' (Main)' : ''}
-                    </div>
-                    <div class="project-description">
-                        ${repo.description || 'No description available'}
-                    </div>
-                    <div class="project-meta">
-                        <div class="project-language">
-                            ${repo.language || 'Unknown'}
+            container.innerHTML = projects.map(project => {
+                if (project.type === 'main') {
+                    return `
+                        <div class="project-card">
+                            <div class="project-title">
+                                ${project.name} (Main Repository)
+                            </div>
+                            <div class="project-description">
+                                ${project.description || 'No description available'}
+                            </div>
+                            <div class="project-meta">
+                                <div class="project-language">
+                                    ${project.language || 'Unknown'}
+                                </div>
+                                <div class="project-stars">
+                                    ⭐ ${project.stargazers_count}
+                                </div>
+                            </div>
+                            <div class="project-links">
+                                <a href="${project.github_url}" target="_blank" class="project-link github-link">
+                                    GitHub
+                                </a>
+                                <a href="${project.url}" target="_blank" class="project-link pages-link">
+                                    Live Site
+                                </a>
+                            </div>
                         </div>
-                        <div class="project-stars">
-                            ⭐ ${repo.stargazers_count}
+                    `;
+                } else {
+                    return `
+                        <div class="project-card">
+                            <div class="project-title">
+                                📁 ${project.name}
+                            </div>
+                            <div class="project-description">
+                                Sub-project within ${mainRepoName}
+                            </div>
+                            <div class="project-meta">
+                                <div class="project-language">
+                                    Sub-project
+                                </div>
+                                <div class="project-stars">
+                                    📂 Directory
+                                </div>
+                            </div>
+                            <div class="project-links">
+                                <a href="${project.github_url}" target="_blank" class="project-link github-link">
+                                    GitHub
+                                </a>
+                                <a href="${project.url}" target="_blank" class="project-link pages-link">
+                                    Live Site
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="project-links">
-                        <a href="${repo.html_url}" target="_blank" class="project-link github-link">
-                            GitHub
-                        </a>
-                        <a href="${repo.pages_url}" target="_blank" class="project-link pages-link">
-                            Live Site
-                        </a>
-                    </div>
-                </div>
-            `).join('');
+                    `;
+                }
+            }).join('');
         }
 
         function showLoading(show) {
