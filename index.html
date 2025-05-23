@@ -204,6 +204,15 @@
             margin-top: 20px;
         }
 
+        .help-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -230,6 +239,12 @@
                 <input type="text" id="usernameInput" placeholder="Enter repository (e.g., username/username.github.io)..." />
                 <button onclick="loadProjects()">Load Projects</button>
             </div>
+            <div class="help-text">
+                <strong>Examples:</strong><br>
+                • For main portfolio site: <code>username/username.github.io</code><br>
+                • For project repository: <code>username/my-project</code><br>
+                • Replace "username" with your actual GitHub username
+            </div>
             <div id="loadingIndicator" class="loading" style="display: none;">
                 Loading projects...
             </div>
@@ -248,29 +263,38 @@
         // Auto-detect username from URL if this is username.github.io
         function detectUsername() {
             const hostname = window.location.hostname;
-            if (hostname.endsWith('.github.io')) {
+            if (hostname.endsWith('.github.io') && hostname !== 'github.io') {
                 const username = hostname.split('.')[0];
-                document.getElementById('usernameInput').value = `${username}/${username}.github.io`;
-                currentUsername = username;
-                loadProjects();
+                if (username && username !== 'www') {
+                    document.getElementById('usernameInput').value = `${username}/${username}.github.io`;
+                    currentUsername = username;
+                    console.log(`Auto-detected GitHub username: ${username}`);
+                    // Only auto-load if we're confident about the detection
+                    loadProjects();
+                }
             }
         }
 
         async function loadProjects() {
             const input = document.getElementById('usernameInput').value.trim();
             if (!input) {
-                showError('Please enter a repository in format username/username.github.io');
+                showError('Please enter a repository in format username/repository-name');
                 return;
             }
 
             // Parse the input to extract username and repo name
             const parts = input.split('/');
             if (parts.length !== 2) {
-                showError('Please use format: username/repository-name');
+                showError('Please use format: username/repository-name (e.g., octocat/octocat.github.io)');
                 return;
             }
 
             const [username, repoName] = parts;
+            if (!username || !repoName) {
+                showError('Both username and repository name are required');
+                return;
+            }
+
             currentUsername = username;
             
             showLoading(true);
@@ -279,13 +303,21 @@
 
             try {
                 // First, verify the main repository exists
+                console.log(`Checking repository: ${username}/${repoName}`);
                 const mainRepoResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
                 
                 if (!mainRepoResponse.ok) {
-                    throw new Error(`Repository ${username}/${repoName} not found`);
+                    if (mainRepoResponse.status === 404) {
+                        throw new Error(`Repository "${username}/${repoName}" not found. Please check the username and repository name.`);
+                    } else if (mainRepoResponse.status === 403) {
+                        throw new Error(`Access denied to repository "${username}/${repoName}". It might be private or you've hit the API rate limit.`);
+                    } else {
+                        throw new Error(`Error accessing repository "${username}/${repoName}" (Status: ${mainRepoResponse.status})`);
+                    }
                 }
 
                 const mainRepo = await mainRepoResponse.json();
+                console.log('Repository found:', mainRepo.name);
 
                 // Check if main repo has GitHub Pages enabled
                 let mainRepoHasPages = false;
@@ -316,16 +348,34 @@
                 }
 
                 // Get repository contents to look for sub-project directories
+                console.log('Fetching repository contents...');
                 const contentsResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents`);
                 
                 if (!contentsResponse.ok) {
-                    throw new Error(`Cannot access repository contents`);
+                    console.warn('Cannot access repository contents, showing main repo only');
+                    // Still show the main repository even if we can't access contents
+                    const allProjects = [
+                        {
+                            name: repoName,
+                            description: mainRepo.description,
+                            language: mainRepo.language,
+                            stargazers_count: mainRepo.stargazers_count,
+                            url: mainRepoUrl,
+                            github_url: mainRepo.html_url,
+                            type: 'main'
+                        }
+                    ];
+                    
+                    showLoading(false);
+                    displayProjects(allProjects, username, repoName);
+                    return;
                 }
 
                 const contents = await contentsResponse.json();
                 
                 // Filter for directories (potential sub-projects)
                 const directories = contents.filter(item => item.type === 'dir');
+                console.log(`Found ${directories.length} directories`);
                 
                 // Check each directory for index.html or other web files
                 const subProjects = [];
@@ -344,9 +394,14 @@
                             );
                             
                             if (hasWebFiles) {
+                                console.log(`Found web project: ${dir.name}`);
                                 // Construct the GitHub Pages URL for the sub-project
-                                // Sub-projects are always subdirectories of username.github.io
-                                const subProjectUrl = `https://${username}.github.io/${dir.name}`;
+                                let subProjectUrl;
+                                if (repoName === `${username}.github.io`) {
+                                    subProjectUrl = `https://${username}.github.io/${dir.name}`;
+                                } else {
+                                    subProjectUrl = `https://${username}.github.io/${repoName}/${dir.name}`;
+                                }
                                 
                                 subProjects.push({
                                     name: dir.name,
@@ -359,6 +414,7 @@
                         }
                     } catch (e) {
                         // Skip directories we can't access
+                        console.warn(`Cannot access directory: ${dir.name}`);
                         continue;
                     }
                 }
@@ -377,10 +433,12 @@
                     ...subProjects
                 ];
 
+                console.log(`Found ${allProjects.length} total projects`);
                 showLoading(false);
                 displayProjects(allProjects, username, repoName);
 
             } catch (error) {
+                console.error('Error loading projects:', error);
                 showLoading(false);
                 showError(`Error loading projects: ${error.message}`);
             }
@@ -482,7 +540,7 @@
             }
         });
 
-        // Auto-detect username on page load
+        // Auto-detect username on page load (only if running on GitHub Pages)
         detectUsername();
     </script>
 </body>
