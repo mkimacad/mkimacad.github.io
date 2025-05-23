@@ -1,0 +1,5 @@
+header:soon to be updated
+soon to be updated.
+header:On simulation code (baseline: jaynes_improved.py)
+Main parameters at the end (currently line 368 # parameters):
+M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced).
