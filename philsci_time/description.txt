@@ -1,3 +1,5 @@
+header:Journal Sophia, doi:10.1007/s11841-021-00829-5
+(https://doi.org/10.1007/s11841-021-00829-5)
 header:An idea, revisited five years later
 1. A philosophy of physics paper that also overlaps with philosophy of religion.
 2. Argues that black hole singularities cut down any theoretical observer timelines such that observer-wise infinite time can be made impossible.
