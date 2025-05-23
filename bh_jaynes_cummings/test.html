@@ -317,44 +317,12 @@
     </div>
     
     <script>
-        // Get current repository information
-        function getCurrentRepo() {
-            const hostname = window.location.hostname;
-            const pathname = window.location.pathname;
-            
-            if (hostname.includes('github.io')) {
-                const parts = hostname.split('.');
-                const username = parts[0];
-                return `${username}/${username}.github.io`;
-            }
-            return '';
-        }
-        
-        // Get the initial path within the repository
-        function getInitialPath() {
-            const hostname = window.location.hostname;
-            const pathname = window.location.pathname;
-            
-            if (hostname.includes('github.io')) {
-                const pathSegments = pathname.replace(/^\/+|\/+$/g, '').split('/').filter(segment => segment);
-                return pathSegments.length > 0 ? pathSegments.join('/') : '';
-            }
-            return '';
-        }
-        
         // Load and parse description.txt
         async function loadDescription() {
-            const repo = getCurrentRepo();
-            const initialPath = getInitialPath();
             const descriptionContainer = document.getElementById('projectDescription');
             
-            if (!repo) {
-                descriptionContainer.innerHTML = '<div class="error">Could not detect repository for loading description.</div>';
-                return;
-            }
-            
             try {
-                // Construct the API URL for description.txt
+                // Try to fetch description.txt directly from the current directory
                 const textUrl = `https://raw.githubusercontent.com/mkimacad/mkimacad.github.io/main/bh_jaynes_cummings/description.txt`;
                 
                 const response = await fetch(textUrl);
@@ -363,9 +331,7 @@
                     throw new Error(`Description file not found (${response.status})`);
                 }
                 
-                const fileData = await response.json();
-                const content = atob(fileData.content); // Decode base64 content
-                
+                const content = await response.text(); // Get as plain text
                 parseDescription(content);
                 
             } catch (error) {
