@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg_grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
@@ -20,56 +20,53 @@
     </filter>
   </defs>
 
-  <rect width="700" height="400" fill="url(#bg_grad)"/>
+  <!-- Background -->
+  <rect width="600" height="400" fill="url(#bg_grad)"/>
 
   <!-- Optical cavity -->
-  <g transform="translate(60, 140)">
+  <g transform="translate(50, 100)">
     <!-- Cavity body -->
-    <rect x="0" y="-100" width="300" height="200" rx="5" ry="5" fill="url(#cavity_grad)" stroke="#343a40" stroke-width="3"/>
+    <rect x="0" y="-80" width="200" height="160" rx="5" ry="5" fill="url(#cavity_grad)" stroke="#343a40" stroke-width="3"/>
 
     <!-- Mirror on left -->
-    <rect x="-10" y="-110" width="20" height="220" rx="2" ry="2" fill="#495057" stroke="#343a40" stroke-width="2"/>
+    <rect x="-10" y="-90" width="20" height="180" rx="2" ry="2" fill="#495057" stroke="#343a40" stroke-width="2"/>
 
-    <!-- Semi-transparent mirror on right -->
-    <rect x="290" y="-110" width="20" height="220" rx="2" ry="2" fill="#6c757d" stroke="#343a40" stroke-width="2" opacity="0.7"/>
+    <!-- Semi-transparent mirror on right (output coupler) -->
+    <rect x="190" y="-90" width="20" height="180" rx="2" ry="2" fill="#6c757d" stroke="#343a40" stroke-width="2" opacity="0.7"/>
 
-    <!-- Axes -->
-    <line x1="20" y1="80" x2="280" y2="80" stroke="#212529" stroke-width="1.5"/>
-    <line x1="20" y1="80" x2="20" y2="-80" stroke="#212529" stroke-width="1.5"/>
-
-    <!-- Axis labels -->
-    <text x="-20" y="-60" font-family="Arial" font-size="12" transform="rotate(-90)" text-anchor="middle">Energy level</text>
-    <text x="150" y="100" font-family="Arial" font-size="12" text-anchor="middle">Different states</text>
-
-    <!-- Version 1: Degenerate energy levels -->
-    <circle cx="70" cy="80" r="7" fill="#0d6efd"/>
-    <circle cx="120" cy="80" r="7" fill="#0d6efd"/>
-    <circle cx="170" cy="80" r="7" fill="#0d6efd"/>
-    <circle cx="220" cy="80" r="7" fill="#0d6efd"/>
+    <!-- Equal energy level states (excited) -->
+    <circle cx="30" cy="-40" r="10" fill="#74b9ff" stroke="#0984e3" stroke-width="1.5"/>
+    <circle cx="70" cy="-40" r="10" fill="#74b9ff" stroke="#0984e3" stroke-width="1.5"/>
+    <circle cx="110" cy="-40" r="10" fill="#74b9ff" stroke="#0984e3" stroke-width="1.5"/>
+    <circle cx="150" cy="-40" r="10" fill="#74b9ff" stroke="#0984e3" stroke-width="1.5"/>
   </g>
 
-  <!-- Atoms to the right -->
-  <g transform="translate(430, 60)">
-    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
-    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₁</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  <!-- Axis labels -->
+  <text x="30" y="40" font-family="Arial" font-size="14" fill="#2c3e50" transform="rotate(-90, 30, 40)">Energy level</text>
+  <text x="140" y="230" font-family="Arial" font-size="14" text-anchor="middle" fill="#2c3e50">Different states</text>
+
+  <!-- Atoms on the right -->
+  <g transform="translate(290, 90)">
+    <circle cx="0" cy="0" r="20" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="12" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₁</text>
+    <text x="0" y="30" font-family="Arial" font-size="11" text-anchor="middle" fill="#2c3e50">|0⟩</text>
   </g>
 
-  <g transform="translate(430, 130)">
-    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
-    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₂</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  <g transform="translate(290, 150)">
+    <circle cx="0" cy="0" r="20" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="12" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₂</text>
+    <text x="0" y="30" font-family="Arial" font-size="11" text-anchor="middle" fill="#2c3e50">|0⟩</text>
   </g>
 
-  <g transform="translate(430, 200)">
-    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
-    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₃</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  <g transform="translate(290, 210)">
+    <circle cx="0" cy="0" r="20" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="12" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₃</text>
+    <text x="0" y="30" font-family="Arial" font-size="11" text-anchor="middle" fill="#2c3e50">|0⟩</text>
   </g>
 
-  <g transform="translate(430, 270)">
-    <circle cx="0" cy="0" r="25" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
-    <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₄</text>
-    <text x="0" y="35" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">|0⟩</text>
+  <g transform="translate(290, 270)">
+    <circle cx="0" cy="0" r="20" fill="url(#atom_grad)" stroke="#e74c3c" stroke-width="2" filter="url(#atom_glow)" opacity="0.9"/>
+    <text x="0" y="0" font-family="Arial" font-size="12" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₄</text>
+    <text x="0" y="30" font-family="Arial" font-size="11" text-anchor="middle" fill="#2c3e50">|0⟩</text>
   </g>
 </svg>
