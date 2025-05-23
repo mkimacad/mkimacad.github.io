@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The multi-atom Jaynes-Cummings model of black holes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .project-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .project-title {
+            font-size: 2.2em;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .project-subtitle {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .project-images {
+            margin: 30px 0;
+        }
+        
+        .image-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .image-row.two-images {
+            gap: 40px; /* Slightly larger gap for two images to use space better */
+        }
+        
+        .image-container {
+            text-align: center;
+            max-width: 540px; /* Increased from 400px by 35% */
+        }
+        
+        .project-image {
+            max-width: 100%;
+            width: 100%; /* Force images to use full container width */
+            height: auto;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer; /* Add pointer cursor to indicate clickability */
+        }
+        
+        /* Specific handling for SVG images to ensure they scale properly */
+        .project-image[src$=".svg"] {
+            width: 100%;
+            min-width: 400px; /* Minimum size for SVG images */
+            max-width: 540px; /* Maximum size matching container */
+        }
+        
+        .project-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000; /* Higher than file modal */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            cursor: pointer;
+        }
+        
+        .image-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 95%; /* Increased from 90% */
+            max-height: 95%; /* Increased from 90% */
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .image-modal img {
+            width: 100%;
+            height: auto;
+            display: block;
+            min-width: 600px; /* Ensure modal images are larger than page images */
+        }
+        
+        /* Make SVG images in modal even larger */
+        .image-modal img[src$=".svg"] {
+            min-width: 800px; /* Much larger than the 540px on page */
+            max-width: 1200px; /* Allow very large SVG display */
+        }
+        
+        .image-modal-caption {
+            padding: 15px;
+            background: white;
+            text-align: center;
+            font-size: 1.1em;
+            color: #333;
+            border-top: 1px solid #eee;
+        }
+        
+        .image-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .image-modal-close:hover {
+            background: rgba(0,0,0,0.7);
+        }
+        
+        .image-caption {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        .project-description {
+            background: transparent; /* Remove background box */
+            padding: 0; /* Remove padding */
+            border-radius: 0; /* Remove border radius */
+            margin: 30px 0;
+            text-align: center;
+            font-size: 1.2em; /* Slightly larger text */
+            color: #555; /* Darker color for better readability */
+            font-style: normal; /* Remove italic */
+            border-left: none; /* Remove left border */
+            font-weight: 500; /* Add slight weight for emphasis */
+        }
+        
+        .description-section {
+            margin: 30px 0;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .description-section h3 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ecf0f1;
+            font-weight: 600;
+        }
+
+        .description-section h3:first-child {
+            margin-top: 0;
+        }
+
+        .description-section p {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .description-loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #95a5a6;
+        }
+        
+        .file-explorer-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ecf0f1;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .file-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .file-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .file-item.directory {
+            border-left-color: #f39c12;
+        }
+        
+        .file-item.file {
+            cursor: default;
+        }
+        
+        .download-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+        
+        .download-button:hover {
+            background: #229954;
+        }
+        
+        .file-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .view-button {
+            background: #8e44ad;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .view-button:hover {
+            background: #7d3c98;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .close-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .close-button:hover {
+            background: #c0392b;
+        }
+        
+        .file-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .download-all-button {
+            background: #e67e22;
+            margin-left: 10px;
+        }
+        
+        .download-all-button:hover {
+            background: #d35400;
+        }
+        
+        .file-info {
+            flex-grow: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .file-size {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .file-type {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+        
+        .directory-type {
+            background: #f39c12;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        input[type="text"] {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            flex-grow: 1;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .github-note {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .breadcrumb-item {
+            display: inline;
+            color: #3498db;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .breadcrumb-item:hover {
+            color: #2980b9;
+        }
+        
+        .breadcrumb-separator {
+            margin: 0 8px;
+            color: #666;
+        }
+        
+        .current-path {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .empty-folder {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .back-button {
+            background: #95a5a6;
+            margin-right: 10px;
+        }
+        
+        .back-button:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Project Header -->
+        <div class="project-header">
+            <h1 class="project-title">The multi-atom Jaynes-Cummings model of black holes</h1>
+            <p class="project-subtitle">sequentially interacting and outgoing atoms as outgoing radiations, optical cavity as a black hole (by Minseong Kim)</p>
+            
+            
+            <!-- First set of images -->
+            <div class="project-images">
+                <div class="image-row two-images">
+                    <div class="image-container">
+                        <img src="jaynes_cummings1.svg" alt="Jaynes-Cummings Model 1" class="project-image" onclick="openImageModal(this, 'image1 description soon to be posted')" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding:20px; background:#f8f9fa; border:2px dashed #ddd; color:#666;">jaynes_cummings1.svg<br><small>Image not found in repository</small></div>
+                        <p class="image-caption">image1 description soon to be posted</p>
+                    </div>
+                    <div class="image-container">
+                        <img src="jaynes_cummings2.svg" alt="Jaynes-Cummings Model 2" class="project-image" onclick="openImageModal(this, 'image2 description soon to be posted')" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding:20px; background:#f8f9fa; border:2px dashed #ddd; color:#666;">jaynes_cummings2.svg<br><small>Image not found in repository</small></div>
+                        <p class="image-caption">image2 description soon to be posted</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Project Description -->
+            <div id="descriptionSection" class="description-loading">
+                Loading project description...
+            </div>
+            
+            <!-- Second set of images -->
+            <div class="project-images">
+                <div class="image-row">
+                    <div class="image-container">
+                        <img src="reduced_time_ex1_1.png" alt="Reduced Time Example 1" class="project-image" onclick="openImageModal(this, 'Reduced Time Example 1')" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding:20px; background:#f8f9fa; border:2px dashed #ddd; color:#666;">reduced_time_ex1_1.png<br><small>Image not found in repository</small></div>
+                    </div>
+                    <div class="image-container">
+                        <img src="nosimple_ex1_1.png" alt="No Simple Example 1" class="project-image" onclick="openImageModal(this, 'No Simple Example 1')" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding:20px; background:#f8f9fa; border:2px dashed #ddd; color:#666;">nosimple_ex1_1.png<br><small>Image not found in repository</small></div>
+                    </div>
+                    <div class="image-container">
+                        <img src="nosimple_ex2_1.png" alt="No Simple Example 2" class="project-image" onclick="openImageModal(this, 'No Simple Example 2')" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding:20px; background:#f8f9fa; border:2px dashed #ddd; color:#666;">nosimple_ex2_1.png<br><small>Image not found in repository</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- File Explorer Section -->
+        <div class="file-explorer-section">
+            <h1>📁 Repository File Explorer</h1>
+            
+            <div class="github-note">
+                <strong>Auto-Loading:</strong> This page automatically detects and loads your GitHub repository contents. For manual loading, enter a repository in the format: username/repository-name
+            </div>
+        
+        <div class="controls">
+            <input type="text" id="repoInput" placeholder="username/repository-name" value="">
+            <button onclick="loadRepository()">Load Repository</button>
+            <button onclick="loadCurrentRepo()">Auto-detect Current Repo</button>
+            <button class="download-all-button" onclick="downloadAllFiles()" id="downloadAllBtn" style="display: none;">Download All Files</button>
+        </div>
+        
+        <div id="breadcrumb" class="breadcrumb" style="display: none;"></div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            Loading repository contents...
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <ul id="fileList" class="file-list"></ul>
+        
+        <div id="emptyFolder" class="empty-folder" style="display: none;">
+            This folder is empty
+        </div>
+        
+        <!-- Image Modal -->
+        <div id="imageModal" class="image-modal">
+            <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+            <div class="image-modal-content">
+                <img id="modalImage" src="" alt="">
+                <div id="modalImageCaption" class="image-modal-caption"></div>
+            </div>
+        </div>
+        
+        <!-- File Preview Modal -->
+        <div id="fileModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">File Preview</h3>
+                    <button class="close-button" onclick="closeModal()">Close</button>
+                </div>
+                <div id="filePreview" class="file-preview"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentRepo = '';
+        let currentPath = '';
+        let pathHistory = [];
+        let currentFiles = []; // Store current directory files for bulk download
+        
+        // Try to auto-detect repository from current URL
+        function getCurrentRepo() {
+            const hostname = window.location.hostname;
+            const pathname = window.location.pathname;
+            
+            if (hostname.includes('github.io')) {
+                const parts = hostname.split('.');
+                const username = parts[0];
+                // For GitHub Pages, the repo is always username.github.io
+                return `${username}/${username}.github.io`;
+            }
+            return '';
+        }
+        
+        // Get the initial path within the repository
+        function getInitialPath() {
+            const hostname = window.location.hostname;
+            const pathname = window.location.pathname;
+            
+            if (hostname.includes('github.io')) {
+                // Remove leading slash and get path segments
+                const pathSegments = pathname.replace(/^\/+|\/+$/g, '').split('/').filter(segment => segment);
+                // For username.github.io/project, the project folder is the initial path
+                return pathSegments.length > 0 ? pathSegments.join('/') : '';
+            }
+            return '';
+        }
+        
+        // Load and parse description from description.txt
+        async function loadProjectDescription() {
+            if (!currentRepo) return;
+            
+            try {
+                const response = await fetch(`https://api.github.com/repos/${currentRepo}/contents/description.txt`);
+                
+                if (!response.ok) {
+                    // If description.txt doesn't exist, show default message
+                    document.getElementById('descriptionSection').innerHTML = `
+                        <div class="description-section">
+                            <p>Description soon to be posted.</p>
+                            <br>
+                            <p><strong>Main simulation python file:</strong> jaynes_improved.py. Main parameters at the end: M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced).</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const fileData = await response.json();
+                const content = atob(fileData.content); // Decode base64 content
+                
+                parseAndDisplayDescription(content);
+                
+            } catch (error) {
+                console.error('Error loading description:', error);
+                document.getElementById('descriptionSection').innerHTML = `
+                    <div class="description-section">
+                        <p>Error loading project description.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Parse description content and display with proper formatting
+        function parseAndDisplayDescription(content) {
+            const lines = content.split('\n');
+            let html = '<div class="description-section">';
+            
+            for (let line of lines) {
+                line = line.trim();
+                
+                if (line.startsWith('header:')) {
+                    // Extract header content after "header:"
+                    const headerContent = line.substring(7).trim();
+                    if (headerContent) {
+                        html += `<h3>${headerContent}</h3>`;
+                    }
+                } else if (line === '') {
+                    // Empty line creates a line break
+                    html += '<br>';
+                } else if (line) {
+                    // Regular content line
+                    html += `<p>${line}</p>`;
+                }
+            }
+            
+            html += '</div>';
+            document.getElementById('descriptionSection').innerHTML = html;
+        }
+        
+        function loadCurrentRepo() {
+            const repo = getCurrentRepo();
+            if (repo) {
+                document.getElementById('repoInput').value = repo;
+                const initialPath = getInitialPath();
+                currentRepo = repo;
+                currentPath = initialPath;
+                loadDirectory(initialPath);
+            } else {
+                showError('Could not auto-detect repository. Please enter manually.');
+            }
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('emptyFolder').style.display = 'none';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        function showError(message) {
+            document.getElementById('error').textContent = message;
+            document.getElementById('error').style.display = 'block';
+            hideLoading();
+        }
+        
+        function formatFileSize(bytes) {
+            if (!bytes) return '';
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+        }
+        
+        function getFileExtension(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const typeMap = {
+                'js': 'JavaScript',
+                'ts': 'TypeScript',
+                'html': 'HTML',
+                'css': 'CSS',
+                'py': 'Python',
+                'java': 'Java',
+                'cpp': 'C++',
+                'c': 'C',
+                'php': 'PHP',
+                'rb': 'Ruby',
+                'go': 'Go',
+                'rs': 'Rust',
+                'md': 'Markdown',
+                'json': 'JSON',
+                'xml': 'XML',
+                'yml': 'YAML',
+                'yaml': 'YAML',
+                'txt': 'Text',
+                'pdf': 'PDF',
+                'png': 'Image',
+                'jpg': 'Image',
+                'jpeg': 'Image',
+                'gif': 'Image',
+                'svg': 'SVG'
+            };
+            return typeMap[ext] || ext.toUpperCase();
+        }
+        
+        function updateBreadcrumb() {
+            const breadcrumbEl = document.getElementById('breadcrumb');
+            
+            if (!currentRepo) {
+                breadcrumbEl.style.display = 'none';
+                return;
+            }
+            
+            breadcrumbEl.style.display = 'block';
+            let breadcrumbHTML = `<span class="breadcrumb-item" onclick="navigateToPath('')">📁 ${currentRepo}</span>`;
+            
+            if (currentPath) {
+                const pathParts = currentPath.split('/').filter(part => part);
+                let buildPath = '';
+                
+                pathParts.forEach((part, index) => {
+                    buildPath += (index > 0 ? '/' : '') + part;
+                    breadcrumbHTML += `<span class="breadcrumb-separator">/</span>`;
+                    
+                    if (index === pathParts.length - 1) {
+                        breadcrumbHTML += `<span class="current-path">${part}</span>`;
+                    } else {
+                        breadcrumbHTML += `<span class="breadcrumb-item" onclick="navigateToPath('${buildPath}')">${part}</span>`;
+                    }
+                });
+            }
+            
+            breadcrumbEl.innerHTML = breadcrumbHTML;
+        }
+        
+        function navigateToPath(path) {
+            currentPath = path;
+            loadDirectory(path);
+        }
+        
+        async function loadRepository() {
+            const repoInput = document.getElementById('repoInput').value.trim();
+            if (!repoInput) {
+                showError('Please enter a repository name in format: username/repository');
+                return;
+            }
+            
+            currentRepo = repoInput;
+            currentPath = '';
+            pathHistory = [];
+            loadDirectory('');
+        }
+        
+        async function loadDirectory(path) {
+            showLoading();
+            updateBreadcrumb();
+            
+            try {
+                const apiPath = path ? `/${path}` : '';
+                const response = await fetch(`https://api.github.com/repos/${currentRepo}/contents${apiPath}`);
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API Error: ${response.status} ${response.statusText}`);
+                }
+                
+                const files = await response.json();
+                displayFiles(files);
+                
+                // Load project description when we successfully load the root directory
+                if (path === '' || path === getInitialPath()) {
+                    loadProjectDescription();
+                }
+                
+                hideLoading();
+                
+            } catch (error) {
+                showError(`Error loading directory: ${error.message}`);
+            }
+        }
+        
+        function displayFiles(files) {
+            const fileList = document.getElementById('fileList');
+            const emptyFolder = document.getElementById('emptyFolder');
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            
+            fileList.innerHTML = '';
+            currentFiles = files || [];
+            
+            if (!files || files.length === 0) {
+                emptyFolder.style.display = 'block';
+                downloadAllBtn.style.display = 'none';
+                return;
+            } else {
+                emptyFolder.style.display = 'none';
+                // Show download all button if there are files (not just directories)
+                const hasFiles = files.some(file => file.type === 'file');
+                downloadAllBtn.style.display = hasFiles ? 'inline-block' : 'none';
+            }
+            
+            // Sort files: directories first, then files alphabetically
+            files.sort((a, b) => {
+                if (a.type !== b.type) {
+                    return a.type === 'dir' ? -1 : 1;
+                }
+                return a.name.localeCompare(b.name);
+            });
+            
+            files.forEach(file => {
+                const li = document.createElement('li');
+                li.className = `file-item ${file.type === 'dir' ? 'directory' : 'file'}`;
+                
+                const actionsHTML = file.type === 'file' ? `
+                    <div class="file-actions">
+                        <span class="file-type">${getFileExtension(file.name)}</span>
+                        <button class="view-button"
