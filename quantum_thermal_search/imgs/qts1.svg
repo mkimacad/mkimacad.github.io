@@ -41,7 +41,7 @@
     Classical search g(x)=1 for every classical state x
   </text>
   <text x="400" y="95" font-family="Arial" font-size="14" text-anchor="middle">
-    System Hamiltonian H_S(x) ≈ ∑ₓ g(x)|x⟩⟨x| = ∑ₓ |x⟩⟨x|
+    System Hamiltonian H_S ≈ ∑ₓ g(x)|x⟩⟨x| = ∑ₓ |x⟩⟨x|
   </text>
 
   <!-- Optical cavity and photons (shifted down and centered) -->
