@@ -1,5 +1,6 @@
 header:Soon to be updated
-soon..
+soon.. latex:$|test\rangle$
+latex:$|test\rangle$
 latex: [[|0\rangle|testing\rangle]]
 latex: [|0\rangle|testing\rangle]
 latex: $|0\rangle|testing\rangle$
