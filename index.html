@@ -224,9 +224,15 @@
             clearProjects();
 
             try {
-                // Read repos.txt file
+                // Use fetch to read repos.txt file
                 console.log('Reading repos.txt...');
-                const reposText = await window.fs.readFile('repos.txt', { encoding: 'utf8' });
+                const response = await fetch('repos.txt');
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch repos.txt: ${response.status} ${response.statusText}`);
+                }
+                
+                const reposText = await response.text();
                 
                 // Parse repository names (one per line, ignore empty lines and comments)
                 const repoNames = reposText
@@ -252,7 +258,7 @@
                         displayName: cleanRepoName.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
                         description: `Project: ${cleanRepoName}`,
                         url: `https://${username}.github.io/${cleanRepoName}`,
-                        github_url: `https://github.com/${username}/${username}.github.io/${cleanRepoName}`
+                        github_url: `https://github.com/${username}/${cleanRepoName}`
                     };
                 });
 
@@ -262,7 +268,7 @@
             } catch (error) {
                 console.error('Error loading projects:', error);
                 showLoading(false);
-                if (error.message.includes('repos.txt')) {
+                if (error.message.includes('repos.txt') || error.message.includes('404')) {
                     showError('repos.txt file not found. Please create a repos.txt file with your repository names (one per line).');
                 } else {
                     showError(`Error loading projects: ${error.message}`);
