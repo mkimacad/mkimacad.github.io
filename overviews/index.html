@@ -80,9 +80,8 @@
             color: #444;
         }
 
-        .content p {
-            margin-bottom: 20px;
-            text-align: justify;
+        .content br {
+            margin-bottom: 10px;
         }
 
         .content img {
@@ -151,7 +150,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>How I see life, computation, physics and maths. A sort-of review for what I have done so far</h1>
+        <h1 id="page-title">Overview Comments</h1>
         <div id="content">
             <div class="loading">Loading comments...</div>
         </div>
@@ -186,6 +185,9 @@
                     throw new Error('Unable to determine repository information from URL');
                 }
                 
+                // Load title from title.txt
+                await loadTitle(repoInfo);
+                
                 const textUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/main.txt`;
                 
                 const response = await fetch(textUrl);
@@ -210,51 +212,54 @@
             }
         }
 
-        // Parse the text content and handle img: lines
+        // Load title from title.txt
+        async function loadTitle(repoInfo) {
+            try {
+                const titleUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/title.txt`;
+                const response = await fetch(titleUrl);
+                if (response.ok) {
+                    const titleText = await response.text();
+                    const cleanTitle = titleText.trim();
+                    if (cleanTitle) {
+                        document.getElementById('page-title').textContent = cleanTitle;
+                    }
+                }
+            } catch (error) {
+                console.log('Could not load title.txt, using default title');
+            }
+        }
+
+        // Parse the text content and handle img: lines with line breaks
         function parseContent(text, repoInfo) {
             const lines = text.split('\n');
             let htmlContent = '';
-            let currentParagraph = '';
             
-            for (let line of lines) {
-                line = line.trim();
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
                 
                 // Check if line starts with "img:"
-                if (line.startsWith('img:')) {
-                    // Close current paragraph if it exists
-                    if (currentParagraph.trim()) {
-                        htmlContent += `<p>${escapeHtml(currentParagraph.trim())}</p>\n`;
-                        currentParagraph = '';
-                    }
-                    
+                if (line.trim().startsWith('img:')) {
                     // Extract image filename
-                    const imageName = line.substring(4).trim();
+                    const imageName = line.trim().substring(4).trim();
                     if (imageName) {
                         const imageUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/${imageName}`;
                         htmlContent += `<img src="${imageUrl}" alt="${escapeHtml(imageName)}" loading="lazy">\n`;
                         htmlContent += `<div class="image-caption">${escapeHtml(imageName)}</div>\n`;
                     }
-                } else if (line === '') {
-                    // Empty line - end current paragraph
-                    if (currentParagraph.trim()) {
-                        htmlContent += `<p>${escapeHtml(currentParagraph.trim())}</p>\n`;
-                        currentParagraph = '';
-                    }
                 } else {
-                    // Regular text line
-                    if (currentParagraph) {
-                        currentParagraph += ' ';
+                    // Regular text line - add line break if not empty
+                    if (line.trim() !== '') {
+                        htmlContent += escapeHtml(line);
                     }
-                    currentParagraph += line;
+                    
+                    // Add line break unless it's the last line
+                    if (i < lines.length - 1) {
+                        htmlContent += '<br>\n';
+                    }
                 }
             }
             
-            // Don't forget the last paragraph
-            if (currentParagraph.trim()) {
-                htmlContent += `<p>${escapeHtml(currentParagraph.trim())}</p>\n`;
-            }
-            
-            return htmlContent || '<p>No content found in main.txt</p>';
+            return htmlContent || 'No content found in main.txt';
         }
 
         // Escape HTML to prevent XSS
