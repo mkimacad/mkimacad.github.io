@@ -54,7 +54,7 @@
     <circle cx="10" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
     <circle cx="30" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
     <circle cx="50" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
-    <circle cx="70" cy="-50" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
+    <circle cx="70" cy="100" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
     <circle cx="90" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
     <circle cx="110" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
     <circle cx="130" cy="0" r="8" fill="url(#photon_grad)" filter="url(#photon_glow)"/>
