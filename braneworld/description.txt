@@ -4,4 +4,5 @@ Initial github.io paper description: May 24-25,2025
 header:Published in Fortschritte der Physik - Progress of Physics
 https://doi.org/10.1002/prop.202400194
 header:Updates coming soon..
-updates coming soon.. some additional remarks about AdS-Rindler paradoxes that could be resolved within the crossed-product construction. Some wistful thoughts about black string models. Possibly an additional memo manuscript to include. Updates to come..
+updates coming soon.. some additional remarks about AdS-Rindler paradoxes that could be resolved within the crossed-product construction. Some wistful thoughts about black string models. Possibly an additional memo manuscript to include. Updates to come.. $|test\rangle$ test.
+$$|test\rangle$$
