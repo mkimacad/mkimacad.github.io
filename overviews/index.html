@@ -389,36 +389,83 @@
 
         // Process text for URLs and LaTeX math
         function processTextForLinksAndMath(text) {
-            // First escape HTML to prevent XSS
-            let processedText = escapeHtml(text);
+            // Split text into segments, preserving LaTeX math expressions
+            const segments = [];
+            let currentPos = 0;
+            const mathPattern = /(\$\$[^$]*\$\$|\$[^$\n]*\$)/g;
+            let match;
             
-            // Process URLs - look for http/https links
-            const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
-            processedText = processedText.replace(urlRegex, (url) => {
-                // Clean up common punctuation at the end of URLs
-                let cleanUrl = url;
-                let trailingPunct = '';
-                const punctuation = /[.,;:!?)\]}]+$/;
-                const match = url.match(punctuation);
-                if (match) {
-                    cleanUrl = url.slice(0, -match[0].length);
-                    trailingPunct = match[0];
+            while ((match = mathPattern.exec(text)) !== null) {
+                // Add text before math
+                if (match.index > currentPos) {
+                    segments.push({
+                        type: 'text',
+                        content: text.substring(currentPos, match.index)
+                    });
                 }
                 
-                // Create a readable display text (limit length)
-                let displayUrl = cleanUrl;
-                if (displayUrl.length > 50) {
-                    displayUrl = displayUrl.substring(0, 47) + '...';
-                }
+                // Add math segment
+                segments.push({
+                    type: 'math',
+                    content: match[0]
+                });
                 
-                return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>${trailingPunct}`;
-            });
+                currentPos = match.index + match[0].length;
+            }
             
-            // LaTeX math is handled by MathJax, so we just need to preserve dollar signs
-            // The escapeHtml function will have converted $ to &dollar; so we need to restore them
-            processedText = processedText.replace(/\$/g, '$');
+            // Add remaining text
+            if (currentPos < text.length) {
+                segments.push({
+                    type: 'text',
+                    content: text.substring(currentPos)
+                });
+            }
             
-            return processedText;
+            // If no math found, treat entire text as text segment
+            if (segments.length === 0) {
+                segments.push({
+                    type: 'text',
+                    content: text
+                });
+            }
+            
+            // Process each segment
+            let result = '';
+            for (const segment of segments) {
+                if (segment.type === 'math') {
+                    // Keep math expressions as-is
+                    result += segment.content;
+                } else {
+                    // Process text segments for HTML escaping and URLs
+                    let processedText = escapeHtml(segment.content);
+                    
+                    // Process URLs - look for http/https links
+                    const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
+                    processedText = processedText.replace(urlRegex, (url) => {
+                        // Clean up common punctuation at the end of URLs
+                        let cleanUrl = url;
+                        let trailingPunct = '';
+                        const punctuation = /[.,;:!?)\]}]+$/;
+                        const match = url.match(punctuation);
+                        if (match) {
+                            cleanUrl = url.slice(0, -match[0].length);
+                            trailingPunct = match[0];
+                        }
+                        
+                        // Create a readable display text (limit length)
+                        let displayUrl = cleanUrl;
+                        if (displayUrl.length > 50) {
+                            displayUrl = displayUrl.substring(0, 47) + '...';
+                        }
+                        
+                        return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>${trailingPunct}`;
+                    });
+                    
+                    result += processedText;
+                }
+            }
+            
+            return result;
         }
 
         // Escape HTML to prevent XSS
