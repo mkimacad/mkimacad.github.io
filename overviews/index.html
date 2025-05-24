@@ -290,72 +290,82 @@
                 // Re-render MathJax after content update
                 console.log('Triggering MathJax re-render...');
                 
-                // Function to try MathJax rendering
-                const tryMathJaxRender = () => {
-                    if (window.MathJax) {
-                        console.log('MathJax object:', MathJax);
-                        console.log('MathJax properties:', Object.keys(MathJax));
-                        
-                        // MathJax 3.x approach
-                        if (typeof MathJax.typesetPromise === 'function') {
-                            console.log('Using MathJax 3.x typesetPromise');
-                            MathJax.typesetPromise([contentDiv]).then(() => {
-                                console.log('MathJax typeset complete');
-                            }).catch((err) => {
-                                console.log('MathJax typesetPromise error:', err);
-                            });
-                            return true;
-                        }
-                        
-                        // MathJax 3.x alternative
-                        if (typeof MathJax.typeset === 'function') {
-                            console.log('Using MathJax 3.x typeset');
-                            try {
-                                MathJax.typeset([contentDiv]);
-                                console.log('MathJax typeset complete');
-                                return true;
-                            } catch (err) {
-                                console.log('MathJax typeset error:', err);
-                            }
-                        }
-                        
-                        // MathJax 2.x approach
-                        if (MathJax.Hub && typeof MathJax.Hub.Queue === 'function') {
-                            console.log('Using MathJax 2.x Hub.Queue');
-                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, contentDiv]);
-                            return true;
-                        }
-                        
-                        console.log('No suitable MathJax render method found');
-                        return false;
+                // Function to check if MathJax is fully loaded
+                const isMathJaxReady = () => {
+                    return window.MathJax && 
+                           (typeof MathJax.typesetPromise === 'function' || 
+                            typeof MathJax.typeset === 'function' ||
+                            (MathJax.Hub && typeof MathJax.Hub.Queue === 'function'));
+                };
+                
+                // Function to render MathJax
+                const renderMathJax = () => {
+                    console.log('Attempting MathJax render...');
+                    console.log('MathJax properties:', Object.keys(MathJax));
+                    
+                    if (typeof MathJax.typesetPromise === 'function') {
+                        console.log('Using MathJax.typesetPromise');
+                        MathJax.typesetPromise([contentDiv]).then(() => {
+                            console.log('MathJax typeset complete');
+                        }).catch((err) => {
+                            console.log('MathJax typesetPromise error:', err);
+                        });
+                        return true;
                     }
+                    
+                    if (typeof MathJax.typeset === 'function') {
+                        console.log('Using MathJax.typeset');
+                        try {
+                            MathJax.typeset([contentDiv]);
+                            console.log('MathJax typeset complete');
+                            return true;
+                        } catch (err) {
+                            console.log('MathJax typeset error:', err);
+                        }
+                    }
+                    
+                    if (MathJax.Hub && typeof MathJax.Hub.Queue === 'function') {
+                        console.log('Using MathJax.Hub.Queue');
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, contentDiv]);
+                        return true;
+                    }
+                    
                     return false;
                 };
                 
-                // Try immediately
-                if (!tryMathJaxRender()) {
-                    // If immediate render fails, wait for MathJax to be ready
-                    console.log('Immediate render failed, waiting for MathJax...');
+                // If MathJax is already ready, render immediately
+                if (isMathJaxReady()) {
+                    console.log('MathJax is ready, rendering now');
+                    renderMathJax();
+                } else {
+                    console.log('MathJax not ready, waiting for initialization...');
                     
-                    // Try multiple times with increasing delays
-                    const delays = [100, 300, 500, 1000];
-                    let attemptCount = 0;
-                    
-                    const attemptRender = () => {
-                        if (attemptCount < delays.length) {
-                            setTimeout(() => {
-                                console.log(`MathJax render attempt ${attemptCount + 1}`);
-                                if (!tryMathJaxRender()) {
-                                    attemptCount++;
-                                    attemptRender();
-                                }
-                            }, delays[attemptCount]);
+                    // Wait for MathJax to be ready
+                    const checkMathJaxReady = () => {
+                        if (isMathJaxReady()) {
+                            console.log('MathJax is now ready');
+                            renderMathJax();
                         } else {
-                            console.log('All MathJax render attempts failed');
+                            console.log('Still waiting for MathJax...');
+                            setTimeout(checkMathJaxReady, 200);
                         }
                     };
                     
-                    attemptRender();
+                    // Start checking after a short delay
+                    setTimeout(checkMathJaxReady, 100);
+                    
+                    // Also listen for the MathJax ready event if available
+                    if (typeof MathJax !== 'undefined' && MathJax.startup) {
+                        console.log('Waiting for MathJax startup promise...');
+                        MathJax.startup.promise.then(() => {
+                            console.log('MathJax startup complete');
+                            if (!renderMathJax()) {
+                                console.log('Render failed even after startup');
+                            }
+                        }).catch((err) => {
+                            console.log('MathJax startup error:', err);
+                        });
+                    }
                 }
                 
             } catch (error) {
