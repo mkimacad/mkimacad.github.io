@@ -405,68 +405,126 @@
     </div>
     
     <script>
-        // Fixed URL detection with proper HTML-aware processing
-        function detectAndLinkURLs(text) {
+        // Enhanced text processing that handles LaTeX and URLs together
+        function processTextWithLatexAndUrls(text) {
             // Skip if text already contains HTML tags to avoid breaking existing links
             if (/<[^>]*>/.test(text)) {
                 return text;
             }
             
-            // Single comprehensive URL regex that captures all types in one pass
-            const urlRegex = /\b(?:(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]|www\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?)\b/gi;
+            // Create a structure to track different types of content
+            const tokens = [];
+            let currentIndex = 0;
             
-            const matches = [];
+            // First, find all LaTeX expressions (display math $$...$$ and inline $...$)
+            const latexDisplayRegex = /\$\$([^$]+?)\$\$/g;
+            const latexInlineRegex = /(?<!\$)\$([^$\n]+?)\$(?!\$)/g;
+            
+            // Find display math first
             let match;
-            
-            // Collect all matches first
-            while ((match = urlRegex.exec(text)) !== null) {
-                matches.push({
-                    match: match[0],
-                    index: match.index
+            while ((match = latexDisplayRegex.exec(text)) !== null) {
+                tokens.push({
+                    type: 'latex-display',
+                    start: match.index,
+                    end: match.index + match[0].length,
+                    content: match[0],
+                    mathContent: match[1]
                 });
             }
             
-            // Reset regex lastIndex
+            // Reset regex
+            latexDisplayRegex.lastIndex = 0;
+            
+            // Find inline math, but avoid areas already marked as display math
+            while ((match = latexInlineRegex.exec(text)) !== null) {
+                const isOverlapping = tokens.some(token => 
+                    match.index >= token.start && match.index < token.end
+                );
+                
+                if (!isOverlapping) {
+                    tokens.push({
+                        type: 'latex-inline',
+                        start: match.index,
+                        end: match.index + match[0].length,
+                        content: match[0],
+                        mathContent: match[1]
+                    });
+                }
+            }
+            
+            // Reset regex
+            latexInlineRegex.lastIndex = 0;
+            
+            // Find URLs, avoiding LaTeX areas
+            const urlRegex = /\b(?:(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]|www\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?)\b/gi;
+            
+            while ((match = urlRegex.exec(text)) !== null) {
+                const isOverlapping = tokens.some(token => 
+                    match.index >= token.start && match.index < token.end
+                );
+                
+                if (!isOverlapping) {
+                    tokens.push({
+                        type: 'url',
+                        start: match.index,
+                        end: match.index + match[0].length,
+                        content: match[0]
+                    });
+                }
+            }
+            
+            // Reset regex
             urlRegex.lastIndex = 0;
             
-            // Process matches in reverse order to maintain indices
-            let result = text;
-            matches.reverse().forEach(matchInfo => {
-                let url = matchInfo.match;
-                let displayUrl = matchInfo.match;
+            // Sort tokens by start position
+            tokens.sort((a, b) => a.start - b.start);
+            
+            // Build the result by processing tokens in order
+            let result = '';
+            let lastIndex = 0;
+            
+            for (const token of tokens) {
+                // Add text before this token
+                result += text.substring(lastIndex, token.start);
                 
-                // Determine if we need to add protocol
-                let needsProtocol = true;
-                if (matchInfo.match.startsWith('http://') || 
-                    matchInfo.match.startsWith('https://') || 
-                    matchInfo.match.startsWith('ftp://')) {
-                    needsProtocol = false;
-                }
-                
-                // Add protocol if needed
-                if (needsProtocol) {
-                    url = 'https://' + matchInfo.match;
-                }
-                
-                // Smart truncation for very long URLs
-                if (displayUrl.length > 60) {
-                    if (displayUrl.includes('/')) {
-                        const parts = displayUrl.split('/');
-                        if (parts.length > 3) {
-                            displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
+                // Add the processed token
+                if (token.type === 'latex-display') {
+                    result += `<div class="latex-equation">$$${token.mathContent}$$</div>`;
+                } else if (token.type === 'latex-inline') {
+                    result += `<span class="latex-inline">$${token.mathContent}$</span>`;
+                } else if (token.type === 'url') {
+                    let url = token.content;
+                    let displayUrl = token.content;
+                    
+                    // Determine if we need to add protocol
+                    if (!token.content.startsWith('http://') && 
+                        !token.content.startsWith('https://') && 
+                        !token.content.startsWith('ftp://')) {
+                        url = 'https://' + token.content;
+                    }
+                    
+                    // Smart truncation for very long URLs
+                    if (displayUrl.length > 60) {
+                        if (displayUrl.includes('/')) {
+                            const parts = displayUrl.split('/');
+                            if (parts.length > 3) {
+                                displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
+                            } else {
+                                displayUrl = displayUrl.substring(0, 57) + '...';
+                            }
                         } else {
                             displayUrl = displayUrl.substring(0, 57) + '...';
                         }
-                    } else {
-                        displayUrl = displayUrl.substring(0, 57) + '...';
                     }
+                    
+                    result += `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${token.content}">${displayUrl}</a>`;
                 }
                 
-                const replacement = `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${matchInfo.match}">${displayUrl}</a>`;
-                
-                // Replace the match at the specific index
-                result = result.substring(0, matchInfo.index) + replacement + result.substring(matchInfo.index + matchInfo.match.length);
-            });
+                lastIndex = token.end;
+            }
+            
+            // Add remaining text
+            result += text.substring(lastIndex);
             
             return result;
         }
@@ -510,7 +568,7 @@
                 
                 if (trimmed.startsWith('header:')) {
                     const text = trimmed.slice(7).trim();
-                    const processedText = detectAndLinkURLs(text);
+                    const processedText = processTextWithLatexAndUrls(text);
                     html += `<div class="description-header">${processedText}</div>`;
                     
                 } else if (trimmed.startsWith('img:')) {
@@ -523,9 +581,8 @@
                     html += '<br>';
                     
                 } else if (trimmed) {
-                    // Process LaTeX in the line, then detect and link URLs
-                    const processedLatexText = processLaTeX(trimmed);
-                    const processedText = detectAndLinkURLs(processedLatexText);
+                    // Process both LaTeX and URLs together
+                    const processedText = processTextWithLatexAndUrls(trimmed);
                     html += `<p>${processedText}</p>`;
                 }
             }
@@ -534,21 +591,6 @@
             
             // Render MathJax after content is loaded
             renderMathJax();
-        }
-        
-        // Process LaTeX math expressions with proper dollar sign handling
-        function processLaTeX(text) {
-            // First handle display math ($$...$$)
-            text = text.replace(/\$\$([^$]+?)\$\$/g, function(match, mathContent) {
-                return `<div class="latex-equation">$$${mathContent}$$</div>`;
-            });
-            
-            // Then handle inline math ($...$) - but avoid double processing
-            text = text.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, function(match, mathContent) {
-                return `<span class="latex-inline">$${mathContent}$</span>`;
-            });
-            
-            return text;
         }
         
         // Render MathJax with proper error handling and async support
