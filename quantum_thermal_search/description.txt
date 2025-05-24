@@ -1,8 +1,37 @@
 header:Published in Quantum Information Processing
 (https://doi.org/10.1007/s11128-024-04413-x)
-header:Soon to be updated
-soon.. $|test\rangle$ aaa $\frac{1}{2}|testing\rangle$ bb
-soon.. $|test2\rangle$ aaa $$\frac{1}{3}$$ bb
-$$\frac{1}{2}|testing\rangle$$
-aaaaaaaaa
-MY LIFE!!!
+header:Motivation
+Suppose you have a difficult search problem, say find $x$ that satisfies $g(x)=0$. There are $2^n$ candidate $x$'s, and you expect the number of satisfying $x$ to be close to zero if not zero. The BBBV theorem proves that unstructured quantum search cannot give exponential speedup over classical search. Adiabatic computing hasn't given us much so far. So are we stuck? Maybe quantum thermodynamics may help beyond adiabatic computing?
+header:An idea: connecting ground states with a search problem
+We can treat $g(x)$ as energy, so $g(x)=0$ refers to ground states.
+header:Motivation 2
+Enters the Chen-Huang-Preskill-Zhou (CHPZ) open quantum system algorithm, where it explores how the environment can be used to cool down system $S$. But there is no need to go open, if we can examine in terms of fully closed systems, since every open system is a subsystem of a closed system. This is what is done in the paper.
+header:Setup/Equilibration question
+Suppose you prepare some system $S$ to be in Hamiltonian $H_S$ in the following way:
+$$H_S = \sum_x g(x)|x\rangle\langle x$$
+This can more easily be imagined in case $S$ is in a maximally mixed state as in the paper - temperature infinite for Hamiltonians with separate ground and excited states. Imagine each classical reality $x$ following classical equations of motion if not interacting with the environment/bath, just that we do not know if there is $x$ that is a ground state with energy different from excited states.
+Can we then interact system $S$ with outside system $BH$ with (Gibbs state) temperature $T_{BH}$ such that if there is $x$ with $g(x)=0$ (ground state differing in energy from excited states), then energy moves away from $S$ to $BH$ resulting in equilibriation at temperature $T_{BH}$?
+header:Key assumption: non-interaction energy conservation
+We expect the assumption to hold for most semiclassical closed systems. There are genuinely quantum cases where non-interaction energy is not served and only total energy is conserved. 
+header:Quick answer
+Of course yes intuitively. Making this precise is one goal of the paper. But we require exponential precision in purity of $BH$ if we want to find the ground state of $S$ this way. This is a challenging task already. So does quantum thermodynamics provide speedup over conventional approaches in search problems? Sort of yes, sort of no so far. Details on these caveats below.
+header:Setup quirks
+Instead of $n$ $BH$ qudits interacting with $S$ together, they interact with $S$ sequentially one-by-one via Hamiltonian $H=H_S+H_{BH}+H_I$. So each $BH$ qudit interaction always starts with initial temperature $T_{BH}$. We can understand this as $n$ random bath qudits locally interacting with $S$ and flying away. (which motivates the toy qudit model part of the braneworld paper - see mkimacad.github.io/braneworld.) 
+header:In case BH is in zero temperature
+The whole argument then simplifies, as explored in the toy qudit model of the braneworld paper (see mkimacad.github.io/braneworld). $n$ qudits of BH can only receive energy and it will do so for most interaction Hamiltonians. So system $S$ brushes off energy until it reaches ground state. 
+header:Equilibration speed? (A more general argument is cited in the paper - here a simplified discussion)
+For equilibration speed, one can simplify the discussion by exploring the modified Jaynes-Cummings (JCM) interaction model - $S$ is treated as a two-energy optical cavity with degeneracy over ground and excited states, though $S$ may be a one-energy optical cavity with $2^n$ degenerate states in case $g(x)=1$ for every $x$.
+In case $S$ is a two-energy cavity, then energy flows with $n$ two-state atoms only depend on average energy of system $S$ setting coupling constant $g=1$.
+Down to average energy $E_1/2$ of $S$ with $E_1$ being energy of excited states, JCM interactions still provide sufficient energy flow. But by that point, we should be able to notice some differences from measurement results.
+header:Do we need to simulate Hamiltonian in a quantum computer? (not in the paper)
+It should be noted that cheat keys have been used - assuming JCM interactions as an example, even though we do not know the exact form of $H_S$ and $H_I$, we know how ground states and excited sates of $S$ behave differently under interaction. As long as we are assumed that our Hamiltonian $H$ is of JCM, then even if we do not know ground state of $H_S$ and $H_S$ itself, we can simply simulate in our reality to figure out. This is not conventional quantum computaiton but still some form of quantum computation.
+The zero-temperature $BH$ case is simplest to explain - in most cases, we expect energy to flow out of $S$ if lower ground state of $S$ is available. This is all there is.
+We could say that exponential speedup of quantum thermal search, if not for demanding exponentially-precise purity of $BH$, comes from our fully analog nature being more powerful than qubit gate considerations.
+header:Quantum simulation (not in the paper, and only briefly discussed)
+The real problem with Hamiltonian simulation for the setup here is providing the interaction Hamiltonian in some form such as quasi-blocking encoding unitary, and at this point, the only way this can be done is by essentially reducing the whole setup to quantum walks, which for very small instances of $g(x)=0$ wipes out any possibility of exponential speedup. So analog matters.
+header:Replica wormholes?
+Well, I mentioned replica wormholes at the end of the paper. The reason for this is that replica wormholes alone technically are non-unitary within EFT, and 'replica' in replica wormholes are actually Euclidean replica. At the time of the writing, I have been working toward the toy qudit model of black holes that is part of the Progress of Physics paper (see mkimacad.github.io/braneworld), and I briefly tinkered with explaining replica wormholes as $n$ implicit "bath" copies that are then truncated to $n=1$ in the limit so that we can think of as if $n=1$. At the time, bath copies were considered to be copies of some black hole, but it turned out that modeling radiation qubits means $n$ initially vacuum states, so $n$ actually should refer to radiations, not copies of the same black hole.
+I think it is true that path integrals cannot alone be used to justify unitarity of the replica wormholes approach, especially given that this is $\textbf{Euclidean}$ approach. But this only means that path integral mechanisms themselves cannot be the sole justification of replica wormholes. There are ways to provide good justifications - real-time effective field theory is ill-defined from the start and we have to start from Euclidean counterparts which provide the 'true' definition for QFT after Wick rotation. See mkimacad.github.io/braneworld for more details, though replica wormholes are not directly mentioned there.
+header:Toward the modified Jaynes-Cummings (JCM) model
+The paper foreshadows the toy qudit model in mkimacad.github.io/braneworld and its precise JCM version in mkimacad.github.io/bh_jaynes_cummings. Potentially, we can think of a black hole thought experiment that utilizes quantum thermal search. If we can somehow effectively (and that is the problem though) manage to make system $S$ inside some black hole to only get entangled with associated radiations, then the same quantum thermal search applies. There are additional radiations if system $S$ has a distinct ground state, and not if no distinct ground state exists. But it is only in qudit approximations that we can really separate dynamics of $S$ inside a black hole from the rest of the black hole. So this analogy and thought experiment cannot go very far.
+To conclude, I want to note that search problems get re-examined classically within contexts of deep learning in mkimacad.github.io/imaginary_time_DL.
