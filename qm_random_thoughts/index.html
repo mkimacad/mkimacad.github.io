@@ -283,7 +283,7 @@
                 // Load title from title.txt
                 await loadTitle(repoInfo);
                 
-                const textUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/main.txt`;
+                const textUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/qm_random_thoughts/main.txt`;
                 
                 const response = await fetch(textUrl);
                 if (!response.ok) {
@@ -342,7 +342,7 @@
         // Load title from title.txt
         async function loadTitle(repoInfo) {
             try {
-                const titleUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/title.txt`;
+                const titleUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/qm_random_thoughts/title.txt`;
                 const response = await fetch(titleUrl);
                 if (response.ok) {
                     const titleText = await response.text();
