@@ -225,6 +225,30 @@
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
+
+        /* Enhanced link styling */
+        .auto-link {
+            color: #3498db;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .auto-link:hover {
+            color: #2980b9;
+            border-bottom-color: #2980b9;
+            text-decoration: none;
+        }
+        
+        .auto-link:visited {
+            color: #8e44ad;
+        }
+        
+        .auto-link:visited:hover {
+            color: #732d91;
+            border-bottom-color: #732d91;
+        }
         
         /* LaTeX equation styling */
         .latex-equation {
@@ -347,6 +371,72 @@
     </div>
     
     <script>
+        // Fixed URL detection with proper HTML-aware processing
+        function detectAndLinkURLs(text) {
+            // Skip if text already contains HTML tags to avoid breaking existing links
+            if (/<[^>]*>/.test(text)) {
+                return text;
+            }
+            
+            // Single comprehensive URL regex that captures all types in one pass
+            const urlRegex = /\b(?:(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]|www\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?)\b/gi;
+            
+            const matches = [];
+            let match;
+            
+            // Collect all matches first
+            while ((match = urlRegex.exec(text)) !== null) {
+                matches.push({
+                    match: match[0],
+                    index: match.index
+                });
+            }
+            
+            // Reset regex lastIndex
+            urlRegex.lastIndex = 0;
+            
+            // Process matches in reverse order to maintain indices
+            let result = text;
+            matches.reverse().forEach(matchInfo => {
+                let url = matchInfo.match;
+                let displayUrl = matchInfo.match;
+                
+                // Determine if we need to add protocol
+                let needsProtocol = true;
+                if (matchInfo.match.startsWith('http://') || 
+                    matchInfo.match.startsWith('https://') || 
+                    matchInfo.match.startsWith('ftp://')) {
+                    needsProtocol = false;
+                }
+                
+                // Add protocol if needed
+                if (needsProtocol) {
+                    url = 'https://' + matchInfo.match;
+                }
+                
+                // Smart truncation for very long URLs
+                if (displayUrl.length > 60) {
+                    if (displayUrl.includes('/')) {
+                        const parts = displayUrl.split('/');
+                        if (parts.length > 3) {
+                            displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
+                        } else {
+                            displayUrl = displayUrl.substring(0, 57) + '...';
+                        }
+                    } else {
+                        displayUrl = displayUrl.substring(0, 57) + '...';
+                    }
+                }
+                
+                const replacement = `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${matchInfo.match}">${displayUrl}</a>`;
+                
+                // Replace the match at the specific index
+                result = result.substring(0, matchInfo.index) + replacement + result.substring(matchInfo.index + matchInfo.match.length);
+            });
+            
+            return result;
+        }
+        
         // Load and parse description.txt
         async function loadDescription() {
             const descriptionContainer = document.getElementById('projectDescription');
@@ -375,7 +465,7 @@
             }
         }
         
-        // Parse description content with header:, img:, and LaTeX handling
+        // Parse description content with header:, img:, LaTeX, and URL handling
         function parseDescription(content) {
             const descriptionContainer = document.getElementById('projectDescription');
             const lines = content.split('\n');
@@ -386,7 +476,8 @@
                 
                 if (trimmed.startsWith('header:')) {
                     const text = trimmed.slice(7).trim();
-                    html += `<div class="description-header">${text}</div>`;
+                    const processedText = detectAndLinkURLs(text);
+                    html += `<div class="description-header">${processedText}</div>`;
                     
                 } else if (trimmed.startsWith('img:')) {
                     const img = trimmed.slice(4).trim();
@@ -397,9 +488,10 @@
                 } else if (trimmed === '') {
                     html += '<br>';
                     
-                } else {
-                    // Process LaTeX in the line
-                    const processedText = processLaTeX(trimmed);
+                } else if (trimmed) {
+                    // Process LaTeX in the line, then detect and link URLs
+                    const processedLatexText = processLaTeX(trimmed);
+                    const processedText = detectAndLinkURLs(processedLatexText);
                     html += `<p>${processedText}</p>`;
                 }
             }
