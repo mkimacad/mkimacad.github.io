@@ -12,6 +12,10 @@ AdS/VAEBM: extending holographic gravity via deep learning
 ads_vaebm
 Imaginary-time deep learning
 imaginary_time_DL
+Random thoughts about quantum physics (not necessarily research)
+qm_random_thoughts
+Random thoughts about computation (not necessarily research, should largely be inactive)
+comp_random_thoughts
 Coffee (not necessarily research)
 coffee
 Music (not necessarily research)
