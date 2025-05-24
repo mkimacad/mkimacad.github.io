@@ -1,2 +1,5 @@
-header:To be updated
+header:History (date-wise)
+V1 draft (Nuclear Physics B submission): March 6, 2025
+V2 (NPB revision submission): Expected around early to mid-June. 
+header:To be further updated
 To be updated
