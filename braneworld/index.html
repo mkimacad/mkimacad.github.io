@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -227,6 +226,30 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
         
+        /* Enhanced link styling */
+        .auto-link {
+            color: #3498db;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .auto-link:hover {
+            color: #2980b9;
+            border-bottom-color: #2980b9;
+            text-decoration: none;
+        }
+        
+        .auto-link:visited {
+            color: #8e44ad;
+        }
+        
+        .auto-link:visited:hover {
+            color: #732d91;
+            border-bottom-color: #732d91;
+        }
+        
         /* LaTeX equation styling */
         .latex-equation {
             background: #f8f9fa;
@@ -364,6 +387,76 @@
     </div>
     
     <script>
+        // Enhanced URL detection with safe HTML-aware processing
+        function detectAndLinkURLs(text) {
+            // Skip if text already contains HTML tags to avoid breaking existing links
+            if (text.includes('<') && text.includes('>')) {
+                return text;
+            }
+            
+            // More precise URL regex patterns
+            const patterns = [
+                // Full URLs with protocols
+                {
+                    regex: /\b(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]/gi,
+                    addProtocol: false
+                },
+                // www URLs
+                {
+                    regex: /\bwww\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?/gi,
+                    addProtocol: 'https://'
+                },
+                // Domain-only URLs (more restrictive)
+                {
+                    regex: /\b[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?\b/gi,
+                    addProtocol: 'https://'
+                }
+            ];
+            
+            let result = text;
+            
+            // Process each pattern
+            patterns.forEach(pattern => {
+                result = result.replace(pattern.regex, function(match) {
+                    // Double-check we're not inside HTML
+                    const beforeMatch = result.substring(0, result.indexOf(match));
+                    const openTags = (beforeMatch.match(/</g) || []).length;
+                    const closeTags = (beforeMatch.match(/>/g) || []).length;
+                    
+                    // If we're inside an HTML tag, skip
+                    if (openTags > closeTags) {
+                        return match;
+                    }
+                    
+                    let url = match;
+                    let displayUrl = match;
+                    
+                    // Add protocol if needed
+                    if (pattern.addProtocol && !match.startsWith('http')) {
+                        url = pattern.addProtocol + match;
+                    }
+                    
+                    // Smart truncation for very long URLs
+                    if (displayUrl.length > 60) {
+                        if (displayUrl.includes('/')) {
+                            const parts = displayUrl.split('/');
+                            if (parts.length > 3) {
+                                displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
+                            } else {
+                                displayUrl = displayUrl.substring(0, 57) + '...';
+                            }
+                        } else {
+                            displayUrl = displayUrl.substring(0, 57) + '...';
+                        }
+                    }
+                    
+                    return `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${match}">${displayUrl}</a>`;
+                });
+            });
+            
+            return result;
+        }
+        
         // Load and parse description.txt
         async function loadDescription() {
             const descriptionContainer = document.getElementById('projectDescription');
@@ -392,7 +485,7 @@
             }
         }
         
-        // Parse description content with header:, img:, and LaTeX handling
+        // Parse description content with header:, img:, LaTeX, and URL handling
         function parseDescription(content) {
             const descriptionContainer = document.getElementById('projectDescription');
             const lines = content.split('\n');
@@ -403,7 +496,9 @@
                 
                 if (trimmed.startsWith('header:')) {
                     const text = trimmed.slice(7).trim();
-                    html += `<div class="description-header">${text}</div>`;
+                    // Process URLs in headers too
+                    const processedText = detectAndLinkURLs(text);
+                    html += `<div class="description-header">${processedText}</div>`;
                     
                 } else if (trimmed.startsWith('img:')) {
                     const img = trimmed.slice(4).trim();
@@ -415,8 +510,8 @@
                     html += '<br>';
                     
                 } else {
-                    // Process LaTeX in the line
-                    const processedText = processLaTeX(trimmed);
+                    // Process URLs only, leave LaTeX as-is for MathJax
+                    const processedText = detectAndLinkURLs(trimmed);
                     html += `<p>${processedText}</p>`;
                 }
             }
