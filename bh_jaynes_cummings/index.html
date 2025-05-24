@@ -405,14 +405,14 @@
     </div>
     
     <script>
-        // Enhanced URL detection with safe HTML-aware processing
+        // Fixed URL detection with proper HTML-aware processing
         function detectAndLinkURLs(text) {
             // Skip if text already contains HTML tags to avoid breaking existing links
-            if (text.includes('<') && text.includes('>')) {
+            if (/<[^>]*>/.test(text)) {
                 return text;
             }
             
-            // More precise URL regex patterns
+            // URL regex patterns
             const patterns = [
                 // Full URLs with protocols
                 {
@@ -435,23 +435,28 @@
             
             // Process each pattern
             patterns.forEach(pattern => {
-                result = result.replace(pattern.regex, function(match) {
-                    // Double-check we're not inside HTML
-                    const beforeMatch = result.substring(0, result.indexOf(match));
-                    const openTags = (beforeMatch.match(/</g) || []).length;
-                    const closeTags = (beforeMatch.match(/>/g) || []).length;
-                    
-                    // If we're inside an HTML tag, skip
-                    if (openTags > closeTags) {
-                        return match;
-                    }
-                    
-                    let url = match;
-                    let displayUrl = match;
+                const matches = [];
+                let match;
+                
+                // Collect all matches first
+                while ((match = pattern.regex.exec(result)) !== null) {
+                    matches.push({
+                        match: match[0],
+                        index: match.index
+                    });
+                }
+                
+                // Reset regex lastIndex
+                pattern.regex.lastIndex = 0;
+                
+                // Process matches in reverse order to maintain indices
+                matches.reverse().forEach(matchInfo => {
+                    let url = matchInfo.match;
+                    let displayUrl = matchInfo.match;
                     
                     // Add protocol if needed
-                    if (pattern.addProtocol && !match.startsWith('http')) {
-                        url = pattern.addProtocol + match;
+                    if (pattern.addProtocol && !matchInfo.match.startsWith('http')) {
+                        url = pattern.addProtocol + matchInfo.match;
                     }
                     
                     // Smart truncation for very long URLs
@@ -468,7 +473,10 @@
                         }
                     }
                     
-                    return `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${match}">${displayUrl}</a>`;
+                    const replacement = `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${matchInfo.match}">${displayUrl}</a>`;
+                    
+                    // Replace the match at the specific index
+                    result = result.substring(0, matchInfo.index) + replacement + result.substring(matchInfo.index + matchInfo.match.length);
                 });
             });
             
@@ -489,7 +497,7 @@
                     throw new Error(`Description file not found (${response.status})`);
                 }
                 
-                const content = await response.text(); // Get as plain text
+                const content = await response.text();
                 parseDescription(content);
                 
             } catch (error) {
@@ -514,7 +522,6 @@
                 
                 if (trimmed.startsWith('header:')) {
                     const text = trimmed.slice(7).trim();
-                    // Process URLs in headers too
                     const processedText = detectAndLinkURLs(text);
                     html += `<div class="description-header">${processedText}</div>`;
                     
@@ -527,7 +534,7 @@
                 } else if (trimmed === '') {
                     html += '<br>';
                     
-                } else {
+                } else if (trimmed) {
                     // Process LaTeX in the line, then detect and link URLs
                     const processedLatexText = processLaTeX(trimmed);
                     const processedText = detectAndLinkURLs(processedLatexText);
