@@ -63,7 +63,8 @@
 
     <!-- New cavity label -->
     <text x="110" y="170" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Hamiltonian H_S</text>
-    <text x="110" y="190" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Hamiltonian H_S</text>
+    <text x="110" y="190" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Maximally mixed state, temperature T_S seems to be infinite</text>
+    <text x="110" y="210" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">No energy flow, so effectively, T_S=T_{BH}.</text>
   </g>
 
   <!-- Atoms (shifted down and left-aligned labels) -->
