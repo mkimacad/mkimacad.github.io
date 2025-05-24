@@ -1,1 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A mini-blog about random computation thoughts</title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            startup: {
+                ready: () => {
+                    console.log('MathJax is ready!');
+                    MathJax.startup.defaultReady();
+                }
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styles for content */
+        .content h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e74c3c;
+            position: relative;
+        }
+
+        .content h2::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(135deg, #4a90e2, #50c8f5);
+        }
+
+        .content h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            font-weight: 500;
+            margin: 25px 0 12px 0;
+            padding-left: 15px;
+            border-left: 4px solid #3498db;
+        }
+
+        .content h4 {
+            color: #34495e;
+            font-size: 1.2em;
+            font-weight: 500;
+            margin: 20px 0 10px 0;
+            padding-left: 10px;
+            border-left: 2px solid #95a5a6;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin: 40px 0;
+            animation: pulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.6; }
+            to { opacity: 1; }
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .content {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .content br {
+            margin-bottom: 10px;
+        }
+
+        .content img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 30px auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-caption {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        /* Link styles */
+        .content a {
+            color: #4a90e2;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .content a:hover {
+            color: #357abd;
+            border-bottom-color: #357abd;
+            text-shadow: 0 1px 2px rgba(53, 122, 189, 0.2);
+        }
+
+        .content a:visited {
+            color: #9b59b6;
+        }
+
+        /* Math styling */
+        .MathJax {
+            font-size: 1.1em !important;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #4a90e2, #50c8f5);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+
+            .content h2 {
+                font-size: 1.5em;
+            }
+
+            .content h3 {
+                font-size: 1.3em;
+            }
+
+            .content h4 {
+                font-size: 1.1em;
+            }
+            
+            .refresh-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="page-title">A mini-blog about random QM thoughts</h1>
+        <div id="content">
+            <div class="loading">Loading comments...</div>
+        </div>
+    </div>
+    
+    <button class="refresh-btn" onclick="loadContent()" title="Refresh">
+        ↻
+    </button>
+
+    <script>
+        // Get the current repository info from the URL
+        function getRepoInfo() {
+            const hostname = window.location.hostname;
+            if (hostname.endsWith('.github.io')) {
+                const username = hostname.split('.')[0];
+                return {
+                    username: username,
+                    repo: `${username}.github.io`
+                };
+            }
+            return null;
+        }
+
+        // Load and parse the main.txt file
+        async function loadContent() {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = '<div class="loading">Loading comments...</div>';
+            
+            try {
+                const repoInfo = getRepoInfo();
+                if (!repoInfo) {
+                    throw new Error('Unable to determine repository information from URL');
+                }
+                
+                // Load title from title.txt
+                await loadTitle(repoInfo);
+                
+                const textUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/comp_random_thoughts/main.txt`;
+                
+                const response = await fetch(textUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to load main.txt: ${response.status} ${response.statusText}`);
+                }
+                
+                const text = await response.text();
+                const parsedContent = parseContent(text, repoInfo);
+                
+                contentDiv.innerHTML = `<div class="content">${parsedContent}</div>`;
+                
+                // Re-render MathJax after content update
+                await renderMathJax(contentDiv);
+                
+            } catch (error) {
+                console.error('Error loading content:', error);
+                contentDiv.innerHTML = `
+                    <div class="error">
+                        <h3>Error Loading Content</h3>
+                        <p>${error.message}</p>
+                        <p>Make sure the file <code>comp_random_thoughts/main.txt</code> exists in your repository.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Simplified MathJax rendering function
+        async function renderMathJax(element) {
+            console.log('Attempting to render MathJax...');
+            
+            // Wait for MathJax to be ready
+            if (typeof MathJax !== 'undefined') {
+                try {
+                    // Wait for MathJax startup to complete
+                    await MathJax.startup.promise;
+                    console.log('MathJax startup complete, rendering...');
+                    
+                    // Typeset the content
+                    await MathJax.typesetPromise([element]);
+                    console.log('MathJax rendering complete!');
+                    
+                } catch (error) {
+                    console.error('MathJax rendering error:', error);
+                    
+                    // Fallback to older API if available
+                    if (MathJax.Hub && MathJax.Hub.Queue) {
+                        console.log('Falling back to MathJax v2 API...');
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+                    }
+                }
+            } else {
+                console.error('MathJax is not loaded');
+            }
+        }
+
+        // Load title from title.txt
+        async function loadTitle(repoInfo) {
+            try {
+                const titleUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/comp_random_thoughts/title.txt`;
+                const response = await fetch(titleUrl);
+                if (response.ok) {
+                    const titleText = await response.text();
+                    const cleanTitle = titleText.trim();
+                    if (cleanTitle) {
+                        document.getElementById('page-title').textContent = cleanTitle;
+                    }
+                }
+            } catch (error) {
+                console.log('Could not load title.txt, using default title');
+            }
+        }
+
+        // Enhanced content parser with header, LaTeX, and link support
+        function parseContent(text, repoInfo) {
+            const lines = text.split('\n');
+            let htmlContent = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const trimmedLine = line.trim();
+                
+                // Check for image lines
+                if (trimmedLine.startsWith('img:')) {
+                    const imageName = trimmedLine.substring(4).trim();
+                    if (imageName) {
+                        const imageUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/${imageName}`;
+                        htmlContent += `<img src="${imageUrl}" alt="${escapeHtml(imageName)}" loading="lazy">\n`;
+                        htmlContent += `<div class="image-caption">${escapeHtml(imageName)}</div>\n`;
+                    }
+                }
+                // Check for header lines
+                else if (trimmedLine.startsWith('header:')) {
+                    const headerText = trimmedLine.substring(7).trim();
+                    if (headerText) {
+                        // Determine header level based on leading #'s or default to h2
+                        let headerLevel = 2;
+                        let cleanHeaderText = headerText;
+                        
+                        if (headerText.startsWith('#')) {
+                            const match = headerText.match(/^(#{1,4})\s*(.+)/);
+                            if (match) {
+                                headerLevel = Math.min(match[1].length + 1, 4); // h2-h4
+                                cleanHeaderText = match[2];
+                            }
+                        }
+                        
+                        const processedHeader = processTextForLinksAndMath(cleanHeaderText);
+                        htmlContent += `<h${headerLevel}>${processedHeader}</h${headerLevel}>\n`;
+                    }
+                }
+                // Regular text lines
+                else if (trimmedLine !== '') {
+                    const processedLine = processTextForLinksAndMath(line);
+                    htmlContent += processedLine;
+                }
+                
+                // Add line break unless it's the last line or we just added a header/image
+                if (i < lines.length - 1 && 
+                    !trimmedLine.startsWith('img:') && 
+                    !trimmedLine.startsWith('header:') &&
+                    !lines[i + 1].trim().startsWith('header:')) {
+                    htmlContent += '<br>\n';
+                }
+            }
+            
+            return htmlContent || 'No content found in main.txt';
+        }
+
+        // Process text for URLs and LaTeX math
+        function processTextForLinksAndMath(text) {
+            // Improved regex that handles LaTeX better
+            const mathPattern = /(\$\$[\s\S]*?\$\$|\$[^$\r\n]*?\$)/g;
+            const parts = [];
+            let lastIndex = 0;
+            let match;
+            
+            // Find all math expressions
+            while ((match = mathPattern.exec(text)) !== null) {
+                // Add text before math
+                if (match.index > lastIndex) {
+                    parts.push({
+                        type: 'text',
+                        content: text.substring(lastIndex, match.index)
+                    });
+                }
+                
+                // Add math expression
+                parts.push({
+                    type: 'math',
+                    content: match[0]
+                });
+                
+                lastIndex = match.index + match[0].length;
+            }
+            
+            // Add remaining text
+            if (lastIndex < text.length) {
+                parts.push({
+                    type: 'text',
+                    content: text.substring(lastIndex)
+                });
+            }
+            
+            // If no math found, treat entire string as text
+            if (parts.length === 0) {
+                parts.push({
+                    type: 'text',
+                    content: text
+                });
+            }
+            
+            // Process each part
+            let result = '';
+            for (const part of parts) {
+                if (part.type === 'math') {
+                    // Keep math as-is for MathJax
+                    result += part.content;
+                } else if (part.content.trim()) {
+                    // Process text for HTML escaping and URLs
+                    let processedText = escapeHtml(part.content);
+                    
+                    // Process URLs
+                    const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
+                    processedText = processedText.replace(urlRegex, (url) => {
+                        let cleanUrl = url;
+                        let trailingPunct = '';
+                        const punctuation = /[.,;:!?)\]}]+$/;
+                        const punctMatch = url.match(punctuation);
+                        if (punctMatch) {
+                            cleanUrl = url.slice(0, -punctMatch[0].length);
+                            trailingPunct = punctMatch[0];
+                        }
+                        
+                        let displayUrl = cleanUrl;
+                        if (displayUrl.length > 50) {
+                            displayUrl = displayUrl.substring(0, 47) + '...';
+                        }
+                        
+                        return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>${trailingPunct}`;
+                    });
+                    
+                    result += processedText;
+                }
+            }
+            
+            return result;
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load content when page loads
+        document.addEventListener('DOMContentLoaded', loadContent);
+    </script>
+</body>
+</html>
 
