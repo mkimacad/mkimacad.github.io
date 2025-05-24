@@ -387,58 +387,74 @@
     </div>
     
     <script>
-        // Enhanced URL detection with comprehensive regex patterns
+        // Enhanced URL detection with safe HTML-aware processing
         function detectAndLinkURLs(text) {
-            // Comprehensive URL regex that handles various protocols and formats
-            const urlRegex = /((?:https?:\/\/|ftp:\/\/|www\.|[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]*\.)+(?:[^\s()<>"{}|\[\]^`]+|\([^\s()]*\))+(?:\([^\s()]*\)|[^\s`!()\[\]{};:'".,<>?«»""'']))/gi;
+            // Skip if text already contains HTML tags to avoid breaking existing links
+            if (text.includes('<') && text.includes('>')) {
+                return text;
+            }
             
-            // Additional regex for domain-only URLs (like github.com/user/repo)
-            const domainRegex = /(?<!https?:\/\/)(?<!ftp:\/\/)(?<!www\.)([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co|uk|de|fr|jp|cn|ru|info|biz|name|museum|aero|coop|int|mil|pro|travel|xxx|[a-z]{2})(?:\/[^\s()<>"{}|\[\]^`]*)?)/gi;
+            // More precise URL regex patterns
+            const patterns = [
+                // Full URLs with protocols
+                {
+                    regex: /\b(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]/gi,
+                    addProtocol: false
+                },
+                // www URLs
+                {
+                    regex: /\bwww\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?/gi,
+                    addProtocol: 'https://'
+                },
+                // Domain-only URLs (more restrictive)
+                {
+                    regex: /\b[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?\b/gi,
+                    addProtocol: 'https://'
+                }
+            ];
             
-            return text
-                // First handle full URLs (http, https, ftp, www)
-                .replace(urlRegex, function(match) {
+            let result = text;
+            
+            // Process each pattern
+            patterns.forEach(pattern => {
+                result = result.replace(pattern.regex, function(match) {
+                    // Double-check we're not inside HTML
+                    const beforeMatch = result.substring(0, result.indexOf(match));
+                    const openTags = (beforeMatch.match(/</g) || []).length;
+                    const closeTags = (beforeMatch.match(/>/g) || []).length;
+                    
+                    // If we're inside an HTML tag, skip
+                    if (openTags > closeTags) {
+                        return match;
+                    }
+                    
                     let url = match;
                     let displayUrl = match;
                     
-                    // Add protocol if missing but starts with www
-                    if (match.startsWith('www.')) {
-                        url = 'https://' + match;
-                    }
-                    // Add protocol if missing but is clearly a URL
-                    else if (!match.match(/^(?:https?|ftp):\/\//)) {
-                        url = 'https://' + match;
+                    // Add protocol if needed
+                    if (pattern.addProtocol && !match.startsWith('http')) {
+                        url = pattern.addProtocol + match;
                     }
                     
-                    // Truncate very long URLs for display
+                    // Smart truncation for very long URLs
                     if (displayUrl.length > 60) {
-                        const parts = displayUrl.split('/');
-                        if (parts.length > 3) {
-                            displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
+                        if (displayUrl.includes('/')) {
+                            const parts = displayUrl.split('/');
+                            if (parts.length > 3) {
+                                displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
+                            } else {
+                                displayUrl = displayUrl.substring(0, 57) + '...';
+                            }
                         } else {
                             displayUrl = displayUrl.substring(0, 57) + '...';
                         }
                     }
                     
                     return `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${match}">${displayUrl}</a>`;
-                })
-                // Then handle domain-only URLs (but avoid double-processing)
-                .replace(domainRegex, function(match) {
-                    // Skip if already inside an <a> tag
-                    if (match.includes('<a ') || match.includes('</a>')) {
-                        return match;
-                    }
-                    
-                    const url = 'https://' + match;
-                    let displayUrl = match;
-                    
-                    // Truncate if too long
-                    if (displayUrl.length > 50) {
-                        displayUrl = displayUrl.substring(0, 47) + '...';
-                    }
-                    
-                    return `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${match}">${displayUrl}</a>`;
                 });
+            });
+            
+            return result;
         }
         
         // Load and parse description.txt
@@ -508,36 +524,34 @@
         
         // Process both LaTeX and URLs while avoiding conflicts
         function processLaTeXAndURLs(text) {
-            // First, temporarily replace LaTeX expressions to protect them
-            const latexPlaceholders = [];
-            let placeholderIndex = 0;
+            // Store original text
+            let result = text;
             
-            // Protect display math ($$...$$)
-            text = text.replace(/\$\$([^$]+?)\$\$/g, function(match) {
-                const placeholder = `__LATEX_DISPLAY_${placeholderIndex}__`;
-                latexPlaceholders[placeholderIndex] = `<div class="latex-equation">${match}</div>`;
-                placeholderIndex++;
-                return placeholder;
+            // Step 1: Process URLs FIRST on plain text
+            result = detectAndLinkURLs(result);
+            
+            // Step 2: Process LaTeX expressions, being careful not to process content inside links
+            // Handle display math ($...$)
+            result = result.replace(/\$\$([^$]+?)\$\$/g, function(match, mathContent) {
+                return `<div class="latex-equation">$${mathContent}$</div>`;
             });
             
-            // Protect inline math ($...$)
-            text = text.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, function(match) {
-                const placeholder = `__LATEX_INLINE_${placeholderIndex}__`;
-                latexPlaceholders[placeholderIndex] = `<span class="latex-inline">${match}</span>`;
-                placeholderIndex++;
-                return placeholder;
+            // Handle inline math ($...$) - avoid processing inside HTML tags
+            result = result.replace(/(?<!\$)\$([^$\n<>]+?)\$(?!\$)/g, function(match, mathContent, offset, string) {
+                // Check if we're inside an HTML tag
+                const beforeMatch = string.substring(0, offset);
+                const lastOpenTag = beforeMatch.lastIndexOf('<');
+                const lastCloseTag = beforeMatch.lastIndexOf('>');
+                
+                // If we're inside an HTML tag, don't process
+                if (lastOpenTag > lastCloseTag) {
+                    return match;
+                }
+                
+                return `<span class="latex-inline">${mathContent}$</span>`;
             });
             
-            // Now process URLs on the protected text
-            text = detectAndLinkURLs(text);
-            
-            // Restore LaTeX expressions
-            for (let i = 0; i < placeholderIndex; i++) {
-                text = text.replace(`__LATEX_DISPLAY_${i}__`, latexPlaceholders[i] || '');
-                text = text.replace(`__LATEX_INLINE_${i}__`, latexPlaceholders[i] || '');
-            }
-            
-            return text;
+            return result;
         }
         
         // Render MathJax with proper error handling and async support
