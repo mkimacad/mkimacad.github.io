@@ -14,3 +14,4 @@ header:An idea, revisited five years later
 header:test
 aa $|test\rangle$ bb https://mkimacad.github.io
 $$|test\rangle$$
+bb $|test\rangle$ bb https://github.io
