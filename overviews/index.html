@@ -389,70 +389,74 @@
 
         // Process text for URLs and LaTeX math
         function processTextForLinksAndMath(text) {
-            // Split text into segments, preserving LaTeX math expressions
-            const segments = [];
-            let currentPos = 0;
-            const mathPattern = /(\$\$[^$]*\$\$|\$[^$\n]*\$)/g;
+            console.log('Processing text:', text); // Debug log
+            
+            // Improved regex that handles LaTeX better
+            const mathPattern = /(\$\$[\s\S]*?\$\$|\$[^$\r\n]*?\$)/g;
+            const parts = [];
+            let lastIndex = 0;
             let match;
             
+            // Find all math expressions
             while ((match = mathPattern.exec(text)) !== null) {
                 // Add text before math
-                if (match.index > currentPos) {
-                    segments.push({
+                if (match.index > lastIndex) {
+                    parts.push({
                         type: 'text',
-                        content: text.substring(currentPos, match.index)
+                        content: text.substring(lastIndex, match.index)
                     });
                 }
                 
-                // Add math segment
-                segments.push({
+                // Add math expression
+                parts.push({
                     type: 'math',
                     content: match[0]
                 });
                 
-                currentPos = match.index + match[0].length;
+                lastIndex = match.index + match[0].length;
             }
             
             // Add remaining text
-            if (currentPos < text.length) {
-                segments.push({
+            if (lastIndex < text.length) {
+                parts.push({
                     type: 'text',
-                    content: text.substring(currentPos)
+                    content: text.substring(lastIndex)
                 });
             }
             
-            // If no math found, treat entire text as text segment
-            if (segments.length === 0) {
-                segments.push({
+            // If no math found, treat entire string as text
+            if (parts.length === 0) {
+                parts.push({
                     type: 'text',
                     content: text
                 });
             }
             
-            // Process each segment
+            console.log('Parts found:', parts); // Debug log
+            
+            // Process each part
             let result = '';
-            for (const segment of segments) {
-                if (segment.type === 'math') {
-                    // Keep math expressions as-is
-                    result += segment.content;
-                } else {
-                    // Process text segments for HTML escaping and URLs
-                    let processedText = escapeHtml(segment.content);
+            for (const part of parts) {
+                if (part.type === 'math') {
+                    // Keep math as-is for MathJax
+                    result += part.content;
+                    console.log('Added math:', part.content); // Debug log
+                } else if (part.content.trim()) {
+                    // Process text for HTML escaping and URLs
+                    let processedText = escapeHtml(part.content);
                     
-                    // Process URLs - look for http/https links
+                    // Process URLs
                     const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
                     processedText = processedText.replace(urlRegex, (url) => {
-                        // Clean up common punctuation at the end of URLs
                         let cleanUrl = url;
                         let trailingPunct = '';
                         const punctuation = /[.,;:!?)\]}]+$/;
-                        const match = url.match(punctuation);
-                        if (match) {
-                            cleanUrl = url.slice(0, -match[0].length);
-                            trailingPunct = match[0];
+                        const punctMatch = url.match(punctuation);
+                        if (punctMatch) {
+                            cleanUrl = url.slice(0, -punctMatch[0].length);
+                            trailingPunct = punctMatch[0];
                         }
                         
-                        // Create a readable display text (limit length)
                         let displayUrl = cleanUrl;
                         if (displayUrl.length > 50) {
                             displayUrl = displayUrl.substring(0, 47) + '...';
@@ -465,6 +469,7 @@
                 }
             }
             
+            console.log('Final result:', result); // Debug log
             return result;
         }
 
