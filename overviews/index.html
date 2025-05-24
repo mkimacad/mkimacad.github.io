@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A review of my pet projects so far</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
     <style>
         * {
             margin: 0;
@@ -49,6 +61,45 @@
             font-size: 2.5em;
             font-weight: 300;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styles for content */
+        .content h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e74c3c;
+            position: relative;
+        }
+
+        .content h2::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .content h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            font-weight: 500;
+            margin: 25px 0 12px 0;
+            padding-left: 15px;
+            border-left: 4px solid #3498db;
+        }
+
+        .content h4 {
+            color: #34495e;
+            font-size: 1.2em;
+            font-weight: 500;
+            margin: 20px 0 10px 0;
+            padding-left: 10px;
+            border-left: 2px solid #95a5a6;
         }
 
         .loading {
@@ -107,6 +158,30 @@
             font-size: 0.9em;
         }
 
+        /* Link styles */
+        .content a {
+            color: #667eea;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .content a:hover {
+            color: #764ba2;
+            border-bottom-color: #764ba2;
+            text-shadow: 0 1px 2px rgba(118, 75, 162, 0.2);
+        }
+
+        .content a:visited {
+            color: #9b59b6;
+        }
+
+        /* Math styling */
+        .MathJax {
+            font-size: 1.1em !important;
+        }
+
         .refresh-btn {
             position: fixed;
             bottom: 30px;
@@ -136,6 +211,18 @@
             
             h1 {
                 font-size: 2em;
+            }
+
+            .content h2 {
+                font-size: 1.5em;
+            }
+
+            .content h3 {
+                font-size: 1.3em;
+            }
+
+            .content h4 {
+                font-size: 1.1em;
             }
             
             .refresh-btn {
@@ -200,6 +287,11 @@
                 
                 contentDiv.innerHTML = `<div class="content">${parsedContent}</div>`;
                 
+                // Re-render MathJax after content update
+                if (window.MathJax) {
+                    MathJax.typesetPromise([contentDiv]).catch((err) => console.log('MathJax error:', err));
+                }
+                
             } catch (error) {
                 console.error('Error loading content:', error);
                 contentDiv.innerHTML = `
@@ -229,37 +321,94 @@
             }
         }
 
-        // Parse the text content and handle img: lines with line breaks
+        // Enhanced content parser with header, LaTeX, and link support
         function parseContent(text, repoInfo) {
             const lines = text.split('\n');
             let htmlContent = '';
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
+                const trimmedLine = line.trim();
                 
-                // Check if line starts with "img:"
-                if (line.trim().startsWith('img:')) {
-                    // Extract image filename
-                    const imageName = line.trim().substring(4).trim();
+                // Check for image lines
+                if (trimmedLine.startsWith('img:')) {
+                    const imageName = trimmedLine.substring(4).trim();
                     if (imageName) {
                         const imageUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/${imageName}`;
                         htmlContent += `<img src="${imageUrl}" alt="${escapeHtml(imageName)}" loading="lazy">\n`;
                         htmlContent += `<div class="image-caption">${escapeHtml(imageName)}</div>\n`;
                     }
-                } else {
-                    // Regular text line - add line break if not empty
-                    if (line.trim() !== '') {
-                        htmlContent += escapeHtml(line);
+                }
+                // Check for header lines
+                else if (trimmedLine.startsWith('header:')) {
+                    const headerText = trimmedLine.substring(7).trim();
+                    if (headerText) {
+                        // Determine header level based on leading #'s or default to h2
+                        let headerLevel = 2;
+                        let cleanHeaderText = headerText;
+                        
+                        if (headerText.startsWith('#')) {
+                            const match = headerText.match(/^(#{1,4})\s*(.+)/);
+                            if (match) {
+                                headerLevel = Math.min(match[1].length + 1, 4); // h2-h4
+                                cleanHeaderText = match[2];
+                            }
+                        }
+                        
+                        const processedHeader = processTextForLinksAndMath(cleanHeaderText);
+                        htmlContent += `<h${headerLevel}>${processedHeader}</h${headerLevel}>\n`;
                     }
-                    
-                    // Add line break unless it's the last line
-                    if (i < lines.length - 1) {
-                        htmlContent += '<br>\n';
-                    }
+                }
+                // Regular text lines
+                else if (trimmedLine !== '') {
+                    const processedLine = processTextForLinksAndMath(line);
+                    htmlContent += processedLine;
+                }
+                
+                // Add line break unless it's the last line or we just added a header/image
+                if (i < lines.length - 1 && 
+                    !trimmedLine.startsWith('img:') && 
+                    !trimmedLine.startsWith('header:') &&
+                    !lines[i + 1].trim().startsWith('header:')) {
+                    htmlContent += '<br>\n';
                 }
             }
             
             return htmlContent || 'No content found in main.txt';
+        }
+
+        // Process text for URLs and LaTeX math
+        function processTextForLinksAndMath(text) {
+            // First escape HTML to prevent XSS
+            let processedText = escapeHtml(text);
+            
+            // Process URLs - look for http/https links
+            const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
+            processedText = processedText.replace(urlRegex, (url) => {
+                // Clean up common punctuation at the end of URLs
+                let cleanUrl = url;
+                let trailingPunct = '';
+                const punctuation = /[.,;:!?)\]}]+$/;
+                const match = url.match(punctuation);
+                if (match) {
+                    cleanUrl = url.slice(0, -match[0].length);
+                    trailingPunct = match[0];
+                }
+                
+                // Create a readable display text (limit length)
+                let displayUrl = cleanUrl;
+                if (displayUrl.length > 50) {
+                    displayUrl = displayUrl.substring(0, 47) + '...';
+                }
+                
+                return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>${trailingPunct}`;
+            });
+            
+            // LaTeX math is handled by MathJax, so we just need to preserve dollar signs
+            // The escapeHtml function will have converted $ to &dollar; so we need to restore them
+            processedText = processedText.replace(/\$/g, '$');
+            
+            return processedText;
         }
 
         // Escape HTML to prevent XSS
