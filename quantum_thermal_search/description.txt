@@ -8,7 +8,7 @@ header:Motivation 2
 Enters the Chen-Huang-Preskill-Zhou (CHPZ) open quantum system algorithm, where it explores how the environment can be used to cool down system $S$. But there is no need to go open, if we can examine in terms of fully closed systems, since every open system is a subsystem of a closed system. This is what is done in the paper.
 header:Setup/Equilibration question
 Suppose you prepare some system $S$ to be in Hamiltonian $H_S$ in the following way:
-$$H_S = \sum_x g(x)|x\rangle\langle x$$
+$$H_S = \sum_x g(x)|x\rangle\langle x|$$
 This can more easily be imagined in case $S$ is in a maximally mixed state as in the paper - temperature infinite for Hamiltonians with separate ground and excited states. Imagine each classical reality $x$ following classical equations of motion if not interacting with the environment/bath, just that we do not know if there is $x$ that is a ground state with energy different from excited states.
 Can we then interact system $S$ with outside system $BH$ with (Gibbs state) temperature $T_{BH}$ such that if there is $x$ with $g(x)=0$ (ground state differing in energy from excited states), then energy moves away from $S$ to $BH$ resulting in equilibriation at temperature $T_{BH}$?
 header:Key assumption: non-interaction energy conservation
