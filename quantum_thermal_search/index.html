@@ -510,8 +510,8 @@
                     html += '<br>';
                     
                 } else {
-                    // Process LaTeX first, then URLs (being careful not to process URLs inside LaTeX)
-                    const processedText = processLaTeXAndURLs(trimmed);
+                    // Process URLs only, leave LaTeX as-is for MathJax
+                    const processedText = detectAndLinkURLs(trimmed);
                     html += `<p>${processedText}</p>`;
                 }
             }
@@ -520,38 +520,6 @@
             
             // Render MathJax after content is loaded
             renderMathJax();
-        }
-        
-        // Process both LaTeX and URLs while avoiding conflicts
-        function processLaTeXAndURLs(text) {
-            // Store original text
-            let result = text;
-            
-            // Step 1: Process URLs FIRST on plain text
-            result = detectAndLinkURLs(result);
-            
-            // Step 2: Process LaTeX expressions, being careful not to process content inside links
-            // Handle display math ($...$)
-            result = result.replace(/\$\$([^$]+?)\$\$/g, function(match, mathContent) {
-                return `<div class="latex-equation">$${mathContent}$</div>`;
-            });
-            
-            // Handle inline math ($...$) - avoid processing inside HTML tags
-            result = result.replace(/(?<!\$)\$([^$\n<>]+?)\$(?!\$)/g, function(match, mathContent, offset, string) {
-                // Check if we're inside an HTML tag
-                const beforeMatch = string.substring(0, offset);
-                const lastOpenTag = beforeMatch.lastIndexOf('<');
-                const lastCloseTag = beforeMatch.lastIndexOf('>');
-                
-                // If we're inside an HTML tag, don't process
-                if (lastOpenTag > lastCloseTag) {
-                    return match;
-                }
-                
-                return `<span class="latex-inline">${mathContent}$</span>`;
-            });
-            
-            return result;
         }
         
         // Render MathJax with proper error handling and async support
