@@ -11,3 +11,6 @@ header:An idea, revisited five years later
 8. Focusing theorems are not properly discussed here, but they are beneficial for the purpose here.
 9. Early paper, could have been written much better now.
 10. **Unfortunately important as well: This is not an atheist argument. I am a theist myself, though bound by scientific justifications.**
+header:test
+aa $|test\rangle$ bb https://mkimacad.github.io
+$$|test\rangle$$
