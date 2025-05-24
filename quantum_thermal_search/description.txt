@@ -38,3 +38,6 @@ I think it is true that path integrals cannot alone be used to justify unitarity
 header:Toward the modified Jaynes-Cummings (JCM) model
 The paper foreshadows the toy qudit model in https://mkimacad.github.io/braneworld and its precise JCM version in https://mkimacad.github.io/bh_jaynes_cummings . Potentially, we can think of a black hole thought experiment that utilizes quantum thermal search. If we can somehow effectively (and that is the problem though) manage to make system $S$ inside some black hole to only get entangled with associated radiations, then the same quantum thermal search applies. There are additional radiations if system $S$ has a distinct ground state, and not if no distinct ground state exists. But it is only in qudit approximations that we can really separate dynamics of $S$ inside a black hole from the rest of the black hole. So this analogy and thought experiment cannot go very far.
 To conclude, I want to note that search problems get re-examined classically within contexts of deep learning in https://mkimacad.github.io/imaginary_time_DL .
+header:latex test
+test $|test\rangle$ https://mkimacad.github.io
+$$test$$
