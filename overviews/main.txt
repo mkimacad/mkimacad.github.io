@@ -1,4 +1,4 @@
-img:hario_switch_failed_sora.png
+img:sora_dripper_prompt.png
 header:Ice-breaking but with hot coffee
 See: https://mkimacad.github.io/coffee maybe?
 From the above image, we know that latest image models (Sora, maybe?) are yet far from perfection.
