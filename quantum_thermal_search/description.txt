@@ -2,7 +2,7 @@ header:History (date-wise)
 Paper published: May 25, 2024. 
 Initial github.io paper description: May 24, 2025. (Year anniversary)
 header:Published in Quantum Information Processing
-(https://doi.org/10.1007/s11128-024-04413-x)
+(https://doi.org/10.1007/s11128-024-04413-x )
 header:Motivation
 Suppose you have a difficult search problem, say find $x$ that satisfies $g(x)=0$. There are $2^n$ candidate $x$'s, and you expect the number of satisfying $x$ to be close to zero if not zero. The BBBV theorem proves that unstructured quantum search cannot give exponential speedup over classical search. Adiabatic computing hasn't given us much so far. So are we stuck? Maybe quantum thermodynamics may help beyond adiabatic computing?
 header:An idea: connecting ground states with a search problem
