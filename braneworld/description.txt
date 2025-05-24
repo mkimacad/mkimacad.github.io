@@ -1,3 +1,6 @@
+header:History (date-wise)
+Published: February 27, 2025
+Initial github.io paper description: May 24-25,2025 
 header:Published in Fortschritte der Physik - Progress of Physics
 https://doi.org/10.1002/prop.202400194
 header:Updates coming soon..
