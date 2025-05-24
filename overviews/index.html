@@ -4,18 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A review of my pet projects so far</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <script>
-        MathJax = {
+        window.MathJax = {
             tex: {
                 inlineMath: [['$', '$']],
-                displayMath: [['$$', '$$']]
+                displayMath: [['$$', '$$']],
+                processEscapes: true,
+                processEnvironments: true
             },
-            svg: {
-                fontCache: 'global'
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            startup: {
+                ready: () => {
+                    console.log('MathJax is ready!');
+                    MathJax.startup.defaultReady();
+                }
             }
         };
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -288,85 +296,7 @@
                 contentDiv.innerHTML = `<div class="content">${parsedContent}</div>`;
                 
                 // Re-render MathJax after content update
-                console.log('Triggering MathJax re-render...');
-                
-                // Function to check if MathJax is fully loaded
-                const isMathJaxReady = () => {
-                    return window.MathJax && 
-                           (typeof MathJax.typesetPromise === 'function' || 
-                            typeof MathJax.typeset === 'function' ||
-                            (MathJax.Hub && typeof MathJax.Hub.Queue === 'function'));
-                };
-                
-                // Function to render MathJax
-                const renderMathJax = () => {
-                    console.log('Attempting MathJax render...');
-                    console.log('MathJax properties:', Object.keys(MathJax));
-                    
-                    if (typeof MathJax.typesetPromise === 'function') {
-                        console.log('Using MathJax.typesetPromise');
-                        MathJax.typesetPromise([contentDiv]).then(() => {
-                            console.log('MathJax typeset complete');
-                        }).catch((err) => {
-                            console.log('MathJax typesetPromise error:', err);
-                        });
-                        return true;
-                    }
-                    
-                    if (typeof MathJax.typeset === 'function') {
-                        console.log('Using MathJax.typeset');
-                        try {
-                            MathJax.typeset([contentDiv]);
-                            console.log('MathJax typeset complete');
-                            return true;
-                        } catch (err) {
-                            console.log('MathJax typeset error:', err);
-                        }
-                    }
-                    
-                    if (MathJax.Hub && typeof MathJax.Hub.Queue === 'function') {
-                        console.log('Using MathJax.Hub.Queue');
-                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, contentDiv]);
-                        return true;
-                    }
-                    
-                    return false;
-                };
-                
-                // If MathJax is already ready, render immediately
-                if (isMathJaxReady()) {
-                    console.log('MathJax is ready, rendering now');
-                    renderMathJax();
-                } else {
-                    console.log('MathJax not ready, waiting for initialization...');
-                    
-                    // Wait for MathJax to be ready
-                    const checkMathJaxReady = () => {
-                        if (isMathJaxReady()) {
-                            console.log('MathJax is now ready');
-                            renderMathJax();
-                        } else {
-                            console.log('Still waiting for MathJax...');
-                            setTimeout(checkMathJaxReady, 200);
-                        }
-                    };
-                    
-                    // Start checking after a short delay
-                    setTimeout(checkMathJaxReady, 100);
-                    
-                    // Also listen for the MathJax ready event if available
-                    if (typeof MathJax !== 'undefined' && MathJax.startup) {
-                        console.log('Waiting for MathJax startup promise...');
-                        MathJax.startup.promise.then(() => {
-                            console.log('MathJax startup complete');
-                            if (!renderMathJax()) {
-                                console.log('Render failed even after startup');
-                            }
-                        }).catch((err) => {
-                            console.log('MathJax startup error:', err);
-                        });
-                    }
-                }
+                await renderMathJax(contentDiv);
                 
             } catch (error) {
                 console.error('Error loading content:', error);
@@ -377,6 +307,35 @@
                         <p>Make sure the file <code>overviews/main.txt</code> exists in your repository.</p>
                     </div>
                 `;
+            }
+        }
+
+        // Simplified MathJax rendering function
+        async function renderMathJax(element) {
+            console.log('Attempting to render MathJax...');
+            
+            // Wait for MathJax to be ready
+            if (typeof MathJax !== 'undefined') {
+                try {
+                    // Wait for MathJax startup to complete
+                    await MathJax.startup.promise;
+                    console.log('MathJax startup complete, rendering...');
+                    
+                    // Typeset the content
+                    await MathJax.typesetPromise([element]);
+                    console.log('MathJax rendering complete!');
+                    
+                } catch (error) {
+                    console.error('MathJax rendering error:', error);
+                    
+                    // Fallback to older API if available
+                    if (MathJax.Hub && MathJax.Hub.Queue) {
+                        console.log('Falling back to MathJax v2 API...');
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+                    }
+                }
+            } else {
+                console.error('MathJax is not loaded');
             }
         }
 
