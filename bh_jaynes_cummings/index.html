@@ -412,72 +412,60 @@
                 return text;
             }
             
-            // URL regex patterns
-            const patterns = [
-                // Full URLs with protocols
-                {
-                    regex: /\b(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]/gi,
-                    addProtocol: false
-                },
-                // www URLs
-                {
-                    regex: /\bwww\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?/gi,
-                    addProtocol: 'https://'
-                },
-                // Domain-only URLs (more restrictive)
-                {
-                    regex: /\b[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?\b/gi,
-                    addProtocol: 'https://'
-                }
-            ];
+            // Single comprehensive URL regex that captures all types in one pass
+            const urlRegex = /\b(?:(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]|www\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?)\b/gi;
             
+            const matches = [];
+            let match;
+            
+            // Collect all matches first
+            while ((match = urlRegex.exec(text)) !== null) {
+                matches.push({
+                    match: match[0],
+                    index: match.index
+                });
+            }
+            
+            // Reset regex lastIndex
+            urlRegex.lastIndex = 0;
+            
+            // Process matches in reverse order to maintain indices
             let result = text;
-            
-            // Process each pattern
-            patterns.forEach(pattern => {
-                const matches = [];
-                let match;
+            matches.reverse().forEach(matchInfo => {
+                let url = matchInfo.match;
+                let displayUrl = matchInfo.match;
                 
-                // Collect all matches first
-                while ((match = pattern.regex.exec(result)) !== null) {
-                    matches.push({
-                        match: match[0],
-                        index: match.index
-                    });
+                // Determine if we need to add protocol
+                let needsProtocol = true;
+                if (matchInfo.match.startsWith('http://') || 
+                    matchInfo.match.startsWith('https://') || 
+                    matchInfo.match.startsWith('ftp://')) {
+                    needsProtocol = false;
                 }
                 
-                // Reset regex lastIndex
-                pattern.regex.lastIndex = 0;
+                // Add protocol if needed
+                if (needsProtocol) {
+                    url = 'https://' + matchInfo.match;
+                }
                 
-                // Process matches in reverse order to maintain indices
-                matches.reverse().forEach(matchInfo => {
-                    let url = matchInfo.match;
-                    let displayUrl = matchInfo.match;
-                    
-                    // Add protocol if needed
-                    if (pattern.addProtocol && !matchInfo.match.startsWith('http')) {
-                        url = pattern.addProtocol + matchInfo.match;
-                    }
-                    
-                    // Smart truncation for very long URLs
-                    if (displayUrl.length > 60) {
-                        if (displayUrl.includes('/')) {
-                            const parts = displayUrl.split('/');
-                            if (parts.length > 3) {
-                                displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
-                            } else {
-                                displayUrl = displayUrl.substring(0, 57) + '...';
-                            }
+                // Smart truncation for very long URLs
+                if (displayUrl.length > 60) {
+                    if (displayUrl.includes('/')) {
+                        const parts = displayUrl.split('/');
+                        if (parts.length > 3) {
+                            displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
                         } else {
                             displayUrl = displayUrl.substring(0, 57) + '...';
                         }
+                    } else {
+                        displayUrl = displayUrl.substring(0, 57) + '...';
                     }
-                    
-                    const replacement = `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${matchInfo.match}">${displayUrl}</a>`;
-                    
-                    // Replace the match at the specific index
-                    result = result.substring(0, matchInfo.index) + replacement + result.substring(matchInfo.index + matchInfo.match.length);
-                });
+                }
+                
+                const replacement = `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${matchInfo.match}">${displayUrl}</a>`;
+                
+                // Replace the match at the specific index
+                result = result.substring(0, matchInfo.index) + replacement + result.substring(matchInfo.index + matchInfo.match.length);
             });
             
             return result;
