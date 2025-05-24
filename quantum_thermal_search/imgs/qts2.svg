@@ -63,6 +63,9 @@
 
     <!-- New cavity label -->
     <text x="110" y="170" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Hamiltonian H_S</text>
+    <text x="110" y="190" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Maximally mixed state</text>
+    <text x="110" y="210" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Temperature T_S=infinity.</text>
+    <text x="110" y="230" font-family="Arial" font-size="16" text-anchor="middle" fill="#343a40">Positive energy flow.</text>
   </g>
 
   <!-- Atoms (shifted down and left-aligned labels) -->
