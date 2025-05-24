@@ -6,6 +6,7 @@ The prompt was to generate a Hario switch dripper, with coffee being extracted. 
 Sometimes coffee brewing seems like the reverse of aerodynamics..
 header:My interest
 Back to the main overview. My main interest is around quantum (computation) insights applied to black holes and sometimes philosophy. But I am actually most interested in black holes, and I believe holography still provides the best way to study them.
+On the times around May 24, 2025, many directions are heading toward theoretical (though all sorts of different areas) applications of the Jaynes-Cummings model, so this could be said to be my current interest as well.
 header:On (journal) published papers.
 https://mkimacad.github.io/philsci_time, https://mkimacad.github.io/quantum_thermal_search, https://mkimacad.github.io/braneworld. Possibly on order of ascending importance.
 header:Black hole singularities can be beneficial? (Journal Sophia)
