@@ -8,6 +8,8 @@ Quantum Thermal Search
 quantum_thermal_search
 Black hole singularities can be beneficial
 philsci_time
+AdS/VAEBM: extending holographic gravity via deep learning
+ads_vaebm
 Imaginary-time deep learning
 imaginary_time_DL
 Coffee (not necessarily research)
