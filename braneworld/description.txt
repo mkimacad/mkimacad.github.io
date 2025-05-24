@@ -6,3 +6,4 @@ https://doi.org/10.1002/prop.202400194
 header:Updates coming soon..
 updates coming soon.. some additional remarks about AdS-Rindler paradoxes that could be resolved within the crossed-product construction. Some wistful thoughts about black string models. Possibly an additional memo manuscript to include. Updates to come.. $|test\rangle$ test.
 $$|test\rangle$$
+test: https://mkimacad.github.io
