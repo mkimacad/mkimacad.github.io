@@ -288,19 +288,43 @@
                 contentDiv.innerHTML = `<div class="content">${parsedContent}</div>`;
                 
                 // Re-render MathJax after content update
-                if (window.MathJax && MathJax.typesetPromise) {
-                    MathJax.typesetPromise([contentDiv]).catch((err) => console.log('MathJax error:', err));
-                } else if (window.MathJax && MathJax.Hub) {
-                    // Fallback for older MathJax versions
-                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, contentDiv]);
-                } else if (window.MathJax) {
-                    // Simple fallback - just trigger a re-render
-                    setTimeout(() => {
+                console.log('Triggering MathJax re-render...');
+                
+                // Wait a bit for DOM to update, then trigger MathJax
+                setTimeout(() => {
+                    if (window.MathJax) {
+                        console.log('MathJax available, version:', MathJax.version);
+                        
                         if (MathJax.typesetPromise) {
-                            MathJax.typesetPromise([contentDiv]).catch((err) => console.log('MathJax error:', err));
+                            console.log('Using MathJax.typesetPromise');
+                            MathJax.typesetPromise([contentDiv]).then(() => {
+                                console.log('MathJax typeset complete');
+                            }).catch((err) => {
+                                console.log('MathJax error:', err);
+                            });
+                        } else if (MathJax.Hub && MathJax.Hub.Queue) {
+                            console.log('Using MathJax.Hub.Queue');
+                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, contentDiv]);
+                        } else if (MathJax.startup && MathJax.startup.promise) {
+                            console.log('Using MathJax.startup.promise');
+                            MathJax.startup.promise.then(() => {
+                                return MathJax.typesetPromise([contentDiv]);
+                            }).then(() => {
+                                console.log('MathJax typeset complete');
+                            }).catch((err) => {
+                                console.log('MathJax error:', err);
+                            });
+                        } else {
+                            console.log('Unknown MathJax version, trying direct typeset');
+                            // Force a complete re-render
+                            if (MathJax.typeset) {
+                                MathJax.typeset([contentDiv]);
+                            }
                         }
-                    }, 100);
-                }
+                    } else {
+                        console.log('MathJax not available');
+                    }
+                }, 50);
                 
             } catch (error) {
                 console.error('Error loading content:', error);
@@ -389,8 +413,6 @@
 
         // Process text for URLs and LaTeX math
         function processTextForLinksAndMath(text) {
-            console.log('Processing text:', text); // Debug log
-            
             // Improved regex that handles LaTeX better
             const mathPattern = /(\$\$[\s\S]*?\$\$|\$[^$\r\n]*?\$)/g;
             const parts = [];
@@ -432,15 +454,12 @@
                 });
             }
             
-            console.log('Parts found:', parts); // Debug log
-            
             // Process each part
             let result = '';
             for (const part of parts) {
                 if (part.type === 'math') {
                     // Keep math as-is for MathJax
                     result += part.content;
-                    console.log('Added math:', part.content); // Debug log
                 } else if (part.content.trim()) {
                     // Process text for HTML escaping and URLs
                     let processedText = escapeHtml(part.content);
@@ -469,7 +488,6 @@
                 }
             }
             
-            console.log('Final result:', result); // Debug log
             return result;
         }
 
