@@ -5,3 +5,8 @@ header:Published in Fortschritte der Physik - Progress of Physics
 https://doi.org/10.1002/prop.202400194
 header:Updates coming soon..
 updates coming soon.. some additional remarks about AdS-Rindler paradoxes that could be resolved within the crossed-product construction. Some wistful thoughts about black string models. Possibly an additional memo manuscript to include. Updates to come..
+header:Digression: replica wormholes (not in the paper) (1)
+To be copied.
+header:Digression: replica wormholes (not in the paper) (2)
+The idea that path integrals can alone justify unitarity and logical consistency of replica wormholes can be thought of different examples. It can be easily seen that in case of theoretically pathological spacetime but empirically imaginable spacetime, we get non-unitary QFT that is allowed by path integrals but disallowed by established quantization procedures.
+It is possible that path integrals actually point out that non-unitary EFT may be used as long as we are assured of its approximate validity, and replica wormholes can be used safely. I personally agree that people neglect too much of the possibility that path integrals disallowed by canonical quantization can still nevertheless effectively be valid, as long as we recognize their approximate nature. Whether this is actually the case is another matter.
