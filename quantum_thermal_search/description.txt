@@ -1,3 +1,6 @@
+header:History (date-wise)
+Paper published: May 25, 2024. 
+Initial github.io paper description: May 24, 2025. (Year anniversary)
 header:Published in Quantum Information Processing
 (https://doi.org/10.1007/s11128-024-04413-x)
 header:Motivation
