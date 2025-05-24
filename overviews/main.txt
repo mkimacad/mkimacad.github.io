@@ -1,7 +1,9 @@
 img:hario_switch_failed_sora.png
 header:Ice-breaking but with hot coffee
-Starting from this: from the above image, we know that latest image models (Sora, maybe?) are yet far from perfection.
+See: https://mkimacad.github.io/coffee maybe?
+From the above image, we know that latest image models (Sora, maybe?) are yet far from perfection.
 The prompt was to generate a Hario switch dripper, with coffee being extracted. It did not understand that the dripper rib structure is essential to V60 and Hario switch. Nevertheless, I felt this is interesting, because the image resembles what a layman uninterested in drip (filter) coffee would have drawn. And the image otherwise is decent. So many things have changed from 2020 - for better or for worse (in case of education).
+Sometimes coffee brewing seems like the reverse of aerodynamics..
 header:My interest
 Back to the main overview. My main interest is around quantum (computation) insights applied to black holes and sometimes philosophy. But I am actually most interested in black holes, and I believe holography still provides the best way to study them.
 header:On (journal) published papers.
