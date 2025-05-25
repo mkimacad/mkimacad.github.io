@@ -11,3 +11,5 @@ header:Large-M,Large-N,small interaction time behavior
 To be updated, this is the most important part to understand about the black hole horizon.
 header:Where the small corrections theorem and the AMPS firewall subadditivity paradox got wrong - or the imprecise meaning of "semiclassical no-drama horizon"
 Updates coming up.
+header:Effective dimension of the black hole Hilbert space, as relating to the small corrections theorem
+The small corrections theorem assumes that the effective black hole Hilbert space dimension can increase over time. However, can we really assume so? We can argue that the point of the small corrections theorem is to say that our usual semiclassical picture requires such increases, and the contents of this paper clarify why we can still have some form of semiclassicality and yet effective dimension must decrease over time.
