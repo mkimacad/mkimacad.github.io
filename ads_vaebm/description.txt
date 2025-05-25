@@ -2,7 +2,7 @@ header:History (date-wise)
 V1 draft (Nuclear Physics B submission): March 6, 2025
 V2 (NPB revision submission): Expected around early to mid-June.
 header:Lesson 1: Deep learning can naturally study perturbations to AdS/CFT
-To be updated
+To be updated, just bulk EFT path integral in Euclidean time..
 header:Lesson 2: On probabilistic independence of IR states from UV states
 While IR states encode and compress information on IR states, probabilistically they are independent in AdS/DL (AdS/DBM and AdS/VAEBM). This means much in terms of how we should think of IR measurements in our world.
 IR states are the compressed states of affairs, and therefore they provide limited information about dynamics. We could think of measurements as picking out one IR branch of the bulk and the dual UV boundary state. And the whole AdS/DL machinery suggests how a single UV state, non-probabilistically interpreted, can arise to multiple IR state results probabilistically via holography.    
