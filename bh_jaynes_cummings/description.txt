@@ -1,5 +1,6 @@
 header:On simulation code (baseline: codes/jaynes_improved.py)
 Main parameters at the end (currently line 368 # parameters):
 M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced).
+The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
 header:updates coming up
 Upcoming
