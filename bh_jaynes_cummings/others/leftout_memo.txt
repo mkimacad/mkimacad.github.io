@@ -1,0 +1,2 @@
+header:Some trivial matters (3): On M'~N behaviors on the entropy curve. (Not in the paper, likely to be removed here as well since unnecessary)
+Let M' be the number of outgoing qubits (and will no longer interact). In the entropy curve, for M'~N, the distribution of excited states in the black hole settles something similar to Gaussian distributions such that we can treat entropy increase to be approximately constant. [variance M'/4, total energy variance lower..]
