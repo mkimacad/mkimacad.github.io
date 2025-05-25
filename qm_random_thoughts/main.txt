@@ -1,5 +1,4 @@
 header:EW GU (May 25, 2025)
-(Writing in my free time, especially while I am eating something, not yet completed)
 So I came across this youtube: https://youtu.be/5m7LnLgvMnM and thought it interesting.
 Younger me would have considered string theory as empirically irrelevant and useless especially by the influence of the people like those people, and I came long away from such a view. Though this is not about that issue, which requires a long, long post.
 And I think I see where Eric (usually we write by last name, but I don't want this to pop up in search engines) is trying to say. For example, see http://arxiv.org/abs/1503.00238 where the geometric formulation of quantum mechanics that makes it something like classical theories is reviewed. His intention seems to be that this line of works is pushed further such that instead of specific Lagrangians, we have geometries that encode dynamics naturally - thus the name of his project.
