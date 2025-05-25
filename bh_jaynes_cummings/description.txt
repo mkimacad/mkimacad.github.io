@@ -2,5 +2,7 @@ header:On simulation code (baseline: codes/jaynes_improved.py)
 Main parameters at the end (currently line 368 # parameters):
 M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced).
 The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
+header:Initial "cavity"/black hole state choice
+In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
 header:updates coming up
 Upcoming
