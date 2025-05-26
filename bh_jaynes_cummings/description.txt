@@ -7,7 +7,7 @@ To be updated
 header:Some trivial matters (1): Initial "cavity"/black hole state choice
 In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
 header:Some terms used interchangably
-Black hole=(Optical) Cavity, (Hawking) radiations=Atom qubits=qubits.
+Black hole=(optical) cavity=field, (Hawking) radiations=atom=qubits.
 header:Some trivial matters (2): On "time" in this modified Jaynes-Cummings (JCM) model
 Since this is a toy qudit model, time is modelled as the number of qubits that interacted with the black hole. This can be re-scaled to fit the Page curve and so the slope of the entropy curve should not be of concern here. It can also be noted that initial entropy increase can be slowed down (such that increases are almost constant across initially interacting qubits) by tuning down the interaction time of each qubit, which is available in the baseline code by reduc parameter.
 header:Do we need to replicate the Page curve, given holography of information?
