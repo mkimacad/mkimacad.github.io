@@ -14,7 +14,7 @@ header:Black hole singularities can be beneficial? (Journal Sophia)
 $$\textbf{Can't black holes impose finite timelines for everyone?}$$
 In https://mkimacad.github.io/philsci_time, I ask whether black hole singularities can be good things, allowing us to avoid inconvenient philosophical and logical issues by cutting down observer timelines to finite proper time. (Published in Journal Sophia)
 header:Quantum thermal search (Journal Quantum Information Processing)
-$$\textbf{Let's cool a quantum system to solve search problems but w/o varying} H\text{?}$$
+$$\textbf{Let's cool a quantum system to solve search problems but w/o varying } H\text{?}$$
 In https://mkimacad.github.io/quantum_thermal_search, I ask whether quantum thermodynamics (mainly cooling) can be harnessed to provide exponential speedup for search problems. The answer is sort-of yes, sort-of no. If exponential precision to purity of some bath is considered demanding, the answer is no. If inability to write down exact interaction Hamiltonian is considered problematic, the answer is also no, and conventional qubit gate-based simulations are impossible without collapsing to quantum random walks. If we believe that there realistically are thermal interactions between some system and the bath, then the answer is yes, as can be simply understood in terms of the modified Jaynes-Cummings (JCM) model, which forms another paper in https://mkimacad.github.io/bh_jaynes_cummings . (Published in Journal Quantum Information Processing)
 header:On Karch-Randall braneworld (Journal Fortschritte der Physik - Progress of Physics)
 $$\textbf{Bulk Hilbert space factorization, quo vadis?}$$
