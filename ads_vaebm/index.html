@@ -405,21 +405,21 @@
     </div>
     
     <script>
-        // HTML encode function to safely handle special characters
-        function htmlEncode(str) {
-            return str.replace(/&/g, '&amp;')
-                     .replace(/</g, '&lt;')
-                     .replace(/>/g, '&gt;')
-                     .replace(/"/g, '&quot;')
-                     .replace(/'/g, '&#39;');
+        // Function to convert custom inequality commands to LaTeX
+        function convertCustomInequalities(text) {
+            // Replace \lineq with < and \gineq with >
+            return text.replace(/\\lineq/g, '<').replace(/\\gineq/g, '>');
         }
-
+        
         // Enhanced text processing that handles LaTeX and URLs together
         function processTextWithLatexAndUrls(text) {
             // Skip if text already contains HTML tags to avoid breaking existing links
             if (/<[^>]*>/.test(text)) {
                 return text;
             }
+            
+            // First convert custom inequality commands
+            text = convertCustomInequalities(text);
             
             // Create a structure to track different types of content
             const tokens = [];
@@ -493,16 +493,13 @@
             let lastIndex = 0;
             
             for (const token of tokens) {
-                // Add text before this token (HTML encoded to handle any stray < > characters)
-                const beforeText = text.substring(lastIndex, token.start);
-                result += htmlEncode(beforeText);
+                // Add text before this token
+                result += text.substring(lastIndex, token.start);
                 
                 // Add the processed token
                 if (token.type === 'latex-display') {
-                    // For LaTeX, we need to preserve the math content as-is for MathJax
                     result += `<div class="latex-equation">$$${token.mathContent}$$</div>`;
                 } else if (token.type === 'latex-inline') {
-                    // For LaTeX, we need to preserve the math content as-is for MathJax
                     result += `<span class="latex-inline">$${token.mathContent}$</span>`;
                 } else if (token.type === 'url') {
                     let url = token.content;
@@ -529,20 +526,19 @@
                         }
                     }
                     
-                    result += `<a href="${htmlEncode(url)}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${htmlEncode(token.content)}">${htmlEncode(displayUrl)}</a>`;
+                    result += `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${token.content}">${displayUrl}</a>`;
                 }
                 
                 lastIndex = token.end;
             }
             
-            // Add remaining text (HTML encoded)
-            const remainingText = text.substring(lastIndex);
-            result += htmlEncode(remainingText);
+            // Add remaining text
+            result += text.substring(lastIndex);
             
             return result;
         }
         
-        // Load and parse description.txt (mock function for demonstration)
+        // Load and parse description.txt
         async function loadDescription() {
             const descriptionContainer = document.getElementById('projectDescription');
             
@@ -586,8 +582,8 @@
                     
                 } else if (trimmed.startsWith('img:')) {
                     const img = trimmed.slice(4).trim();
-                    html += `<img src="${htmlEncode(img)}" alt="${htmlEncode(img)}" class="description-image"
-                                 onclick="openImageModal(this,'${htmlEncode(img)}')"
+                    html += `<img src="${img}" alt="${img}" class="description-image"
+                                 onclick="openImageModal(this,'${img}')"
                                  onerror="this.style.display='none'">`;
                     
                 } else if (trimmed === '') {
