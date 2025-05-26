@@ -546,26 +546,19 @@
         async function loadDescription() {
             const descriptionContainer = document.getElementById('projectDescription');
             
-            // Mock description content with LaTeX containing < and > for testing
-            const mockContent = `header: Mathematical Inequalities in Physics
-
-This is a test of LaTeX rendering with inequality signs:
-
-For quantum states, we often have $0 < n < N$ where n is the photon number.
-
-The energy constraint is given by:
-$$E_{min} < E < E_{max}$$
-
-$S_a \leq S_b$, $S_a \geq S_b.
-
-In perturbation theory, we need $\epsilon << 1$ for the expansion to be valid.
-
-Multiple inequalities: $0 < \alpha < \beta < 1$ and $\gamma > \delta \geq 0$.
-
-This demonstrates that our parser can now handle all types of inequality signs properly!`;
-
             try {
-                parseDescription(mockContent);
+                // Try to fetch description.txt directly from the current directory
+                const textUrl = `https://raw.githubusercontent.com/mkimacad/mkimacad.github.io/main/ads_vaebm/description.txt`;
+                
+                const response = await fetch(textUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Description file not found (${response.status})`);
+                }
+                
+                const content = await response.text();
+                parseDescription(content);
+                
             } catch (error) {
                 console.error('Error loading description:', error);
                 descriptionContainer.innerHTML = `
