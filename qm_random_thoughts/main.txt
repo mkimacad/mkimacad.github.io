@@ -16,6 +16,3 @@ As in the JCM model (see https://mkimacad.github.io/bh_jaynes_cummings ), whenev
 Additionally, we cannot add compute classical wave-like superposition of $|N\rangle-|N+1\rangle \approx |N\rangle - |N+1\rangle \approx 0$? - this is disallowed in quantum physics. However, in some non-JCM cases, we do have $\langle N|N+1\rangle \approx 1$ for large N as well. In such a case, under theoretically pathological spacetime such that QFT cannot be constructed on with established quantization procedures, then path integrals lead to significant non-linearity under large-N if we initially started from small-N states and evolve those states into large-N states.
 Instead of completely rejecting this as conventionally done, we may understand this as an EFT behavior and try to understand what non-linear classical behaviors we can extract, knowing that this is only very approximately valid.
 But I don't know.
-header:test
-$test:0\lineq n$,
-$$test:0\gineq n$$
