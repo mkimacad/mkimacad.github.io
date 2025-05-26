@@ -405,12 +405,21 @@
     </div>
     
     <script>
+        // Function to convert custom inequality commands to LaTeX
+        function convertCustomInequalities(text) {
+            // Replace \lineq with < and \gineq with >
+            return text.replace(/\\lineq/g, '<').replace(/\\gineq/g, '>');
+        }
+        
         // Enhanced text processing that handles LaTeX and URLs together
         function processTextWithLatexAndUrls(text) {
             // Skip if text already contains HTML tags to avoid breaking existing links
             if (/<[^>]*>/.test(text)) {
                 return text;
             }
+            
+            // First convert custom inequality commands
+            text = convertCustomInequalities(text);
             
             // Create a structure to track different types of content
             const tokens = [];
