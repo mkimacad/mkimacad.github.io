@@ -12,5 +12,5 @@ header:An idea, revisited five years later
 9. Early paper, could have been written much better now.
 10. **Unfortunately important as well: This is not an atheist argument. I am a theist myself, though bound by scientific justifications.**
 header:test
-$test:0<n$,
-$$test:0<n$$
+$test:0\lineq n$,
+$$test:0\gineq n$$
