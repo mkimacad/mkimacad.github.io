@@ -15,7 +15,15 @@ See discussions in https://mkimacad.github.io/braneworld, but some of them are r
 header:Interaction setup
 Each $k$th qubit, initially in $|0\rangle$ interacts sequentially with the black hole for duration of $\Delta t_k$ ("interaction time") from $t=\sum_{j=1}^{k-1}\Delta t_j$ to $t=\sum_{j=1}^k \Delta t_j$. The Hamiltonian governing this interaction is provided by the Jaynes-Cummings model (JCM) - the black hole being an optical cavity and qubits being atoms. Then this qubit flies away, never interacting with the black hole again.
 header:Hamiltonians
-To be updated
+The free Hamiltonian $H_{rad}$ of each qubit is given as:
+$$H_{rad} = \omega_a \sigma_{+}\sigma_{-} = \omega_a |1\rangle\langle 1|$$
+This is simply about only the excited state of the qubit having non-zero energy, with $\sigma_{+}=|1\rangle\langle 0|$ and $\sigma_{-}=|0\rangle\langle 1|$.
+The free Hamiltonian $H_{BH}$ of the black hole is given as:
+$$H_{BH} = \omega_a a^{\dagger}a$$
+with $[a,a^{\dagger}]=1$. This gives us $|n\rangle$ with particle number operator $\hat{n}=a^{\dagger}a$ such that $\hat{n}|n\rangle=n|n\rangle$.
+Now most importantly, the JCM interaction Hamiltonian that couples $\textbf{one}$ qubit and the black hole goes as:
+$$H_I = g(\sigma_{+}a + \sigma_{-}a^{\dagger})$$
+Since we have same $\omega_a$ in the free Hamiltonians, this JCM interaction is all about trading non-interaction energy: if the black hole loses energy $\omega_a$, then the qubit obtains $\omega_a$ and vice versa. There is no need to vary $g$ in this paper, so $g=1$ is set. The value of $\omega_a$ is also irrelevant for rest of the discussions. 
 header:Variable interaction time case
 The final outgoing state of the $k$th qubit is determined with unitary $U_k$: 
 $$U_k|0,n\rangle = \cos(g\sqrt{n}\Delta t_k)|0,n\rangle -i\sin(g\sqrt{n}\Delta t_k)|1,n-1\rangle$$
