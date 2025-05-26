@@ -1,0 +1,5 @@
+Currently, latex and link parsers for embedded text files have limitations, and I am considering external parsers that can handle this properly.
+Maybe I will get these fixed, but for now workarounds are adopted.
+
+1) The format of "URL." doesn't work - it'd link URL. instead of URL in the sentence. So I use "URL ." instead.
+2) "<" and ">" are treated as simple texts since trying to make these parsed lead to significant problems. Instead, one should use "\lineq" and "\gineq".
