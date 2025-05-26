@@ -17,5 +17,5 @@ Additionally, we cannot add compute classical wave-like superposition of $|N\ran
 Instead of completely rejecting this as conventionally done, we may understand this as an EFT behavior and try to understand what non-linear classical behaviors we can extract, knowing that this is only very approximately valid.
 But I don't know.
 header:test
-$test:0<n$,
-$$test:0<n$$
+$test:0\lineq n$,
+$$test:0\gineq n$$
