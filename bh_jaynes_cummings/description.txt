@@ -37,10 +37,10 @@ $$U|0,0\rangle = |0,0\rangle$$
 This simplified model continues to respect conservation of non-interaction energy. The model is analytically simpler and can be beneficial for those insisting on the same interaction behavior regardless of $n$. We arrive at the same conclusions qualitatively regardless of the models used. Even ignoring conservation of non-interaction energy for $|0,0\rangle$, we should get the same entropy conclusions, since there is no actual entanglement being generated.
 header:Simulation results
 The model simulations go as follows:
-img:imgs/nosimpleex1_1.png
-img:imgs/nosimpleex1_2.png
-img:imgs/nosimpleex2_1.png
-img:imgs/nosimpleex2_2.png
+img:imgs/nosimple_ex1_1.png
+img:imgs/nosimple_ex1_2.png
+img:imgs/nosimple_ex2_1.png
+img:imgs/nosimple_ex2_2.png
 img:imgs/reduced_time_ex1_1.png
 img:imgs/reduced_time_ex1_2.png
 We confirm the same qualitative result for the simplified model:
