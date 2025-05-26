@@ -3,7 +3,7 @@ Main parameters at the end (currently line 368 # parameters):
 M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced).
 The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
 header:History (date-wise)
-To be updated
+Paper V1/github.io description: May 25-26, 2025
 header:Some trivial matters (1): Initial "cavity"/black hole state choice
 In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
 header:Some terms used interchangably and Planck units
