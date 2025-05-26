@@ -8,5 +8,5 @@ While IR states encode and compress information on IR states, probabilistically 
 IR states are the compressed states of affairs, and therefore they provide limited information about dynamics. We could think of measurements as picking out one IR branch of the bulk and the dual UV boundary state. And the whole AdS/DL machinery suggests how a single UV state, non-probabilistically interpreted, can arise to multiple IR state results probabilistically via holography.    
 header:To be further updated
 To be updated
-$test:0<n$,
-$$test:0<n$$
+$test:0\lineq n$,
+$$test:0\gineq n$$
