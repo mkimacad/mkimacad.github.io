@@ -44,8 +44,8 @@ img:imgs/nosimple_ex2_2.png
 img:imgs/reduced_time_ex1_1.png
 img:imgs/reduced_time_ex1_2.png
 We confirm the same qualitative result for the simplified model:
-img:imgs/simple_ex1_1.png
-img:imgs/simple_ex1_2.png
+img:imgs/simple_ex1.png
+img:imgs/simple_ex2.png
 header:Large-M,Large-N,small interaction time behavior
 To be updated, this is the most important part to understand about the black hole horizon.
 header:Where the small corrections theorem and the AMPS firewall subadditivity paradox got wrong - or the imprecise meaning of "semiclassical no-drama horizon"
