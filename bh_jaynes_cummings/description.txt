@@ -15,7 +15,7 @@ See discussions in https://mkimacad.github.io/braneworld, but some of them are r
 header:Interaction setup
 Each $k$th qubit, initially in $|0\rangle$ interacts sequentially with the black hole for duration of $\Delta t_k$ ("interaction time") from $t=\sum_{j=1}^{k-1}\Delta t_j$ to $t=\sum_{j=1}^k \Delta t_j$. The Hamiltonian governing this interaction is provided by the Jaynes-Cummings model (JCM) - the black hole being an optical cavity and qubits being atoms. Then this qubit flies away, never interacting with the black hole again.
 header:Hamiltonians
-The free Hamiltonian $H_{rad}$ of each qubit is given as:
+The free Hamiltonian $H_{rad}$ of each qubit is given as, with qubit states satisfying $\langle 0|1\rangle =0$:
 $$H_{rad} = \omega_a \sigma_{+}\sigma_{-} = \omega_a |1\rangle\langle 1|$$
 This is simply about only the excited state of the qubit having non-zero energy, with $\sigma_{+}=|1\rangle\langle 0|$ and $\sigma_{-}=|0\rangle\langle 1|$.
 The free Hamiltonian $H_{BH}$ of the black hole is given as:
