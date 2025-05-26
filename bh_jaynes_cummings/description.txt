@@ -4,13 +4,36 @@ M (number of atoms), N (number of photons), reduc (multiplicative factor by whic
 The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
 header:History (date-wise)
 To be updated
-header:Some trivial matters (1): Initial "cavity"/black hole state choice, some terminology equivalence
+header:Some trivial matters (1): Initial "cavity"/black hole state choice
 In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
-Black hole=(Optical) Cavity, (Hawking) radiations=Atom qubits
+header:Some terms used interchangably
+Black hole=(Optical) Cavity, (Hawking) radiations=Atom qubits=qubits.
 header:Some trivial matters (2): On "time" in this modified Jaynes-Cummings (JCM) model
 Since this is a toy qudit model, time is modelled as the number of qubits that interacted with the black hole. This can be re-scaled to fit the Page curve and so the slope of the entropy curve should not be of concern here. It can also be noted that initial entropy increase can be slowed down (such that increases are almost constant across initially interacting qubits) by tuning down the interaction time of each qubit, which is available in the baseline code by reduc parameter.
 header:Do we need to replicate the Page curve, given holography of information?
 See discussions in https://mkimacad.github.io/braneworld, but some of them are replicated here. In short, confirmation by our familiar local non-gravitational horizon observables is important. Holography of information can be or is correct, but there may still be pathologies around black hole horizons that require understanding. We cannot simply invoke unitarity of quantum physics or AdS/CFT to resolve the information problem, and this is essentially the same thing.
+header:Interaction setup
+Each $k$th qubit, initially in $|0\rangle$ interacts sequentially with the black hole for duration of $\Delta t_k$ ("interaction time") from $t=\sum_{j=1}^{k-1}\Delta t_j$ to $t=\sum_{j=1}^k \Delta t_j$. The Hamiltonian governing this interaction is provided by the Jaynes-Cummings model (JCM) - the black hole being an optical cavity and qubits being atoms. Then this qubit flies away, never interacting with the black hole again.
+header:Hamiltonians
+To be updated
+header:Variable interaction time case
+The final outgoing state of the $k$th qubit is determined with unitary $U_k$: 
+$$U_k|0,n\rangle = \cos(g\sqrt{n}\Delta t_k)|0,n\rangle -i\sin(g\sqrt{n}\Delta t_k)|1,n-1\rangle$$
+where $|q_1,q_2\rangle$ refers to $q_1 \in \{0,1\}$ ($k$th qubit), $q_2 \in \{0,1,..,N\}$ (black hole).
+For variable interaction time $\Delta t_k$, we choose
+$$\Delta t_k = \frac{1}{4g\sqrt{\langle n_k \rangle}}$$
+where $\langle n_k\rangle$ is average excitation numbers in the black hole (or optical cavity, in JCM terms). This matches the semiclassical requirement of the small corrections theorem that must reproduce up to phase, for $\langle n_k\rangle \in \mathbb{N}$,
+$$U_k|0,\langle n_k\rangle\rangle \approx \frac{1}{\sqrt 2}\left(|0,\langle n_k\rangle\rangle + |1,\langle n_k\rangle-1\rangle\right)$$
+header:Fixed interaction time case
+We can instead fix interaction time as constant $\Delta t_k = \Delta t$ ($U_k=U$) such that:
+$$\Delta t_k = \frac{1}{4g\sqrt{N}}$$
+reproducing only for $n=N$ up to phase,
+$$U|0,N\rangle \approx \frac{1}{\sqrt 2}\left(|0,N\rangle+|1,N-1\rangle\right)$$
+header:Simplified model
+We can modify interaction unitary $U_k=U$ (fixed interaction time case) to be slightly different from the JCM case such that for $0<n$
+$$U|0,n\rangle = \frac{1}{\sqrt 2}\left(|0,n\rangle+|1,n-1\rangle\right)$$
+while for $n=0$,
+$$U|0,0\rangle = |0,0\rangle$$
 header:Large-M,Large-N,small interaction time behavior
 To be updated, this is the most important part to understand about the black hole horizon.
 header:Where the small corrections theorem and the AMPS firewall subadditivity paradox got wrong - or the imprecise meaning of "semiclassical no-drama horizon"
