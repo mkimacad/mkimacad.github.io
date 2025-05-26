@@ -245,7 +245,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="page-title">A mini-blog about random computation thoughts</h1>
+        <h1 id="page-title">Overview Comments</h1>
         <div id="content">
             <div class="loading">Loading comments...</div>
         </div>
@@ -369,7 +369,7 @@
                 if (trimmedLine.startsWith('img:')) {
                     const imageName = trimmedLine.substring(4).trim();
                     if (imageName) {
-                        const imageUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/overviews/${imageName}`;
+                        const imageUrl = `https://raw.githubusercontent.com/${repoInfo.username}/${repoInfo.repo}/main/comp_random_thoughts/${imageName}`;
                         htmlContent += `<img src="${imageUrl}" alt="${escapeHtml(imageName)}" loading="lazy">\n`;
                         htmlContent += `<div class="image-caption">${escapeHtml(imageName)}</div>\n`;
                     }
@@ -412,7 +412,7 @@
             return htmlContent || 'No content found in main.txt';
         }
 
-        // Process text for URLs and LaTeX math
+        // Process text for URLs and LaTeX math with inequality sign handling
         function processTextForLinksAndMath(text) {
             // Improved regex that handles LaTeX better
             const mathPattern = /(\$\$[\s\S]*?\$\$|\$[^$\r\n]*?\$)/g;
@@ -430,10 +430,15 @@
                     });
                 }
                 
-                // Add math expression
+                // Add math expression with inequality replacement
+                let mathContent = match[0];
+                // Replace custom inequality commands with actual symbols
+                mathContent = mathContent.replace(/\\lineq/g, '<');
+                mathContent = mathContent.replace(/\\gineq/g, '>');
+                
                 parts.push({
                     type: 'math',
-                    content: match[0]
+                    content: mathContent
                 });
                 
                 lastIndex = match.index + match[0].length;
@@ -459,7 +464,7 @@
             let result = '';
             for (const part of parts) {
                 if (part.type === 'math') {
-                    // Keep math as-is for MathJax
+                    // Keep math as-is for MathJax (already processed for inequalities)
                     result += part.content;
                 } else if (part.content.trim()) {
                     // Process text for HTML escaping and URLs
@@ -504,4 +509,3 @@
     </script>
 </body>
 </html>
-
