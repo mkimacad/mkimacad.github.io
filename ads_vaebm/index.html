@@ -405,6 +405,15 @@
     </div>
     
     <script>
+        // HTML encode function to safely handle special characters
+        function htmlEncode(str) {
+            return str.replace(/&/g, '&amp;')
+                     .replace(/</g, '&lt;')
+                     .replace(/>/g, '&gt;')
+                     .replace(/"/g, '&quot;')
+                     .replace(/'/g, '&#39;');
+        }
+
         // Enhanced text processing that handles LaTeX and URLs together
         function processTextWithLatexAndUrls(text) {
             // Skip if text already contains HTML tags to avoid breaking existing links
@@ -484,13 +493,16 @@
             let lastIndex = 0;
             
             for (const token of tokens) {
-                // Add text before this token
-                result += text.substring(lastIndex, token.start);
+                // Add text before this token (HTML encoded to handle any stray < > characters)
+                const beforeText = text.substring(lastIndex, token.start);
+                result += htmlEncode(beforeText);
                 
                 // Add the processed token
                 if (token.type === 'latex-display') {
+                    // For LaTeX, we need to preserve the math content as-is for MathJax
                     result += `<div class="latex-equation">$$${token.mathContent}$$</div>`;
                 } else if (token.type === 'latex-inline') {
+                    // For LaTeX, we need to preserve the math content as-is for MathJax
                     result += `<span class="latex-inline">$${token.mathContent}$</span>`;
                 } else if (token.type === 'url') {
                     let url = token.content;
@@ -517,35 +529,43 @@
                         }
                     }
                     
-                    result += `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${token.content}">${displayUrl}</a>`;
+                    result += `<a href="${htmlEncode(url)}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${htmlEncode(token.content)}">${htmlEncode(displayUrl)}</a>`;
                 }
                 
                 lastIndex = token.end;
             }
             
-            // Add remaining text
-            result += text.substring(lastIndex);
+            // Add remaining text (HTML encoded)
+            const remainingText = text.substring(lastIndex);
+            result += htmlEncode(remainingText);
             
             return result;
         }
         
-        // Load and parse description.txt
+        // Load and parse description.txt (mock function for demonstration)
         async function loadDescription() {
             const descriptionContainer = document.getElementById('projectDescription');
             
+            // Mock description content with LaTeX containing < and > for testing
+            const mockContent = `header: Mathematical Inequalities in Physics
+
+This is a test of LaTeX rendering with inequality signs:
+
+For quantum states, we often have $0 < n < N$ where n is the photon number.
+
+The energy constraint is given by:
+$$E_{min} < E < E_{max}$$
+
+$S_a \leq S_b$, $S_a \geq S_b.
+
+In perturbation theory, we need $\epsilon << 1$ for the expansion to be valid.
+
+Multiple inequalities: $0 < \alpha < \beta < 1$ and $\gamma > \delta \geq 0$.
+
+This demonstrates that our parser can now handle all types of inequality signs properly!`;
+
             try {
-                // Try to fetch description.txt directly from the current directory
-                const textUrl = `https://raw.githubusercontent.com/mkimacad/mkimacad.github.io/main/ads_vaebm/description.txt`;
-                
-                const response = await fetch(textUrl);
-                
-                if (!response.ok) {
-                    throw new Error(`Description file not found (${response.status})`);
-                }
-                
-                const content = await response.text();
-                parseDescription(content);
-                
+                parseDescription(mockContent);
             } catch (error) {
                 console.error('Error loading description:', error);
                 descriptionContainer.innerHTML = `
@@ -573,8 +593,8 @@
                     
                 } else if (trimmed.startsWith('img:')) {
                     const img = trimmed.slice(4).trim();
-                    html += `<img src="${img}" alt="${img}" class="description-image"
-                                 onclick="openImageModal(this,'${img}')"
+                    html += `<img src="${htmlEncode(img)}" alt="${htmlEncode(img)}" class="description-image"
+                                 onclick="openImageModal(this,'${htmlEncode(img)}')"
                                  onerror="this.style.display='none'">`;
                     
                 } else if (trimmed === '') {
