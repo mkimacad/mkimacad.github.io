@@ -28,5 +28,5 @@ The problem is that large-N quasi-vacuum behaviors are different for the exterio
 header:High-frequency filtering via imaginary-time deep learning
 In https://mkimacad.github.io/imaginary_time_DL (First round submission stage), I explore how the use of imaginary time in deep learning can aid high-frequency filtering. In contrast to empirical signals, we can compute samples of different functions that allow for complex domain. This leads to significant computation and filtering performance differences in deep learning.
 header:test
-$test:0\lineq n$,
-$$test:0\gineq n$$
+$testr:0\lineq n$,
+$$testr:0\gineq n$$
