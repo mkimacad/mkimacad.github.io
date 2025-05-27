@@ -7,7 +7,7 @@ Paper V1/github.io description: mostly around May 25-26, 2025, some May 27, 2025
 header:The main goal of this paper
 1) Show that semiclassical spacetime geometry can be consistent with the Page curve,
 2) the problem with the small corrections theorem + firewall paradox has to do with empty black hole quantum branches in superpositions.
-It is easy to achieve the second goal by violating the first goal. Satisfying both goals is what makes the matter difficult. The paper succeeds.
+It is easy to achieve unitarity by violating semiclassical spacetime. Satisfying both goals is what makes the matter difficult. The paper succeeds.
 (No-hair, no electricity, no angular momentum -> semiclassical geometry = semiclassical black hole mass (equivalently, energy).)
 In this Jaynes-Cummings (JCM) model, black hole=(optical) cavity=field, (Hawking) radiations=atom=qubits. $\hslash=1$ is used for convenience.
 header:On "time" in this modified Jaynes-Cummings (JCM) model
