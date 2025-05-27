@@ -26,7 +26,7 @@ Of course we should trust the boundary picture - the bulk is about quantum gravi
 header:Small corrections theorem and black hole paradoxes
 This paper highlights the bulk Hilbert space factorization issue as why the small corrections theorem breaks down. Bulk EFT entropy calculations become unreliable, and boundary calculations have different local structures, so the horizon behavior is different. The toy qudit model illustrates this in a BCFT-like setup. However, eventually we see that this is not the real problem in https://mkimacad.github.io/bh_jaynes_cummings .
 header:Planar black string model (only briefly mentioned in the paper, explored further here)
-This part was largely dropped since it was not in the first version of the paper, and the paper was anyway very close to publication at the time.
+This part was largely dropped since it was not in the first version of the paper, and the paper was anyway very close to publication at the time. It is not my model, and is in https://doi.org/10.1007/JHEP05(2022)153 (Geng 2022).
 The metric of the bulk $\mathrm{AdS}_{d+1}$ space with a black hole is given as:
 $$ds^2 = \frac{1}{u^2 \sin^2\mu}\left[-h(u) dt^2 + \frac{du^2}{h(u)} + d\vec{x}^2 + u^2 d\mu^2\right]$$
 $$h(u) = 1 - \frac{u^{d-1}}{u_h^{d-1}}$$
@@ -40,6 +40,8 @@ $$\mu(u_h \Gamma)=\pi, \hspace{1cm} \mu(u_{h}) = \theta_{HM}, \hspace{1cm} \mu'(
 and the boundary condition given for the island surface given by:
 $$u(\pi) = u_h\Gamma, \hspace{1cm} u(\theta_b) = u_b, \hspace{1cm} u'(\theta_b) = 0$$
 Between the HM surface and the island surface, we choose the surface that has minimal area as the extremal surface. The existence of the island surface depends on $\theta_b > \theta_c$ for $d>2$, where $\theta_c$ would be the critical angle due to the $-(d-2)u\,h(u)$ term.
+The picture from Geng (2022) goes as:
+img:imgs/Holography_comp.png
 header:Digression: replica wormholes (not in the paper) (1)
 See https://mkimacad.github.io/bh_jaynes_cummings for some relevant details. Euclidan graviational path integrals incorporating additional replica topolgies modify the theory but without actually changing the underlying theory. This reflects the idea that as black holes are completely emptied in some quantum "branches"/instances or worlds in some superposition, no radiation can be generated so information must be represented as if the interior and the exterior share the same information - bulk-wise Hilbert space factorization change, again. However, the interior horizon vacuum version of semiclassicality may not be ensured according to https://doi.org/10.1016/j.physletb.2024.139130 .
 It could be said that replica wormholes actually correct "quantum states", given that gravitational path integrals are done in Euclidean time, corresponding to the breakdown of bulk Hilbert space factorization. The line between theory and states can be blurry, especially given that Euclidean QFTs may be the ones that provide the actual meaning of QFTs - at least mathematically rigorously. Cast in terms of real-time QFT, we could say that Euclidean QFTs properly correct Minkowski QFTs after analytic continuation. 
