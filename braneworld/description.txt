@@ -4,15 +4,17 @@ Initial github.io paper description: May 24-25,2025
 header:Published in Fortschritte der Physik - Progress of Physics
 https://doi.org/10.1002/prop.202400194
 header:Updates coming soon..
-updates coming soon.. some additional remarks about AdS-Rindler paradoxes that could be resolved within the crossed-product construction. Some wistful thoughts about black string models. Possibly an additional memo manuscript to include. Updates to come..
-header:Question 1: is Page curve needed?
-Holography of information suggests that information on the black hole interior is actually always on the exterior, since quantum gravity observables work differently. If so, then some arguments say that the Page curve is unnecessary.
-I am on the side that demonstrating the Page curve in near-horizon terms is important, because this is where we check by our conventional non-gravitational observables that information is transferred locally and is not lost. There may be reasons why these observables cannot replicate the Page curve, but I think this is yet to be shown. So the Page curve remains a valid goal.
+updates coming soon.
+header:Is the Page curve needed?
+Holography of information suggests that information on the black hole interior is actually always on the exterior, since quantum gravity observables work differently. If so, the Page curve may be unnecessary.
+I do think that demonstrating the Page curve in near-horizon terms is important, because this is where we check by our conventional non-gravitational observables that information is transferred locally and is not lost. There may be reasons why these observables cannot replicate the Page curve, but I think this is yet to be shown. So the Page curve remains a valid goal.
 Furthermore, in holographic gravity, a quantum gravity theory is dual to a non-gravitational theory. This gives us an opportunity to check how information flows in terms of non-gravitational observables. That should afford us the Page curve if evolution is unitary. In this regard, Karch-Randall braneworld offers a nice setup to explore the non-gravitational side of the story.
 header:On some characteristics of Karch-Randall (KR) braneworld.
 KR braneworlds are nice in that they sort of mimic (though not exactly) the idea that information is encoded on the black hole horizon. In the BCFT representation, we have $D$-dimensional standard boundary interacting with $D-1$-dimensional brane, which is on the boundary of the standard boundary. So this brane acts as information emitter without having to have information escaping the black hole via some wormhole.
 header:Is KR braneworld necessary to justify the toy qudit model of the paper?
 No. This leads to https://mkimacad.github.io/bh_jaynes_cummings . But it is true that 'the horizon having all information about the black hole interior' provides the simplest explanation.
+header:Can't AdS-Rindler paradoxes nicely be resolved by the recent crossed-product construction?
+Maybe. If the construction works generally, then semiclassicality is no longer required. Potentially, the construction allows us to make precise what we mean by subregion complementarity - different subregions can encode the same information. However, we do not know whether true finite-N corrections save the construction, and it is to be seen whether it works generally. Even in such a case, the point about bulk Hilbert space factorization ambiguities remains. In fact, the construction suggests implicit observer dependence, marked by modular automorphism groups.    
 header:Black string model (only briefly mentioned in the paper, explored further here)
 To be updated. This part was dropped since it was not in the first version of the paper, and the paper was anyway very close to publication at the time. I explain it here more in depth.
 header:Digression: replica wormholes (not in the paper) (1)
