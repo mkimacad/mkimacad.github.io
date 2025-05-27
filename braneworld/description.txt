@@ -28,8 +28,8 @@ This paper highlights the bulk Hilbert space factorization issue as why the smal
 header:Planar black string model (only briefly mentioned in the paper, explored further here)
 This part was largely dropped since it was not in the first version of the paper, and the paper was anyway very close to publication at the time.
 The metric of the bulk $\mathrm{AdS}_{d+1}$ space with a black hole is given as:
-$$ds^2 &= \frac{1}{u^2 \sin^2\mu}\left[-h(u) dt^2 + \frac{du^2}{h(u)} + d\vec{x}^2 + u^2 d\mu^2\right]$$
-$$h(u) &= 1 - \frac{u^{d-1}}{u_h^{d-1}}$$
+$$ds^2 = \frac{1}{u^2 \sin^2\mu}\left[-h(u) dt^2 + \frac{du^2}{h(u)} + d\vec{x}^2 + u^2 d\mu^2\right]$$
+$$h(u) = 1 - \frac{u^{d-1}}{u_h^{d-1}}$$
 where $u > 0$, $\theta_b \leq \mu < \pi$ and $\vec{x} \in \mathbb{R}^{d-2}$, with the blackening factor $h(u)$ and anchor (end)point $\Gamma = u_a/u_h$ with $u$-coordinate $u_a=u(u_a)$. Radiation region $R$, depending on time $t$, scales over time, following the trajectory of old and new radiations over time, with the endpoint defined by $\Gamma$, assuming symmetry between the two non-brane CFT copies.
 The objective then is to find the extremal surface homologous to $R$ satisfying boundary conditions as to extremize area density function $\mathcal{A}$ (which is derived from the metric) by varying functional $u = u(\mu)$ that traces the extremal surface.
 $$\mathcal{A} = \int_{\theta_b}^{\pi} \frac{d\mu}{(u\sin\mu)^{d-1}} \sqrt{u^2 + \frac{u'(\mu)^2}{h(u)}}$$
