@@ -7,6 +7,7 @@ header:Main lessons
 1) Non-gravitational observables, conventional Hilbert space factorization should work. But no assurance for the bulk gravity side.
 Information on the black hole interior eventually needs to escape (entanglement structure is not enough), so this is a good thing.
 2) As noted in the JCM model paper (https://mkimacad.github.io/bh_jaynes_cummings ), the semiclassical horizon can actually be structurally complicated in the interior. EFT calculations that do not factor this in will be wrong. In Karch-Randall (KR) braneworld holography, we have a dual boundary EFT as well, where computations can potentially be done reliably. Assuming validity of the entanglement wedge duality, the matter is simpler. Bulk EFT is corrected according to the entanglement wedge duality. In reality, it is not really the bulk EFT that is being corrected but the bulk state of the universe that is being corrected.
+3) The entanglement wedge duality actually restores holography to spacetime that perturbs (or truncates) global AdS, for which the Terashima-Sugishita results say naive holography ill-defined.
 Stretched horizon in the JCM model paper ~ the boundary of the KR brane in this paper.
 header:Is the Page curve needed?
 Holography of information suggests that information on the black hole interior is actually always on the exterior, since quantum gravity observables work differently. If so, the Page curve may be unnecessary.
