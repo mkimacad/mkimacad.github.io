@@ -1,8 +1,13 @@
 header:History (date-wise)
 Published: February 27, 2025
-Initial github.io paper description: May 24-25,2025 
+Github.io paper description: May 24-27,2025 
 header:Published in Fortschritte der Physik - Progress of Physics
 https://doi.org/10.1002/prop.202400194
+header:Main lessons
+1) Non-gravitational observables, conventional Hilbert space factorization should work. But no assurance for the bulk gravity side.
+Information on the black hole interior eventually needs to escape (entanglement structure is not enough), so this is a good thing.
+2) As noted in the JCM model paper (https://mkimacad.github.io/bh_jaynes_cummings ), the semiclassical horizon can actually be structurally complicated in the interior. EFT calculations that do not factor this in will be wrong. In Karch-Randall (KR) braneworld holography, we have a dual boundary EFT as well, where computations can potentially be done reliably. Assuming validity of the entanglement wedge duality, the matter is simpler. Bulk EFT is corrected according to the entanglement wedge duality. In reality, it is not really the bulk EFT that is being corrected but the bulk state of the universe that is being corrected.
+Stretched horizon in the JCM model paper ~ the boundary of the KR brane in this paper.
 header:Is the Page curve needed?
 Holography of information suggests that information on the black hole interior is actually always on the exterior, since quantum gravity observables work differently. If so, the Page curve may be unnecessary.
 I do think that demonstrating the Page curve in near-horizon terms is important, because this is where we check by our conventional non-gravitational observables that information is transferred locally and is not lost. There may be reasons why these observables cannot replicate the Page curve, but I think this is yet to be shown. So the Page curve remains a valid goal.
@@ -26,7 +31,7 @@ Of course we should trust the boundary picture - the bulk is about quantum gravi
 header:Small corrections theorem and black hole paradoxes
 This paper highlights the bulk Hilbert space factorization issue as why the small corrections theorem breaks down. Bulk EFT entropy calculations become unreliable, and boundary calculations have different local structures, so the horizon behavior is different. The toy qudit model illustrates this in a BCFT-like setup. However, eventually we see that this is not the real problem in https://mkimacad.github.io/bh_jaynes_cummings .
 header:Planar black string model (only briefly mentioned in the paper, explored further here)
-This part was largely dropped since it was not in the first version of the paper, and the paper was anyway very close to publication at the time. It is not my model, and is in https://doi.org/10.1007/JHEP05(2022)153 (Geng 2022).
+This part was largely dropped since it was not in the first version of the paper, and the paper was anyway very close to publication at the time. It is not my model, and is in https://doi.org/10.1007/JHEP05(2022)153 (Geng 2022). Basically, islands recovered just from extremal surface calculations, which really are pure geometrical. So as long as the entanglement wedge duality and the extremal surface formula are valid, trust the boundary theory Hilbert space for the purpose of the Page curve. 
 The metric of the bulk $\mathrm{AdS}_{d+1}$ space with a black hole is given as:
 $$ds^2 = \frac{1}{u^2 \sin^2\mu}\left[-h(u) dt^2 + \frac{du^2}{h(u)} + d\vec{x}^2 + u^2 d\mu^2\right]$$
 $$h(u) = 1 - \frac{u^{d-1}}{u_h^{d-1}}$$
@@ -40,8 +45,10 @@ $$\mu(u_h \Gamma)=\pi, \hspace{1cm} \mu(u_{h}) = \theta_{HM}, \hspace{1cm} \mu'(
 and the boundary condition given for the island surface given by:
 $$u(\pi) = u_h\Gamma, \hspace{1cm} u(\theta_b) = u_b, \hspace{1cm} u'(\theta_b) = 0$$
 Between the HM surface and the island surface, we choose the surface that has minimal area as the extremal surface. The existence of the island surface depends on $\theta_b > \theta_c$ for $d>2$, where $\theta_c$ would be the critical angle due to the $-(d-2)u\,h(u)$ term.
-The picture from Geng (2022) goes as:
+The picture from Geng (2022) (CC-BY 4.0) goes as:
 img:imgs/Holography_comp.png
+So islands follow from the extremal surface formula, describing when bulk Hilbert space factorization breaks down, requiring bulk EFT or (equivalently) bulk state corrections/transitions.
+What about the model in the paper? 
 header:Digression: replica wormholes (not in the paper) (1)
 See https://mkimacad.github.io/bh_jaynes_cummings for some relevant details. Euclidan graviational path integrals incorporating additional replica topolgies modify the theory but without actually changing the underlying theory. This reflects the idea that as black holes are completely emptied in some quantum "branches"/instances or worlds in some superposition, no radiation can be generated so information must be represented as if the interior and the exterior share the same information - bulk-wise Hilbert space factorization change, again. However, the interior horizon vacuum version of semiclassicality may not be ensured according to https://doi.org/10.1016/j.physletb.2024.139130 .
 It could be said that replica wormholes actually correct "quantum states", given that gravitational path integrals are done in Euclidean time, corresponding to the breakdown of bulk Hilbert space factorization. The line between theory and states can be blurry, especially given that Euclidean QFTs may be the ones that provide the actual meaning of QFTs - at least mathematically rigorously. Cast in terms of real-time QFT, we could say that Euclidean QFTs properly correct Minkowski QFTs after analytic continuation. 
