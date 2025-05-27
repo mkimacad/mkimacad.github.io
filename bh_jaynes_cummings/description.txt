@@ -9,57 +9,30 @@ header:The main goal of this paper
 2) the problem with the small corrections theorem + firewall paradox has to do with empty black hole quantum branches in superpositions.
 It is easy to achieve the second goal by violating the first goal. Satisfying both goals is what makes the matter difficult. The paper succeeds.
 (No-hair, no electricity, no angular momentum -> semiclassical geometry = semiclassical black hole mass (equivalently, energy).)
-header:Some trivial matters (1): Initial "cavity"/black hole state choice
-In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
-header:Some terms used interchangably and Planck units
-Black hole=(optical) cavity=field, (Hawking) radiations=atom=qubits. $\hslash=1$ is used for convenience.
-header:Some trivial matters (2): On "time" in this modified Jaynes-Cummings (JCM) model
-Since this is a toy qudit model, time is modelled as the number of qubits that interacted with the black hole. This can be re-scaled to fit the Page curve and so the slope of the entropy curve should not be of concern here. It can also be noted that initial entropy increase can be slowed down (such that increases are almost constant across initially interacting qubits) by tuning down the interaction time of each qubit, or reducing coupling constant $g$ equivalently.
-header:Do we need to replicate the Page curve, given holography of information?
-See discussions in https://mkimacad.github.io/braneworld, but some of them are replicated here. In short, confirmation by our familiar local non-gravitational horizon observables is important. Holography of information can be or is correct, but there may still be pathologies around black hole horizons that require understanding. We cannot simply invoke unitarity of quantum physics or AdS/CFT to resolve the information problem, and this is essentially the same thing.
-header:Is black hole complementarity or a special 'boundary of a boundary' setup like Karch-Randall braneworld necessary?
-No. But they provide convenient ways of directly connecting to quantum gravity calculations. 
-header:Interaction setup
-Each $k$th qubit, initially in $|0\rangle$ interacts sequentially with the black hole for duration of $\Delta t_k$ ("interaction time") from $t=\sum_{j=1}^{k-1}\Delta t_j$ to $t=\sum_{j=1}^k \Delta t_j$. The Hamiltonian governing this interaction is provided by the Jaynes-Cummings model (JCM) - the black hole being an optical cavity and qubits being atoms. Then this qubit flies away, never interacting with the black hole again.
-header:Hamiltonians
-The free Hamiltonian $H_{rad}$ of each qubit is given as, with qubit states satisfying $\langle 0|1\rangle =0$:
-$$H_{rad} = \omega_a \sigma_{+}\sigma_{-} = \omega_a |1\rangle\langle 1|$$
-This is simply about only the excited state of the qubit having non-zero energy, with $\sigma_{+}=|1\rangle\langle 0|$ and $\sigma_{-}=|0\rangle\langle 1|$.
-The free Hamiltonian $H_{BH}$ of the black hole is given as:
+In this Jaynes-Cummings (JCM) model, black hole=(optical) cavity=field, (Hawking) radiations=atom=qubits. $\hslash=1$ is used for convenience.
+header:On "time" in this modified Jaynes-Cummings (JCM) model
+Qubits are not fundamental - they are only entropy/entanglement generators. Time can conveniently be re-scaled to fit the Page curve slopes.
+header:General storylines
+1. Non-interaction energy is conserved. Qubits are initialized with no energy to transfer to the black hole. The black hole probabilistically emits energy via JCM interaction until it reaches its ground state, thereby being purified - unitarity upheld even after complete evaporation.
+2. Meanwhile, with small interaction time, semiclassical spacetime geometry with close to zero variance (via central limit theorem + very low variance of each qubit) can be maintained - semiclassical spacetime preserved.
+3. This qudit model is almost identical to the toy qubit setup used in black hole physics.
+4. The real issue with the black hole information problem is that semiclassical spacetime is often thought to imply that the empty black hole quantum branch of superpositions can be ignored. But contributions of this branch eventually build up, despite semiclassical spacetime. Without the energy lower bound of the black hole, black hole entanglement entropy builds up continuously even in this model.
+5. Nothing wrong with EFT: complete evaporation or not, different horizon vacua. The black hole exterior sees nothing strange (horizon vacuum maintained).
+6. AMPS firewall and the small corrections theorem went astray because infalling observers do not see the interior horizon vacuum, though they sort of do for each classically measured state $|n\rangle$.
+header:JCM interaction setup
+1. The JCM interaction (between one qubit and the black hole) of the model says: if a two-energy radiation qubit is in ground state $|0\rangle$ and the black hole has enegy, then the qubit should gain energy to the excited state. If the qubit is in excited state $|1\rangle$ then the black hole should gain energy. Our initial qubit state is always in $|0\rangle$, so the black hole always loses energy until complete evaporation. Governed by $H_I$.
+2. Each $k$th qubit, initially in $|0\rangle$ interacts sequentially with the black hole for duration of $\Delta t_k$ ("interaction time"). Then the qubit flies away, never interacting with the black hole again.
+3. The initial state of the black hole at $t=0$ is $|N\rangle$, with $a^{\dagger}a|N\rangle = N|N\rangle$, $N \in \mathbb{N}$. The pre-interaction state of a qubit is $|0\rangle$ as aforementioned.
+$$H_{rad} = \omega_a |1\rangle\langle 1|$$
 $$H_{BH} = \omega_a a^{\dagger}a$$
-with commutation relations $[a,a^{\dagger}]=1$ and $[a,a]=[a^{\dagger},a^{\dagger}]=0$. This gives us $|n\rangle$ with particle number operator $\hat{n}=a^{\dagger}a$ such that $\hat{n}|n\rangle=n|n\rangle$.
-Now most importantly, the JCM interaction Hamiltonian that couples $\textbf{one}$ qubit and the black hole goes as:
-$$H_I = g(\sigma_{+}a + \sigma_{-}a^{\dagger})$$
-Since we have same $\omega_a$ in the free Hamiltonians, this JCM interaction is all about trading non-interaction energy: if the black hole loses energy $\omega_a$, then the qubit obtains $\omega_a$ and vice versa. The total number of 'particles' and non-interaction energy are conserved in the model. There is no need to vary $g$ in this paper, so $g=1$ is set. The value of $\omega_a$ is also irrelevant for rest of the discussions. 
-header:Variable interaction time case
-The final outgoing state of the $k$th qubit is determined with unitary $U_k$: 
-$$U_k|0,n\rangle = \cos(g\sqrt{n}\Delta t_k)|0,n\rangle -i\sin(g\sqrt{n}\Delta t_k)|1,n-1\rangle$$
-where $|q_1,q_2\rangle$ refers to $q_1 \in \{0,1\}$ ($k$th qubit), $q_2 \in \{0,1,..,N\}$ (black hole).
-For variable interaction time $\Delta t_k$, we choose
-$$\Delta t_k = \frac{\pi}{4g\sqrt{\langle n_k \rangle}}$$
-where $\langle n_k\rangle$ is average excitation numbers in the black hole (or optical cavity, in JCM terms). This matches the semiclassical requirement of the small corrections theorem that must reproduce up to phase, for $\langle n_k\rangle \in \mathbb{N}$,
-$$U_k|0,\langle n_k\rangle\rangle \approx \frac{1}{\sqrt 2}\left(|0,\langle n_k\rangle\rangle + |1,\langle n_k\rangle-1\rangle\right)$$
-header:Fixed interaction time case
-We can instead fix interaction time as constant $\Delta t_k = \Delta t$ ($U_k=U$) such that:
-$$\Delta t = \frac{\pi}{4g\sqrt{N}}$$
-reproducing only for $n=N$ up to phase,
-$$U|0,N\rangle \approx \frac{1}{\sqrt 2}\left(|0,N\rangle+|1,N-1\rangle\right)$$   
-header:Simplified model
-We can modify interaction unitary $U_k=U$ (fixed interaction time case) to be slightly different from the JCM case such that for $0\lineq n$,
-$$U|0,n\rangle = \frac{1}{\sqrt 2}\left(|0,n\rangle+|1,n-1\rangle\right)$$
-while for $n=0$,
-$$U|0,0\rangle = |0,0\rangle$$
-This simplified model continues to respect conservation of non-interaction energy. The model is analytically simpler and can be beneficial for those insisting on the same interaction behavior regardless of $n$. We arrive at the same conclusions qualitatively regardless of the models used. Even ignoring conservation of non-interaction energy for $|0,0\rangle$ such that qubits get superposition $(|0\rangle+|1\rangle)/\sqrt{2}$, we should get the same entropy conclusions, since there is no actual entanglement being generated.
-header:Reduced interaction time case
-Interaction time $\Delta t_k$ or coupling constant $g$ can be reduced by factor $k_r$ such that more $M$ is allowed for the given time. As $M$ becomes larger, the total energy emitted becomes more semiclassical due to the central limit theorem (CLT). The simplest model to explore this is the simplified model. $U$ now instead generates for $0\lineq n$,
-$$U|0,n\rangle = \cos(\pi/(4k_r))|0,n\rangle+\sin(\pi/(4k_r))|1,n-1\rangle$$
-while for $n=0$,
-$$U|0,0\rangle = |0,0\rangle$$
-If we can ignore the empty black hole case, variance in energy emitted per each qubit $Var[E_{k,rad}]$ goes as:
-$$Var[E_{k,rad}] = \langle (E_{k,rad})^2\rangle-(\langle E_{k,rad}\rangle)^2 = \sin^2\left(\frac{\pi}{4k_r}\right) - \sin^4\left(\frac{\pi}{4k_r}\right)$$
-CLT says that for $K$ such identical qubits, with $\sigma^2=Var[E_{k,rad}]$:
-$$K E_{k,rad}-K\langle E_{k,rad}\rangle \mathrel{\overset{d}{\longrightarrow}} \mathcal{N}\left(0,K\sigma^2\right)$$
-It can be noted that variance is lowered approximately by factor of $(1/k_r)^2$ as $k_r$ is varied, while time is reduced by $1/k_r$, achieving the goal of enlarging the number of interacting qubits within the same time duration. The point is that with large $k_r$, we see practically zero variance in energy emitted from the semiclssical prediction.
+with $[a,a^{\dagger}]=1$ and $[a,a]=[a^{\dagger},a^{\dagger}]=0$. 
+$$H_I = g(|1\rangle\langle 0|a + |0\rangle \langle 1|a^{\dagger})$$
+$g$ and $\omega_a$ are largely irrelevant in this paper.
+header:Models/cases considered
+Variable interaction time case: $\Delta t_k$ is determined by $\langle n \rangle$, the average excitation number of the black hole.
+Fixed interaction time case: $\Delta t_k$ is determined by $N$, the initial particle number of the black hole.
+Interaction time reduction: $\Delta t_k$ can be reduced by $k_r$ (reduc in the codes) to better induce semiclassicality of spacetime.
+Simplified model: Replacing JCM interaction with a more simplified interaction unitary $U$ - for all $|n\rangle$ ($n\in \mathbb{N}$) of the black hole, same entanglement behavior except for $n=0$ (no entanglement).
 header:Simulation results
 The model simulations go as follows:
 img:imgs/nosimple_ex1_1.png
@@ -71,17 +44,11 @@ img:imgs/reduced_time_ex1_2.png
 We confirm the same qualitative result for the simplified model:
 img:imgs/simple_ex1.png
 img:imgs/simple_ex2.png
-header:Why does entropy eventually decrease?
-This is due to the zero energy lower bound of the black hole. If not for it, entropy would have increased continuously. For the simplified model, the only correction is that the zero energy black hole must not produce entanglements because it is effectively no longer there. It is a big correction for $|0,0\rangle$ case, and this significantly changes the analysis. This is despite semiclassical spacetime geometry being kept due to the power of CLT.
-Furthermore, this does not have to do with not distinguishing different quantum states of each black hole $|n\rangle$ outside JCM contexts. IF this were the only factor, entropy still keeps increasing. If following the no-hair principle, we expect different states of $|n\rangle$ to be not distinguished outside the black hole anyway, though this is not a relevant point here.
-So down to complete evaporation, there is nothing wrong with effective field theory (EFT) in black hole physics. The semiclassical entanglement relation around the horizon is well-justified, but it should take into account that it does not apply for the complete evaporation quantum branch/world of the superpositions.
-header:Conclusion: exterior and interior pictures
-The exterior horizon vacuum remains perfectly fine - each qubit is initially in $|0\rangle$. The semiclassical spacetime geometry also is also stable for slow interaction time cases. All that changes is qubit entanglement behavior.
-The interior horizon quasi-vacuum (each $|n\rangle$, $n \in \mathbb{N}$) cannot be assumed for late-time evaporation - we could say this as a partial breakdown of semiclassicality and even possibly 'no drama'. However, for each $|n\rangle$ branch that one can classical measure, nothing different from EFT should be noticeable, so semiclassicality is preserved that way.
+header:Extra talks: replica wormholes (not in the paper)
 There could also be workarounds that minimize the partial breakdown of semiclassicality. Essentially, the issue is that the black hole does not exist for some quantum branches, so these branches need to be taken out to the exterior, if we are following the traditional qubit pair picture. This may be achieved by the ideas like replica wormholes - see discussions in https://mkimacad.github.io/braneworld , though note that in https://doi.org/10.1016/j.physletb.2024.139130 , Khodahami and Azizi (2024) argues that firewalls can be generated with replica wormholes. If this holds generally, the interior horizon vacuum is not really saved.
-AMPS firewall arguments assume that infalling observers see horizon vacuum on the black hole interior. This is no longer true, but only because of quantum branches with complete black hole evaporation. Infalling observers have different annhilation operators in case they are faced with non-empty or empty black holes at late times.
-For early times, it is safe to assume quasi-vacuum, as long as we are careful in invoking the toy information model. The details of the small corrections theorem are in the manuscript, and I will not go over it here. This settles where the small corrections theorem went wrong. We do not even need to invoke black hole complementarity (information is effectively encoded in the stretched horizon for exterior observers) to settle the matter, though it provides a natural interpretation. Soft hairs are also not invoked, so the no-hair semiclassical picture remains there.
-header:Historical reference: Wen's JCM model of black holes.
-Wen's JCM model is at https://doi.org/10.1016/j.physletb.2020.135348 .
-Wen uses the JCM model with a reflective cavity such that reflected photons can re-interact with the black hole atom. We notice some differences: Wen uses atoms as black holes instead of a cavity as a black hole. A black hole atom is embedded in a reflective cavity in Wen's model. This is in contrast to a typical black hole setup where Hawking radiations are outgoing radiations that can be seen at radial future infinity. Therefore, despite sharing JCM, there are different realities involved.
-Wen's model replicates the Parikh-Wilczek (PW) non-thermal spectrum and provides its quantum toy model description, as well as somewhat periodic entanglement entropy curve, with entropy decreases understood to provide a potential mechanism of information transfer. However, the setup of the model limits it from replicating the full restoration of unitarity and complete evaporation, and entropy tends to bounce up and down instead. 
+header:Some trivial matters: Initial "cavity"/black hole state choice
+In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
+header:Do we need to replicate the Page curve, given holography of information?
+See discussions in https://mkimacad.github.io/braneworld , but some of them are replicated here. In short, confirmation by our familiar local non-gravitational horizon observables is important. Holography of information can be or is correct, but there may still be pathologies around black hole horizons that require understanding. We cannot simply invoke unitarity of quantum physics or AdS/CFT to resolve the information problem, and this is essentially the same thing.
+header:Is black hole complementarity or a special 'boundary of a boundary' setup like Karch-Randall braneworld necessary?
+No. But they provide convenient ways of directly connecting to quantum gravity calculations.
