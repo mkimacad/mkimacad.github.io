@@ -7,7 +7,8 @@ Paper V1/github.io description: May 25-26, 2025
 header:The main goal of this paper
 1) Show that semiclassical spacetime geometry can be consistent with the Page curve,
 2) the problem with the small corrections theorem + firewall paradox has to do with empty black hole quantum branches in superpositions.
-It is easy to achieve the second goal by violating the first goal. Satisfying both goals is what makes the matter difficult. The paper succeeds. 
+It is easy to achieve the second goal by violating the first goal. Satisfying both goals is what makes the matter difficult. The paper succeeds.
+(No-hair, no electricity, no angular momentum -> semiclassical geometry = semiclassical black hole mass (equivalently, energy).)
 header:Some trivial matters (1): Initial "cavity"/black hole state choice
 In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
 header:Some terms used interchangably and Planck units
