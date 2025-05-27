@@ -140,9 +140,6 @@
     <text x="0" y="0" font-family="Arial" font-size="14" text-anchor="middle" dominant-baseline="middle" font-weight="bold">A₅</text>
   </g>
   
-  <!-- Shared label for escaping atoms -->
-  <text x="620" y="190" font-family="Arial" font-size="12" text-anchor="middle" fill="#343a40">P(|0⟩)=1/2, P(|1⟩)=1/2</text>
-  
   <!-- Atoms remaining near cavity -->
   <!-- Atom 6 -->
   <g transform="translate(430, 150)">
