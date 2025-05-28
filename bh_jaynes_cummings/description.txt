@@ -44,6 +44,8 @@ img:imgs/reduced_time_ex1_2.png
 We confirm the same qualitative result for the simplified model:
 img:imgs/simple_ex1.png
 img:imgs/simple_ex2.png
+header:Is this a consequence of no hair?
+Yes. If we had degenerate (ie. multiple) ground states, then entanglement entropy could be much larger at late times. So apparently, no hair actually helps us to solve the information problem. (Analyzing the case of degenerate ground states is also a wonderful future topic.)
 header:Extra talks: replica wormholes (not in the paper)
 There could also be workarounds that minimize the partial breakdown of semiclassicality. Essentially, the issue is that the black hole does not exist for some quantum branches, so these branches need to be taken out to the exterior, if we are following the traditional qubit pair picture. This may be achieved by the ideas like replica wormholes - see discussions in https://mkimacad.github.io/braneworld , though note that in https://doi.org/10.1016/j.physletb.2024.139130 , Khodahami and Azizi (2024) argues that firewalls can be generated with replica wormholes. If this holds generally, the interior horizon vacuum is not really saved.
 header:Some trivial matters: Initial "cavity"/black hole state choice
