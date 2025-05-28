@@ -38,6 +38,8 @@ There is nothing wrong with effective field theory (EFT), when restricted to non
 header:High-frequency filtering via imaginary-time deep learning
 $$\textbf{Two DL time axes for signal processing of mathematical interests}$$
 In https://mkimacad.github.io/imaginary_time_DL (First round submission stage), I explore how the use of imaginary time in deep learning can aid high-frequency filtering. In contrast to empirical signals, we can compute samples of different functions that allow for complex domain. This leads to significant computation and filtering performance differences in deep learning.
+header:A set of credo/creed (Continuously updating)
+I believe that we are already close to resolving the black hole information problem.
 header:orcid info and others
 http://orcid.org/0000-0003-2115-081X
 IOP Trusted reviewer / Outstanding Reviewer Award 2024.
