@@ -40,7 +40,8 @@ $$\textbf{Two DL time axes for signal processing of mathematical interests}$$
 In https://mkimacad.github.io/imaginary_time_DL (First round submission stage), I explore how the use of imaginary time in deep learning can aid high-frequency filtering. In contrast to empirical signals, we can compute samples of different functions that allow for complex domain. This leads to significant computation and filtering performance differences in deep learning.
 header:A set of credo/creed (very unserious, continuously updating)
 I believe that we are already close to resolving the black hole information problem. (at least that's a good belief to have.)
-I believe that JCM models reveal much about our universe. (no, but to some degree.)
+I believe that qudit models (including JCM) reveal much about our universe. (no, but to some degree.)
+I believe that holography is actually there in the universe, even though its role in resolving the information problem may have been overrated.
 header:orcid info and others
 http://orcid.org/0000-0003-2115-081X
 IOP Trusted reviewer / Outstanding Reviewer Award 2024.
