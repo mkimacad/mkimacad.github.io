@@ -52,3 +52,5 @@ header:Do we need to replicate the Page curve, given holography of information?
 See discussions in https://mkimacad.github.io/braneworld , but some of them are replicated here. In short, confirmation by our familiar local non-gravitational horizon observables is important. Holography of information can be or is correct, but there may still be pathologies around black hole horizons that require understanding. We cannot simply invoke unitarity of quantum physics or AdS/CFT to resolve the information problem, and this is essentially the same thing.
 header:Is black hole complementarity or a special 'boundary of a boundary' setup like Karch-Randall braneworld necessary?
 No. But they provide convenient ways of directly connecting to quantum gravity calculations.
+header:Digression:On necessity of quantum gravity and on classicality
+To be updated.
