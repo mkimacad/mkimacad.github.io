@@ -42,7 +42,8 @@ header:A set of credo/creed (very unserious, continuously updating)
 I believe that we are already close to resolving the black hole information problem. (at least that's a good belief to have.)
 I believe that qudit models (including JCM) reveal much about our universe. (no, but to some degree.)
 I believe that holography is actually there in the universe, even though its role in resolving the information problem may have been overrated.
-I believe that the logics behind quantization procedures need to be understood, in particular with respect to effective field theories.  
+I believe that the logics behind quantization procedures need to be understood, in particular with respect to effective field theories.
+I believe that the logics of equilibrium convergence need to be properly understood, regardless of areas and fields.  
 header:orcid info and others
 http://orcid.org/0000-0003-2115-081X
 IOP Trusted reviewer / Outstanding Reviewer Award 2024.
