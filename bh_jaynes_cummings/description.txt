@@ -66,4 +66,4 @@ The JCM model of this paper could be thought of as a thought experiment in the n
 (Also quantization issues, if we do not properly correct states. Complications after complications. It does not seem like these complications are just for black hole setups.)
 (And the JCM model of this paper also makes us the very condition of classicality within large-n classicality, but I will stop here for now.)
 header: Addendum
-Currently working toward V2.B that incorporates parts of the braneworld paper as well that is to be uploaed to arXiv. 
+Currently working toward V2.B that incorporates parts of the braneworld paper as well that is to be uploaded to arXiv. 
