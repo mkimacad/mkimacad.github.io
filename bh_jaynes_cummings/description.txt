@@ -3,7 +3,7 @@ Main parameters at the end (currently line 368 # parameters):
 M (number of radiation qubits), N (number of particles in the black hole), reduc (multiplicative factor by which interaction time is reduced).
 The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
 header:History (date-wise)
-Paper V1/github.io description: mostly around May 25-26, 2025, some May 27, 2025.
+Paper V1/github.io description: mostly around May 25-26, 2025, the description further edited arouond May 27-31, 2025
 header:The main goal of this paper
 1) Show that semiclassical spacetime geometry can be consistent with the Page curve,
 2) the problem with the small corrections theorem + firewall paradox has to do with empty black hole quantum branches in superpositions.
