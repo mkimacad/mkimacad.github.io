@@ -44,6 +44,16 @@ img:imgs/reduced_time_ex1_2.png
 We confirm the same qualitative result for the simplified model:
 img:imgs/simple_ex1.png
 img:imgs/simple_ex2.png
+header:On necessity of quantum gravity (possibly in v2 of the paper, or a separate paper)
+The JCM model of this paper could be thought of as a thought experiment in the necessity of quantum gravity. Suppose gravity is fundamentally semiclassical or even classical. Then even for the empty black hole branch of a quantum superposition, an EFT on fixed curved spacetime (of some unknown gravity theory) will continue to work, and we have continuous entropy increases and energy outflow even fom the empty black hole branch. This can only realistically be defensible in terms of the largely deprecated version of black hole complementarity - that exterior observers never see this violation of energy conservation. It makes most sense to say that gravity needs to be quantized.
+This conclusion depends on:
+1) validity of examining individual outcomes in a quantum superposition state of some full gravity theory (not necessarily quantum gravity here, since we are dealing with the question of whether gravity needs to be quantized),
+2) whether something like remnants will not form at the end of evaporation,
+3) EFT on curved spacetime remains approximately valid for the given curved spacetime.
+If all are valid, then 'the empty black hole branch on some non-empty black hole spacetime' leads to energy non-conservation.
+If 1) is invalid, then 'the empty black hole branch' cannot be discussed.
+If 2) is invalid, then there is no truly empty black hole branch.
+If 3) is invalid (for example, fuzzballs), then there is no point in this paper anyway.  
 header:Is this a consequence of no hair? (possibly in v2 of the paper)
 Yes. If we had degenerate (ie. multiple) ground states, then entanglement entropy could be much larger at late times. So apparently, no hair actually helps us to solve the information problem. (Analyzing the case of degenerate ground states is also a wonderful future topic.)
 header:On applications of CLT and large-m, small-n (possibly in v2 of the paper)
@@ -67,8 +77,7 @@ header:Do we need to replicate the Page curve, given holography of information?
 See discussions in https://mkimacad.github.io/braneworld , but some of them are replicated here. In short, confirmation by our familiar local non-gravitational horizon observables is important. Holography of information can be or is correct, but there may still be pathologies around black hole horizons that require understanding. We cannot simply invoke unitarity of quantum physics or AdS/CFT to resolve the information problem, and this is essentially the same thing.
 header:Is black hole complementarity or a special 'boundary of a boundary' setup like Karch-Randall braneworld necessary?
 No. But they provide convenient ways of directly connecting to quantum gravity calculations.
-header:Digression: On necessity of quantum gravity and maybe others
-The JCM model of this paper could be thought of as a thought experiment in the necessity of quantum gravity. Suppose gravity is fundamentally semiclassical or even classical. Then even for the empty black hole branch of a quantum superposition, an EFT on fixed curved spacetime (of some unknown gravity theory) will continue to work, and we have continuous entropy increases and energy outflow even fom the empty black hole branch. This can only be defensible in terms of the largely deprecated version of black hole complementarity - that exterior observers never see this violation of energy conservation. It makes most sense to say that gravity needs to be quantized.
+header:Digression: "remnants" of incomplete fragments that may become relevant
 (Also quantization issues, if we do not properly correct states. Complications after complications. It does not seem like these complications are just for black hole setups.)
 (And the JCM model of this paper also makes us the very condition of classicality within large-n classicality, but I will stop here for now.)
 header: Addendum
