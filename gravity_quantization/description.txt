@@ -1,0 +1,33 @@
+header:I do believe in quantum gravity, but a general issue with attempts to demonstrate the necessity of quantum gravity
+In general, attempts to demonstrate the necessity of gravity quantization resort to quantum measurement results.
+If we accept the standard postulates of quantum mechanics on measurements - linearity and Born rule, then these results largely follow.
+Some "people" take the Born rule only as an approximation to the underlying reality, and even the stochastic nature ("measurement problem"). 
+header:Feynman-Bohr-Rosenfeld argument for quantization of gravity
+Use a quantum particle in superposition (double-slit fashion) to measure some classical field ("electromagnetic field" or "gravitational field"). 
+To be updated
+header:Eppley-Hannah argument for quantization of gravity
+To be updated
+header:Kent's counter-argument against Eppley-Hannah
+To be updated
+header:Peres-Terno argument
+To be updated
+header:Page-Geilker argument
+To be updated
+header:Rydving-Aurell-Pikovsky counter-arguments against general thought experiments for quantization of gravity
+Relevant paper: https://doi.org/10.1103/PhysRevD.104.086024
+To be updated
+header:Großardt argument against Page-Geilker and general thought experiments for quantization of gravity
+Relevant paper: https://doi.org/10.1116/5.0073509
+To be updated
+header:Oppenheim's attempt to evade
+To be updated
+header:Hugget-Callender review
+To be updated
+header:Mattingly review
+To be updated
+header:Wüthrich review
+Relevant paper: https://doi.org/10.1086/508946
+To be updated
+header:Tilloy's non-relativistic toy model counter-argument
+Relevant paper: https://doi.org/10.1088/1742-6596/1275/1/012006
+To be updated
