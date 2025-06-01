@@ -1,3 +1,5 @@
+header:History (date-wise)
+Forked from https://mkimacad.github.io/bh_jaynes_cummings: May 31-June 1, 2025
 header:I do believe in quantum gravity, but a general issue with attempts to demonstrate the necessity of quantum gravity
 In general, attempts to demonstrate the necessity of gravity quantization resort to quantum measurement results.
 If we accept the standard postulates of quantum mechanics on measurements - linearity and Born rule, then these results largely follow.
@@ -22,6 +24,7 @@ If 4) is invalid, then the consequence may be mild, but we do not understand rem
 header:Different meaning as to semiclassical gravity
 In mainstream black hole physics, gravity is not fundamentally semiclassical. Nevertheless, for the purpose of evaporation, semiclassical EFT is understood to provide reasonable estimates, upon which small corrections are added to restore unitarity of the black hole exterior. 
 header:Feynman-Bohr-Rosenfeld argument for quantization of gravity
+Best to view review papers mentioned below.
 Use a quantum particle in superposition (double-slit fashion) to measure some classical field ("electromagnetic field" or "gravitational field"). 
 To be updated
 header:Eppley-Hannah argument for quantization of gravity
@@ -61,5 +64,7 @@ See https://mkimacad.github.io/bh_jaynes_cummings . The same argument. If we rep
 $$U|0,0\rangle = \frac{1}{\sqrt 2}(|0,0\rangle + |1,-1\rangle)$$
 as part of general $U$ for all $n \in \mathbb{Z}$
 $$U|0,n\rangle = \frac{1}{\sqrt 2}(|0,n\rangle + |1,n-1\rangle)$$
-until a black hole "semiclassically" evaporates completely, then the black hole entanglement entropy monotonically increases over time - a much more naive version of the usual black hole information problem.
-Late-time violations of Bekenstein-Hawking, no measurement involved. Does not invoke conservation of energy.
+until a black hole "semiclassically" evaporates completely, then the black hole entanglement entropy monotonically increases over time: late-time violations of Bekenstein-Hawking - a version of the usual black hole information problem as a consequence of fundamentally semiclassical gravity.
+No measurement involved. Does not invoke conservation of energy.
+header:Addendum
+See Crowther's excellent review as well, https://arxiv.org/abs/2505.04858 .
