@@ -29,8 +29,9 @@ To be updated
 header:Großardt argument against Page-Geilker and general thought experiments for quantization of gravity
 Relevant paper: https://doi.org/10.1116/5.0073509
 To be updated
-header:Oppenheim's attempt to evade
-To be updated
+header:Oppenheim's attempt to evade: postquantum gravity theory
+Relevant paper: https://doi.org/10.1103/PhysRevX.13.041040
+Noting this paper, since it gets mentioned a lot recently. Let me just agree to disagree and move on, maybe. But possibly covering it as well.  
 header:Hugget-Callender review
 Relevant paper: https://doi.org/10.1086/392923
 To be updated
@@ -40,6 +41,16 @@ To be updated
 header:Wüthrich review
 Relevant paper: https://doi.org/10.1086/508946
 To be updated
+header:Carlip review on Schroindger-Newton
+Relevant paper: https://doi.org/10.1088/0264-9381/25/15/154010
+To be updated
 header:Tilloy's non-relativistic toy model counter-argument
 Relevant paper: https://doi.org/10.1088/1742-6596/1275/1/012006
 To be updated
+header:My argument
+See https://mkimacad.github.io/bh_jaynes_cummings . The same argument. If we replace the $U$ in the simplified model such that:
+$$U|0,0\rangle = \frac{1}{\sqrt 2}(|0,0\rangle + |1,-1\rangle)$$
+as part of general $U$ for all $n \in \mathbb{Z}$
+$$U|0,n\rangle = \frac{1}{\sqrt 2}(|0,n\rangle + |1,n-1\rangle)$$
+until a black hole "semiclassically" evaporates completely, then the black hole entanglement entropy monotonically increases over time - a much more naive version of the usual black hole information problem.
+Late-time violations of Bekenstein-Hawking, no measurement involved. Does not invoke conservation of energy.
