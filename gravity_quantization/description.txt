@@ -7,10 +7,18 @@ header:Main goal
 A thought experiment for quantization of gravity without reliance on measurements.
 Instead rely on (non-)unitarity and entanglement of the black hole exterior.
 At the end of evaporation, if we have significant entanglement entropy (even to the point of monotonic increase) on a black hole assuming semiclassical gravity, then we have a problem, unless we believe in remnants or entangled world.
-Bekenstein-Hawking - entropy upper bound on a black hole (up to very small corrections). Small black hole, smaller entanglement entropy upper bound.
-Note that unlike in https://mkimacad.github.io/bh_jaynes_cummings, ensuring approximate semiclassicality is not a requirement here. 
+Note that the lesson in https://mkimacad.github.io/bh_jaynes_cummings is: even though this thought experiment for quantization of gravity holds, approximate semiclassicality nevertheless continues to hold.
 header:Assumptions required
-To be updated
+The conclusion of the thought experiment - that gravity needs to be quantized - depends on:
+1) The validity of Bekenstein-Hawking entropy up to very small corrections in providing the entropy upper bound to a black hole. Smaller black hole, smaller upper bound to its entanglement entropy. This means that at the end of evaporation, unitarity solely on the black hole exterior has to be restored.
+2) The largely deprecated version of black hole complementarity - that exterior observers never actually observe violations of unitarity and energy conservation despite existence of actual violations - is not there.
+3) The assumption of linearity, at least within black hole physics EFT. Within a quantum superposition, a local outcome state within the superposition can be considered. If spacetime is assumed the same across all local outcomes ("same gravitational field"), then each local outcome state can be examined independently of other outcomes with the same semiclassical EFT on the fixed background spacetime and then added back linearly as a superposition. 
+4) Something like remnants or observable singularities do not form at the end of evaporation,
+If all are valid, then 'the empty black hole branch on some non-empty black hole spacetime' leads to the eventual energy non-conservation. When measured as in the conventional postulates of quantum mechanics, this is a serious trouble. However, even without measurements we see that it is inconsistent with Bekenstein-Hawking.
+If 1) is invalid, then unitarity of the black hole exterior may not be there. Intuitively, an empty black hole entangled with the exterior seems troubling, especially given that no reasonable physics descriptions exist for describing an empty black hole. This often leads to the idea of remnants or some singularities proposals. 
+If 2) is invalid, then the goal is to find why observers cannot detect contradictions. This moves us back to the times around 2013, when people were scrambling to save observation-dependent black hole complementarity, especially using quantum information and computation theories.
+If 3) is invalid, then a lot of soul searching would be needed. We do not know what this even means. From the small corrections theorem, we know that small corrections to EFT alone will not save the day. So unless violations from linearity are severe and observable, Bekenstein-Hawking would need to break down.
+If 4) is invalid, then the consequence may be mild, but we do not understand remnants and singularities well.
 header:Different meaning as to semiclassical gravity
 In mainstream black hole physics, gravity is not fundamentally semiclassical. Nevertheless, for the purpose of evaporation, semiclassical EFT is understood to provide reasonable estimates, upon which small corrections are added to restore unitarity of the black hole exterior. 
 header:Feynman-Bohr-Rosenfeld argument for quantization of gravity
