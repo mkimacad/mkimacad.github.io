@@ -8,6 +8,7 @@ A thought experiment for quantization of gravity without reliance on measurement
 Instead rely on (non-)unitarity and entanglement of the black hole exterior.
 At the end of evaporation, if we have significant entanglement entropy (even to the point of monotonic increase) on a black hole assuming semiclassical gravity, then we have a problem, unless we believe in remnants or entangled world.
 Bekenstein-Hawking - entropy upper bound on a black hole (up to very small corrections). Small black hole, smaller entanglement entropy upper bound.
+Note that unlike in https://mkimacad.github.io/bh_jaynes_cummings, ensuring approximate semiclassicality is not a requirement here. 
 header:Assumptions required
 To be updated
 header:Different meaning as to semiclassical gravity
