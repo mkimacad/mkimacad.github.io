@@ -65,6 +65,7 @@ $$U|0,0\rangle = \frac{1}{\sqrt 2}(|0,0\rangle + |1,-1\rangle)$$
 as part of general $U$ for all $n \in \mathbb{Z}$
 $$U|0,n\rangle = \frac{1}{\sqrt 2}(|0,n\rangle + |1,n-1\rangle)$$
 until a black hole "semiclassically" evaporates completely, then the black hole entanglement entropy monotonically increases over time: late-time violations of Bekenstein-Hawking - a version of the usual black hole information problem as a consequence of fundamentally semiclassical gravity.
+This invokes the idea that the black hole horizon vacuum (temperature increases as black holes become smaller) is significantlly different from the flat-space horizon vacuum according to EFT itself.
 No measurement involved. Does not invoke conservation of energy.
 header:Addendum
 See Crowther's excellent review as well, https://arxiv.org/abs/2505.04858 .
