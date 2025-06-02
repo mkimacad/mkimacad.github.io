@@ -32,13 +32,11 @@ Use a quantum particle in superposition (double-slit fashion, charged or massive
 Kent (2018) (http://arxiv.org/abs/1807.08708 ) argues the third scenario does not always hold. Suppose the following initial quantum state for $L,R$ (with distance $d$):
 $$\frac{1}{\sqrt 2}(|0_L,0_R\rangle+|1_L,1_R\rangle)$$
 Now $L$ is measured at $t=T$, and suppose we have $|0_L\rangle$. While Hannah-Eppley assumes that the state of $R$ immediately changes to $|0_R\rangle$ or gravitational field responds to the change in $L$ immdediately, this may not be the case depending on the form of a hybrid theory. In particular, it is perfectly reasonable to assume a theory where the state of $R$ remains in mixed state $\frac{1}{2}(|0_R\rangle\langle 0_R|+|1_R\rangle\langle 1_R|)$ from $t=T$ to $t=T+d/c$. At $t=T+d/c$, a signal with speed of light can reach $R$ from $L$ that reflects the change in $L$ and $R$ changes to state $|0_R\rangle$. Therefore, the Eppley-Hannah argument loses its power in case classical gravitational waves do not collapse quantum states.
-header:Page-Geilker argument and Großardt counter-argument (briefly discussed)
+header:Page-Geilker argument (briefly discussed)
 Paper: https://doi.org/10.1103/PhysRevLett.47.979 (only the publisher paywall version available)
-A thought experiment that attempts to rule out the Møller-Rosenfeld semiclassical gravity. Does not rule out other forms of semiclassical gravity. But even for the Møller-Rosenfeld semiclassical gravity based on stress-energy tensor expectation, in case an additional collapse mechanism is given, then the Møller-Rosenfeld semiclassical gravity is not completely ruled out.
-Then comes the Großardt counter-argument (http://arxiv.org/abs/2201.10452 ). 
-To be updated
-header:Rydving-Aurell-Pikovsky counter-arguments against general thought experiments for quantization of gravity
-Paper: https://doi.org/10.1103/PhysRevD.104.086024
+A thought experiment that attempts to rule out the Møller-Rosenfeld semiclassical gravity. Does not rule out other forms of semiclassical gravity. But even for the Møller-Rosenfeld semiclassical gravity based on stress-energy tensor expectation, in case an additional collapse mechanism is given, then the Møller-Rosenfeld semiclassical gravity is not completely ruled out - see the Großardt counter-argument in http://arxiv.org/abs/2201.10452 .
+header:Rydving-Aurell-Pikovsky counter-arguments
+Paper: http://arxiv.org/pdf/2107.07514
 To be updated
 header:Peres-Terno (2001) example
 Paper: https://arxiv.org/abs/quant-ph/0008068 
