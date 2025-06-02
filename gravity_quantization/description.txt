@@ -26,7 +26,7 @@ In mainstream black hole physics, gravity is not fundamentally semiclassical. Ne
 Within the literature that discusses the (non-)necessity of gravity quantization, what we mean by semiclassical gravity can differ as well. As discussed in Tilloy's quasi-review paper (see below), we have the conventional Møller-Rosenfeld semiclassical gravity, where the stress-energy tensor of the Einstein field equations comes from the expectation value of the quantum stress-energy tensor operator, but there are other approaches as well. 
 header:Feynman-Bohr-Rosenfeld argument for quantization of gravity
 Use a quantum particle in superposition (double-slit fashion, charged or massive particles). Measure some classical field ("electromagnetic field" or "gravitational field") to reveal which path it went through. This collapses the superposition without measuring the quantum system, implying non-unitary (or non-linear) evolution of the quantum system.
-However, gravity is different from electromagnetism, and the Feynman argument is considered extremely appealing but not forceful enough to argue for quantization of gravity today. To be updated.
+However, gravity is different from electromagnetism, and the Feynman argument is considered extremely appealing but not forceful enough to argue for quantization of gravity today. Classical gravity is different from other theories, and general relativity largely pictures it as geometry rather than some force, along with it being somewhat non-linear. This geometric nature allows for loophole attempts.  
 header:Eppley-Hannah argument for quantization of gravity
 To be updated
 header:Kent's counter-argument against Eppley-Hannah
