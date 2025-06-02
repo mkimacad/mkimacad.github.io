@@ -22,7 +22,7 @@ If 2) is invalid, then the goal is to find why observers cannot detect contradic
 If 3) is invalid, then a lot of soul searching would be needed. We do not know what this even means. From the small corrections theorem, we know that small corrections to EFT alone will not save the day. So unless violations from linearity are severe and observable, Bekenstein-Hawking would need to break down.
 If 4) is invalid, then the consequence may be mild, but we do not understand remnants and singularities well.
 header:Different meaning as to semiclassical gravity
-In mainstream black hole physics, gravity is not fundamentally semiclassical. Nevertheless, for the purpose of evaporation, semiclassical EFT is understood to provide reasonable estimates, upon which small corrections are added to restore unitarity of the black hole exterior. This has been challenged around year 2009-2012, and the current mainstream responses largely evolve around holography of information and replica wormholes, which have all been somewhat controversial.
+In mainstream black hole physics, gravity is not fundamentally semiclassical in any form. Nevertheless, for the purpose of evaporation, semiclassical EFT (with semiclassicality referring to Møller-Rosenfeld, where gravity responds to expected stress-energy tensor) is understood to provide reasonable estimates, upon which small corrections are added to restore unitarity of the black hole exterior. This has been challenged around year 2009-2012, and the current mainstream responses largely evolve around holography of information and replica wormholes, which have all been somewhat controversial.
 Within the literature that discusses the (non-)necessity of gravity quantization, what we mean by semiclassical gravity can differ as well. As discussed in Tilloy's quasi-review paper (see below), we have the conventional Møller-Rosenfeld semiclassical gravity, where the stress-energy tensor of the Einstein field equations comes from the expectation value of the quantum stress-energy tensor operator, but there are other approaches as well. 
 header:Feynman-Bohr-Rosenfeld (FBR) and Eppley-Hannah arguments for quantization of gravity and Kent's counter-argument
 Use a quantum particle in superposition (double-slit fashion, charged or massive particles). Measure some classical field ("electromagnetic field" or "gravitational field") to reveal which path it went through. According to FBR, this collapses the superposition without measuring the quantum system, implying non-unitary (or non-linear) evolution of the quantum system. Or, as Eppley-Hannah further elaborates, we have three scenarios, starting with the initial quantum system in momentum eigenstate $|p\rangle$, with potential position detection going through small-momentum small-wavelength classical graviational waves:
@@ -32,16 +32,16 @@ Use a quantum particle in superposition (double-slit fashion, charged or massive
 Kent (2018) (http://arxiv.org/abs/1807.08708 ) argues the third scenario does not always hold. Suppose the following initial quantum state for $L,R$ (with distance $d$):
 $$\frac{1}{\sqrt 2}(|0_L,0_R\rangle+|1_L,1_R\rangle)$$
 Now $L$ is measured at $t=T$, and suppose we have $|0_L\rangle$. While Hannah-Eppley assumes that the state of $R$ immediately changes to $|0_R\rangle$ or gravitational field responds to the change in $L$ immdediately, this may not be the case depending on the form of a hybrid theory. In particular, it is perfectly reasonable to assume a theory where the state of $R$ remains in mixed state $\frac{1}{2}(|0_R\rangle\langle 0_R|+|1_R\rangle\langle 1_R|)$ from $t=T$ to $t=T+d/c$. At $t=T+d/c$, a signal with speed of light can reach $R$ from $L$ that reflects the change in $L$ and $R$ changes to state $|0_R\rangle$. Therefore, the Eppley-Hannah argument loses its power in case classical gravitational waves do not collapse quantum states.
-header:Page-Geilker argument
+header:Page-Geilker argument and Großardt counter-argument (briefly discussed)
+Paper: https://doi.org/10.1103/PhysRevLett.47.979 (only the publisher paywall version available)
+A thought experiment that attempts to rule out the Møller-Rosenfeld semiclassical gravity. Does not rule out other forms of semiclassical gravity. But even for the Møller-Rosenfeld semiclassical gravity based on stress-energy tensor expectation, in case an additional collapse mechanism is given, then the Møller-Rosenfeld semiclassical gravity is not completely ruled out.
+Then comes the Großardt counter-argument (http://arxiv.org/abs/2201.10452 ). 
 To be updated
 header:Rydving-Aurell-Pikovsky counter-arguments against general thought experiments for quantization of gravity
-Relevant paper: https://doi.org/10.1103/PhysRevD.104.086024
-To be updated
-header:Großardt argument against Page-Geilker and general thought experiments for quantization of gravity
-Relevant paper: https://doi.org/10.1116/5.0073509
+Paper: https://doi.org/10.1103/PhysRevD.104.086024
 To be updated
 header:Peres-Terno (2001) example
-Relevant paper: https://arxiv.org/abs/quant-ph/0008068 
+Paper: https://arxiv.org/abs/quant-ph/0008068 
 An attempt is to made to mix a fundamentally classical system (classical harmonic oscillator) and a quantum system (quantum harmonic oscillator) with some interaction (bilinear coupling) in a single quantum formalism, but the correspondence principle (or conservation of energy) then breaks down.
 Basically we start from the Koopman-von Neumann classical mechanics formalism, where we cast Liouville (probability) density $f$ into a Hilbert space, which with $\psi(x,y,t) = \sqrt{f}$ gives us familiar Schrodinger equation, though with Hamiltonian $H$ replaced with the Liouville operator $L_v$ (not Lagrangian). This Liouvillian is in general treated unobservable, so its unbounded spectrum is considered a non-issue.
 $$L_v = \left(\frac{\partial H}{\partial y}\right)\left(-i\frac{\partial}{\partial x}\right)-\left(\frac{\partial H}{\partial x}\right)\left(-i\frac{\partial}{\partial y}\right)$$
