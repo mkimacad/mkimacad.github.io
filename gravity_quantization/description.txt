@@ -39,6 +39,19 @@ To be updated
 header:Großardt argument against Page-Geilker and general thought experiments for quantization of gravity
 Relevant paper: https://doi.org/10.1116/5.0073509
 To be updated
+header:Peres-Terno (2001) example
+Relevant paper: https://arxiv.org/abs/quant-ph/0008068 
+An attempt is to made to mix a fundamentally classical system (classical harmonic oscillator) and a quantum system (quantum harmonic oscillator) with some interaction (bilinear coupling) in a single quantum formalism, but the correspondence principle (or conservation of energy) then breaks down.
+Basically we start from the Koopman-von Neumann classical mechanics formalism, where we cast Liouville (probability) density $f$ into a Hilbert space, which with $\psi(x,y,t) = \sqrt{f}$ gives us familiar Schrodinger equation, though with Hamiltonian $H$ replaced with the Liouville operator $L_v$ (not Lagrangian). This Liouvillian is in general treated unobservable, so its unbounded spectrum is considered a non-issue.
+$$L_v = \left(\frac{\partial H}{\partial y}\right)\left(-i\frac{\partial}{\partial x}\right)-\left(\frac{\partial H}{\partial x}\right)\left(-i\frac{\partial}{\partial y}\right)$$
+$$i\frac{\partial \psi}{\partial t}=L_v\psi(x,y,t)$$
+where $y$ now refers to classical momentum that is different from unobservable quantum momentum operator $\hat{p}_x = -id/dx$, since this is a fundamentally classical system. $L_v$ is also unobservable.
+Then a quantum system is introduced in addition to the aforementioned classical system. The formalism is now modified but largely in spirit of the initial formalism to incorporate two systems: just with Liouvillian $L$ replaced with Koopmanian $K$ in the Schrodinger equation.
+$$K = L(x,y,p_x,p_y)+H(q,p)+K_I$$
+$$i\frac{\partial \psi}{\partial t}=K\psi(x,y,q,p,t)$$
+where $q$ refers to position of the quantum system, $p$ refers to the momentum of the quantum system, $K_I$ refers to the interaction term to be determined and $H(q,p)$ is the free Hamiltonian of the quantum system. 
+But classical interaction intuitions do not work, and the best possible is to treat bilinear interaction $kqx$ as a part of the classical system Hamiltonian which then forms corrected Liouvillian $L$. With this $L$, one obtains the expected classical equations of motion for coupling of two harmonic oscillators but with additional equations, which cause conservation of energy to break down.
+See Oppenheim's attempt though. 
 header:Oppenheim's attempt to evade: postquantum gravity theory
 Relevant paper: https://doi.org/10.1103/PhysRevX.13.041040
 Noting this paper, since it gets mentioned a lot recently. Let me just agree to disagree and move on, maybe. But possibly covering it as well.  
@@ -51,7 +64,7 @@ To be updated
 header:Wüthrich review
 Relevant paper: https://doi.org/10.1086/508946
 To be updated
-header:Carlip review on Schroindger-Newton
+header:Carlip review on Schrodinger-Newton
 Relevant paper: https://doi.org/10.1088/0264-9381/25/15/154010
 To be updated
 header:Tilloy's non-relativistic toy model counter-argument
@@ -67,4 +80,3 @@ This invokes the idea that the black hole horizon vacuum (temperature increases 
 No measurement involved. Does not invoke conservation of energy.
 header:Addendum
 See Crowther's excellent review as well, https://arxiv.org/abs/2505.04858 .
-Historically, see also the Peres-Terno (2001) example (https://arxiv.org/abs/quant-ph/0008068 ), where an attempt is to made to mix a fundamentally classical system with a quantum system in a single quantum formalism, but the correspondence principle then breaks down. See Oppenheim's attempt though. 
