@@ -1,5 +1,5 @@
 header:History (date-wise)
-Forked from https://mkimacad.github.io/bh_jaynes_cummings: May 31-June 1, 2025
+Forked from https://mkimacad.github.io/bh_jaynes_cummings: May 31-June 2, 2025
 header:I do believe in quantum gravity, but a general issue with attempts to demonstrate the necessity of quantum gravity
 In general, attempts to demonstrate the necessity of gravity quantization resort to quantum measurement results.
 If we accept the standard postulates of quantum mechanics on measurements - linearity and Born rule, then these results largely follow.
@@ -25,9 +25,8 @@ header:Different meaning as to semiclassical gravity
 In mainstream black hole physics, gravity is not fundamentally semiclassical. Nevertheless, for the purpose of evaporation, semiclassical EFT is understood to provide reasonable estimates, upon which small corrections are added to restore unitarity of the black hole exterior. This has been challenged around year 2009-2012, and the current mainstream responses largely evolve around holography of information and replica wormholes, which have all been somewhat controversial.
 Within the literature that discusses the (non-)necessity of gravity quantization, what we mean by semiclassical gravity can differ as well. As discussed in Tilloy's quasi-review paper (see below), we have the conventional Møller-Rosenfeld semiclassical gravity, where the stress-energy tensor of the Einstein field equations comes from the expectation value of the quantum stress-energy tensor operator, but there are other approaches as well. 
 header:Feynman-Bohr-Rosenfeld argument for quantization of gravity
-Best to view review papers mentioned below.
-Use a quantum particle in superposition (double-slit fashion) to measure some classical field ("electromagnetic field" or "gravitational field"). 
-To be updated
+Use a quantum particle in superposition (double-slit fashion, charged or massive particles). Measure some classical field ("electromagnetic field" or "gravitational field") to reveal which path it went through. This collapses the superposition without measuring the quantum system, implying non-unitary (or non-linear) evolution of the quantum system.
+However, gravity is different from electromagnetism, and the Feynman argument is considered extremely appealing but not forceful enough to argue for quantization of gravity today. To be updated.
 header:Eppley-Hannah argument for quantization of gravity
 To be updated
 header:Kent's counter-argument against Eppley-Hannah
