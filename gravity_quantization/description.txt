@@ -60,7 +60,8 @@ header:Potential problems with the postquantum theory
 (See the argument in the end as well.)
 The postquantum theory as a hybrid quantum-classical theory will allow for instances where an empty black hole (quantum-wise) is in non-empty black hole spacetime (classical gravitational field). Linearity enforces that these instances must be considered genuinely and individually. We believe that a conventional EFT on the given spacetime (gravitational field) continues to hold.
 Then since unitarity is still enforced for evolution from the particular classical branch, and the black hole has no energy to emit, there should be no radiation. However, EFT on non-empty black hole spacetime demands that radiations should be emitted, which is a contradiction. Therefore, we need the postquantum theory to explicitly rule out these instances, and I personally cannot see how this would avoid imposing conservation of energy for each classical-quantum interaction history.
-Given this problem, I can instead off an account of a hybrid classical-quantum formalism, where classical systems are portrayed instead as a collection of $n$ identical systems, with $n \to \infty$. Or we can think of some quantum subsystem as collapsing into the ground state of time-varying subsystem Hamiltonian that interacts with some environment, with ground state evolution respecting classical equations of motion, rendering it classical. Neither of the ideas has been received favorably by the physics community, which I can understand, given the problems stated above and I moved on. And we can agree to disagree. This is a difficult thing to do, and you can see why from this discussion.
+Given this problem, I can instead off an account of a hybrid classical-quantum formalism, where classical systems are portrayed instead as a collection of $n$ identical systems, with $n \to \infty$. Or we can think of some quantum subsystem as collapsing into the ground state of time-varying subsystem Hamiltonian that interacts with some environment, with ground state evolution respecting classical equations of motion, rendering it classical. Neither of the ideas has been received favorably by the physics community, which I can understand, given the same and new problems stated above and I moved on. And we can agree to disagree. This is a difficult thing to do, and you can see why from this discussion.
+For other critiques of postquantum theory, see https://arxiv.org/abs/2404.13037 and more importantly, https://arxiv.org/abs/2404.07723v2 . 
 header:Hugget-Callender review
 Relevant paper: https://doi.org/10.1086/392923
 To be updated
@@ -76,6 +77,10 @@ To be updated
 header:Tilloy's non-relativistic toy model counter-argument
 Relevant paper: https://doi.org/10.1088/1742-6596/1275/1/012006
 To be updated
+header:Remnants, fuzzballs and final state proposal (brief discussions)
+Some have argued that remnants remain as valid physics - see https://arxiv.org/abs/2412.00322v2 for the review.
+For fuzzballs, see https://arxiv.org/abs/2111.05295 for the review, though as I argue, the small corrections theorem cannot be invoked to disprove the conventional semiclassical story. See https://arxiv.org/abs/1804.10616 for a critique of the fuzzball proposal, its conclusion being that fuzzballs are too different from conventional black holes to be relevant.
+For the final state proposal, see http://arxiv.org/abs/hep-th/0310281 , though very few continue to advocate this view.
 header:My argument
 See https://mkimacad.github.io/bh_jaynes_cummings . The same argument. If we replace the $U$ in the simplified model such that:
 $$U|0,0\rangle = \frac{1}{\sqrt 2}(|0,0\rangle + |1,-1\rangle)$$
