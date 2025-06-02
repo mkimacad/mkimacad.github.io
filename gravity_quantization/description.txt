@@ -22,7 +22,7 @@ If 2) is invalid, then the goal is to find why observers cannot detect contradic
 If 3) is invalid, then a lot of soul searching would be needed. We do not know what this even means. From the small corrections theorem, we know that small corrections to EFT alone will not save the day. So unless violations from linearity are severe and observable, Bekenstein-Hawking would need to break down.
 If 4) is invalid, then the consequence may be mild, but we do not understand remnants and singularities well.
 header:Different meaning as to semiclassical gravity
-In mainstream black hole physics, gravity is not fundamentally semiclassical. Nevertheless, for the purpose of evaporation, semiclassical EFT is understood to provide reasonable estimates, upon which small corrections are added to restore unitarity of the black hole exterior. 
+In mainstream black hole physics, gravity is not fundamentally semiclassical. Nevertheless, for the purpose of evaporation, semiclassical EFT is understood to provide reasonable estimates, upon which small corrections are added to restore unitarity of the black hole exterior. This has been challenged around year 2009-2012, and the current mainstream responses largely evolve around holography of information and replica wormholes, which have all been somewhat controversial.    
 header:Feynman-Bohr-Rosenfeld argument for quantization of gravity
 Best to view review papers mentioned below.
 Use a quantum particle in superposition (double-slit fashion) to measure some classical field ("electromagnetic field" or "gravitational field"). 
@@ -30,8 +30,6 @@ To be updated
 header:Eppley-Hannah argument for quantization of gravity
 To be updated
 header:Kent's counter-argument against Eppley-Hannah
-To be updated
-header:Peres-Terno argument
 To be updated
 header:Page-Geilker argument
 To be updated
@@ -69,3 +67,4 @@ This invokes the idea that the black hole horizon vacuum (temperature increases 
 No measurement involved. Does not invoke conservation of energy.
 header:Addendum
 See Crowther's excellent review as well, https://arxiv.org/abs/2505.04858 .
+Historically, see also the Peres-Terno (2001) example (https://arxiv.org/abs/quant-ph/0008068 ), where an attempt is to made to mix a fundamentally classical system with a quantum system in a single quantum formalism, but the correspondence principle then breaks down. See Oppenheim's attempt though. 
