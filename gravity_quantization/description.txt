@@ -63,18 +63,6 @@ The postquantum theory as a hybrid quantum-classical theory will allow for insta
 Then since unitarity is still enforced for evolution from the particular classical branch, and the black hole has no energy to emit, there should be no radiation. However, EFT on non-empty black hole spacetime demands that radiations should be emitted, which is a contradiction. Therefore, we need the postquantum theory to explicitly rule out these instances, and I personally cannot see how this would avoid imposing conservation of energy for each classical-quantum interaction history.
 Given this problem, I can instead off an account of a hybrid classical-quantum formalism, where classical systems are portrayed instead as a collection of $n$ identical systems, with $n \to \infty$. Or we can think of some quantum subsystem as collapsing into the ground state of time-varying subsystem Hamiltonian that interacts with some environment, with ground state evolution respecting classical equations of motion, rendering it classical. Neither of the ideas has been received favorably by the physics community, which I can understand, given the same and new problems stated above and I moved on. And we can agree to disagree. This is a difficult thing to do, and you can see why from this discussion.
 For other critiques of postquantum theory, see https://arxiv.org/abs/2404.13037 and more importantly, https://arxiv.org/abs/2404.07723v2 . See also Tilloy's non-relativistic toy model paper that utilizes a similar intuition (to postquantum theory): http://arxiv.org/abs/1903.01823 , though the model features continuous measurements systemically included as a theory. 
-header:Hugget-Callender review
-Relevant paper: https://doi.org/10.1086/392923
-To be updated
-header:Mattingly review
-Relevant paper: https://doi.org/10.1007/0-8176-4454-7_17
-To be updated
-header:Wüthrich review
-Relevant paper: https://doi.org/10.1086/508946
-To be updated
-header:Carlip review on Schrodinger-Newton
-Relevant paper: https://doi.org/10.1088/0264-9381/25/15/154010
-To be updated
 header:Remnants, fuzzballs and final state proposal (brief discussions)
 Some have argued that remnants remain as valid physics - see https://arxiv.org/abs/2412.00322v2 for the review.
 For fuzzballs, see https://arxiv.org/abs/2111.05295 for the review, though as I argue, the small corrections theorem cannot be invoked to disprove the conventional semiclassical story. See https://arxiv.org/abs/1804.10616 for a critique of the fuzzball proposal, its conclusion being that fuzzballs are too different from conventional black holes to be relevant.
@@ -87,5 +75,9 @@ $$U|0,n\rangle = \frac{1}{\sqrt 2}(|0,n\rangle + |1,n-1\rangle)$$
 until a black hole "semiclassically" evaporates completely, then the black hole entanglement entropy monotonically increases over time: late-time violations of Bekenstein-Hawking - a version of the usual black hole information problem as a consequence of fundamentally semiclassical gravity.
 This invokes the idea that the black hole horizon vacuum (temperature increases as black holes become smaller) is significantlly different from the flat-space horizon vacuum according to EFT itself.
 No measurement involved. Does not invoke conservation of energy.
-header:Addendum
-See Crowther's excellent review as well, https://arxiv.org/abs/2505.04858 .
+header:Addendum: reviews that discuss quantization of gravity
+Crowther review (https://arxiv.org/abs/2505.04858 ): discusses general philosophical grounds for quantizing gravity than thought experiments that argue for gravity quantization.
+Carlip review (https://arxiv.org/abs/0803.3456 ): analyzes Schrodinger-Newton (works largely as the non-relativistic limit of conventional semiclassical gravity) theoretically, concludes that empirical tests verifying deviations from linear quantum mechanics are very likely to be infeasible. 
+Mattingly review (https://doi.org/10.1007/0-8176-4454-7_17 , no preprint available): to be updated
+Wüthrich review (https://doi.org/10.1086/508946 , no preprint available): to be updated
+Hugget-Callender review (https://doi.org/10.1086/392923 , no preprint available): to be updated
