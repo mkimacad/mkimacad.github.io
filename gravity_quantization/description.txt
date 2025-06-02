@@ -32,12 +32,9 @@ Use a quantum particle in superposition (double-slit fashion, charged or massive
 Kent (2018) (http://arxiv.org/abs/1807.08708 ) argues the third scenario does not always hold. Suppose the following initial quantum state for $L,R$ (with distance $d$):
 $$\frac{1}{\sqrt 2}(|0_L,0_R\rangle+|1_L,1_R\rangle)$$
 Now $L$ is measured at $t=T$, and suppose we have $|0_L\rangle$. While Hannah-Eppley assumes that the state of $R$ immediately changes to $|0_R\rangle$ or gravitational field responds to the change in $L$ immdediately, this may not be the case depending on the form of a hybrid theory. In particular, it is perfectly reasonable to assume a theory where the state of $R$ remains in mixed state $\frac{1}{2}(|0_R\rangle\langle 0_R|+|1_R\rangle\langle 1_R|)$ from $t=T$ to $t=T+d/c$. At $t=T+d/c$, a signal with speed of light can reach $R$ from $L$ that reflects the change in $L$ and $R$ changes to state $|0_R\rangle$. Therefore, the Eppley-Hannah argument loses its power in case classical gravitational waves do not collapse quantum states.
-header:Page-Geilker argument (briefly discussed)
+header:Page-Geilker argument (briefly discussed) and some counter-arguments
 Paper: https://doi.org/10.1103/PhysRevLett.47.979 (only the publisher paywall version available)
-A thought experiment that attempts to rule out the Møller-Rosenfeld semiclassical gravity. Does not rule out other forms of semiclassical gravity. But even for the Møller-Rosenfeld semiclassical gravity based on stress-energy tensor expectation, in case an additional collapse mechanism is given, then the Møller-Rosenfeld semiclassical gravity is not completely ruled out - see the Großardt counter-argument in http://arxiv.org/abs/2201.10452 .
-header:Rydving-Aurell-Pikovsky counter-arguments
-Paper: http://arxiv.org/pdf/2107.07514
-To be updated
+A thought experiment that attempts to rule out the Møller-Rosenfeld semiclassical gravity. Does not rule out other forms of semiclassical gravity. But even for the Møller-Rosenfeld semiclassical gravity based on stress-energy tensor expectation, in case an additional collapse mechanism is given, then the Møller-Rosenfeld semiclassical gravity is not completely ruled out - see the Großardt counter-argument in http://arxiv.org/abs/2201.10452 . See also the Rydving-Aurell-Pikovsky counter-argument in http://arxiv.org/pdf/2107.07514 that the spatial resolution limit is sufficient to guard against paradoxes.
 header:Peres-Terno (2001) example
 Paper: https://arxiv.org/abs/quant-ph/0008068 
 An attempt is to made to mix a fundamentally classical system (classical harmonic oscillator) and a quantum system (quantum harmonic oscillator) with some interaction (bilinear coupling) in a single quantum formalism, but the correspondence principle (or conservation of energy) then breaks down.
@@ -73,9 +70,9 @@ $$U|0,n\rangle = \frac{1}{\sqrt 2}(|0,n\rangle + |1,n-1\rangle)$$
 until a black hole "semiclassically" evaporates completely, then the black hole entanglement entropy monotonically increases over time: late-time violations of Bekenstein-Hawking - a version of the usual black hole information problem as a consequence of fundamentally semiclassical gravity.
 This invokes the idea that the black hole horizon vacuum (temperature increases as black holes become smaller) is significantlly different from the flat-space horizon vacuum according to EFT itself.
 No measurement involved. Does not invoke conservation of energy.
-header:Addendum: reviews that discuss quantization of gravity
+header:Addendum: reviews that discuss quantization of gravity (to be updated)
 Crowther review (https://arxiv.org/abs/2505.04858 ): discusses general philosophical grounds for quantizing gravity than thought experiments that argue for gravity quantization.
 Carlip review (https://arxiv.org/abs/0803.3456 ): analyzes Schrodinger-Newton (works largely as the non-relativistic limit of conventional semiclassical gravity) theoretically, concludes that empirical tests verifying deviations from linear quantum mechanics are very likely to be infeasible. 
-Mattingly review (https://doi.org/10.1007/0-8176-4454-7_17 , no preprint available): to be updated
-Wüthrich review (https://doi.org/10.1086/508946 , no preprint available): to be updated
-Hugget-Callender review (https://doi.org/10.1086/392923 , no preprint available): to be updated
+Mattingly review (https://doi.org/10.1007/0-8176-4454-7_17 , no preprint available)
+Wüthrich review (https://doi.org/10.1086/508946 , no preprint available)
+Hugget-Callender review (https://doi.org/10.1086/392923 , no preprint available)
