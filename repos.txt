@@ -14,7 +14,7 @@ Imaginary-time deep learning
 imaginary_time_DL
 Gravity needs quantization (forked from the JCM model)
 gravity_quantization
-Non-unitary quantum computing? (Non-publication memo)
+Non-unitary quantum computing? (Non-publication memo, forked from gravity_quantization)
 other_quantum_computers
 CV (to be updated)
 cv
