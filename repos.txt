@@ -1,6 +1,6 @@
 Overview
 overviews
-Modified Janyes-Cummings model of black holes
+A JCM model of black holes
 bh_jaynes_cummings
 Investigations of Karch-Randall braneworld, small corrections theorem and the toy qudit model of black holes
 braneworld
@@ -12,6 +12,12 @@ AdS/VAEBM: extending holographic gravity via deep learning
 ads_vaebm
 Imaginary-time deep learning
 imaginary_time_DL
+Gravity needs quantization (forked from the JCM model)
+gravity_quantization
+Non-unitary quantum computing? (Non-publication memo)
+other_quantum_computers
+CV (to be updated)
+cv
 Random thoughts about quantum physics (not necessarily research)
 qm_random_thoughts
 Random thoughts about computation (not necessarily research, should largely be inactive)
