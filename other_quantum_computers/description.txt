@@ -1,0 +1,20 @@
+header:The non-unitarity puzzle of replica wormholes (simple thought experiment)
+Continuing from https://mkimacad.github.io/braneworld . Replica wormholes essentially argue that (since Euclidean space corrections amount to quantum state corrections):
+$$|\Psi(0)\rangle = \sqrt{1-\epsilon_0}|\psi(0)\rangle + \sqrt{\epsilon_0}|rw(0)\rangle$$
+$$|\psi(t_L)\rangle = \sqrt{1-\epsilon_L}|rw(t_L)\rangle + \sqrt{\epsilon_L}|\psi(t_L)\rangle$$
+with $\epsilon_0,\epsilon_L \ll 1$, and $|\Psi\rangle$ is the full corrected state while $|\psi\rangle$ is the original EFT state without replica wormhole corrections.
+This is by itself not problematic, but we know that the evolution of $|\psi(t)\rangle$ is approximately unitary. This is essentially the small corrections theorem re-casted, since the above evolution requires non-linearity.
+What we mean by non-unitarity in black hole evaporation is not theoretical non-unitarity but rather physical non-unitarity - asymptotic observers at radial infinity never see the black hole interior, so we expect the exterior to be in a pure state after complete black hole evaporation.
+So we have to sacrifice something: non-unitarity, non-linearity or non-locality. It is non-locality that is sacrificed. This requires EFT or quantum states to be modified.
+But the logical appeal of replica wormholes is that this is just a gravitational path integral on sufficiently local EFT. And there is a way out: treat a theory derived from the path integral formalism as a nonlinear effective field theory.
+And then, why not? Yes, quantum observables are linear observables, but the JCM model (https://mkimacad.github.io/bh_jaynes_cummings ) provides a toy but fundamental, linear and unitary model. So we can map out obsevables easily.
+header:A potential problem with the neck construction in Antonini et al. (2025) ("An Apologia for islands")
+Antonini et al. (2025) (https://arxiv.org/abs/2506.04311 ) argues that we do not need an external reservoir (or KR branes, etc.) to reproduce islands via the neck construction - no massive graviton in other words.
+img:imgs/neck_construction.png
+(The image is from Antonini et al. (2025), license CC-BY 4.0)
+You can define EFT on some manifold with an additional small neck using the path integral formalism. But would this be a linear unitary theory?
+Consider two (largely identical) particle wavepackets localized around the neck at $t=0$, but their central position slightly being different. These wavepackets propagate from the regions far away off the neck at $t\ll 0$ to the neck at $t=0$.
+Suppose these wavepackets are quite non-orthogonal (no phase cancellation) but with effectively inverse velocity. Then if we propagate backward to $t \ll 0$, then we should arrive at two largely orthogonal wavepackets - non-unitary (or non-linear). See the memo paper below. 
+header:A potential non-linear quantum computing scheme based on non-linear effective field theory
+But I do not think non-linear EFT is necessarily bad, as long as we have a way of mapping observables to true linear observables. Rather, I think we should understand path integrals in pathological spacetime as providing non-linear EFT.
+To be updated ("waves" "double-slit experiment in an infinite potential wall")
