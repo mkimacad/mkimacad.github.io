@@ -14,7 +14,9 @@ Antonini et al. (2025) (https://arxiv.org/abs/2506.04311 ) argues that we do not
 img:imgs/neck_construction.png
 (The image is from Antonini et al. (2025), license CC-BY 4.0)
 You can define EFT on some manifold with an additional small neck using the path integral formalism. But would this be a linear unitary theory?
-Consider two (largely identical) particle wavepackets localized around the neck at $t=0$, but their central position slightly being different. These wavepackets propagate from the regions far away off the neck at $t\ll 0$ to the neck at $t=0$.
+As with the paper in https://mkimacad.github.io/braneworld , let's revisit https://arxiv.org/abs/2304.08478 (localized wavepackets in AdS/CFT).
+"Wavepacket maths to be updated"
+Consider two (largely identical) particle wavepackets localized around the neck at $t=0$. These wavepackets propagate from the regions far away off the neck at $t\ll 0$ to the neck at $t=0$.
 Suppose these wavepackets are quite non-orthogonal (no phase cancellation) but with effectively inverse velocity. Then if we propagate backward to $t \ll 0$, then we should arrive at two largely orthogonal wavepackets - non-unitary (or non-linear). See the memo paper below. 
 header:A potential non-linear quantum computing scheme based on non-linear effective field theory
 But I do not think non-linear EFT is necessarily bad, as long as we have a way of mapping observables to true linear observables. Rather, I think we should understand path integrals in pathological spacetime as providing non-linear EFT.
