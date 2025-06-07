@@ -7,7 +7,7 @@ This is by itself not problematic, but we know that the evolution of $|\psi(t)\r
 What we mean by non-unitarity in black hole evaporation is not theoretical non-unitarity but rather physical non-unitarity - asymptotic observers at radial infinity never see the black hole interior, so we expect the exterior to be in a pure state after complete black hole evaporation.
 So we have to sacrifice something: non-unitarity, non-linearity or non-locality. It is non-locality that is sacrificed. This requires EFT or quantum states to be modified.
 But the logical appeal of replica wormholes is that this is just a gravitational path integral on sufficiently local EFT. And there is a way out: treat a theory derived from the path integral formalism as a nonlinear effective field theory.
-And then, why not? Yes, quantum observables are linear observables, but the JCM model (https://mkimacad.github.io/bh_jaynes_cummings ) provides a toy but fundamental, linear and unitary model. So we can map out obsevables easily.
+And then, why not? Yes, quantum observables are linear observables, but the JCM model (https://mkimacad.github.io/bh_jaynes_cummings ) provides a toy but fundamental, linear and unitary model. So we can map out observables easily.
 header:A potential problem with the neck construction in Antonini et al. (2025) ("An Apologia for islands")
 Antonini et al. (2025) (https://arxiv.org/abs/2506.04311 ) argues that we do not need an external reservoir (or KR branes, etc.) to reproduce islands via the neck construction - no massive graviton in other words.
 img:imgs/neck_construction.png
