@@ -17,4 +17,4 @@ Consider two (largely identical) particle wavepackets localized around the neck 
 Suppose these wavepackets are quite non-orthogonal (no phase cancellation) but with effectively inverse velocity. Then if we propagate backward to $t \ll 0$, then we should arrive at two largely orthogonal wavepackets - non-unitary (or non-linear). See the memo paper below. 
 header:A potential non-linear quantum computing scheme based on non-linear effective field theory
 But I do not think non-linear EFT is necessarily bad, as long as we have a way of mapping observables to true linear observables. Rather, I think we should understand path integrals in pathological spacetime as providing non-linear EFT.
-To be updated ("waves" "double-slit experiment in an infinite potential wall")
+To be updated ("waves" "double-slit experiment in an infinite potential wall" "neck image from my memo paper")
