@@ -1,6 +1,7 @@
 header:History (date-wise)
 Paper published: May 25, 2024. 
 Initial github.io paper description: May 24, 2025. (Year anniversary)
+"Black hole implementation": June 8, 2025
 header:Published in Quantum Information Processing
 https://doi.org/10.1007/s11128-024-04413-x
 header:Motivation
@@ -40,7 +41,7 @@ Push system $S$ into a Schwarzschild black hole. Since the black hole horizon is
 The main problem is about how energy conservation is interpreted. Before $S$ enters the black hole, it is infeasible to utilize the ground energy of $S$. 
 1. But if black hole evaporation also involves transferring away the ground energy of $S$, then this provides an example where subsystem ground energy can successfully be harvested. In this scenario, black holes do not help in implementing quantum thermal search. $H_{out}$ needs no correction over time.
 2. An alternative is that black hole evaporates only the excited energy of $S$. In this case, if we are to preserve energy conservation, then as $S$ enters the black hole, eigenvalues of $H_{out}$ need to be corrected such that all energy levels are increased by the ground energy of $S$ (divided by the number of available qudits in case of qudit models). Quantum thermal search can then be implemented. 
-Which one is correct? I believe the answer is latter (no. 2). Integrate all bath qudits and $S$ as one initially exterior field system. Then exterior Hamiltonian $H_{ext}$ can remain uncorrected over the evaporation process, since the ground energy remains the same, and Combine this with $H_{black}$ remaining invariant as well. No. 1 only gets invariance of $H_{out}$ because there is a reduction of the number of systems involved in $H_{ext}$ and this is only an artefact of qudit considerations.
+Which one is correct? I believe the answer is latter (no. 2). Integrate all bath qudits and $S$ as one initially exterior field system. Then exterior Hamiltonian $H_{ext}$ can remain uncorrected over the evaporation process, since the ground energy remains the same, and Combine this with $H_{black}$ remaining invariant as well. No. 1 only gets invariance of $H_{out}$ because there is a reduction of the number of systems involved in $H_{ext}$ and this is only an artefact of qudit considerations. Note that we have the 'universe including a black hole' over-counting degrees of freedom for no. 2, but this is actually an expected feature.
 header:Open universe versus closed universe (back to CHPZ)
 Suppose we have an open universe instead. There, we can utilize the environment to implement physical changes involving non-conservation of energy for the systems under control. The systems under control are initially described by thermal states. Can we do better then?
 The initial answer is no. The obvious reason can be seen when we consider the full closed universe that the open universe is part of, and non-interaction energy is being conserved. Consider cooling the main system $S$ to zero temperature. The bath is initially at zero temperature. The extra environment not under control actually makes energy transfer from $S$ to the outside complicated, since the environment is not precisely at ground state, so energy transfer from the environment to $S$ is also possible. So we should not be fooled by non-conservation of energy possibly giving us extra advantages.
