@@ -24,4 +24,16 @@ Of course the whole picture may not be this bad, if we admit that non-linear (bu
 It is in this context that I write the below memos and the memo papers - the possibility of utilizing effective non-linearity for additional quantum computing powers. 
 header:A potential non-linear quantum computing scheme based on non-linear effective field theory
 Again, I do not think non-linear EFT is necessarily bad, as long as we have a way of mapping observables to true linear observables. With this context, I construct a potential quantum computer that takes advantage of effective non-linearity.
-To be updated ("waves" "double-slit experiment in an infinite potential wall" "neck image from my memo paper")
+img:imgs/collider.png
+The above image models a wavepacket coming from left and right sides. Outside the left and right "tubes" and the main chamber, assume infinite potential $V=\infty$. More precisely,
+img:imgs/collider2.png
+where left and right tubes are modelled more accurately ("antennae") such that when wavepackets enter the main chamber, they intersect almost exactly at some location. This setup allows destructive interference to occur according to the path integral formalism - we have a non-linear EFT if unitarity is preserved.
+There are different ways to recover the full theory, though these procedures all result in different complete theories.
+The point to remember is that the normalized path integral formalism never predicts destructive cancellation. Rather we obtain some unit-norm state as the limit of preceding normalized states.
+In a way, this is a nonlinear model of the double-slit experiment where photons can never escape detection by experiment apparatus. Basic interference lessons as well as particle-wave duality remain valid, even though linearity is lost. This is therefore also a model of the duality interference computer that does not rely on postselection but rather on non-linear EFT, grounded upon the path integral formalism.
+With a simple construction, it is possible to detect the pre-normalization destructive interference pattern in this form of the duality computer, just as in black holes we can witness the effects of replica wormholes if they ever exist - see the evolution below.
+$$\frac{\sqrt{1-\alpha}}{\sqrt 2}(|\psi_L(0)\rangle+|\psi_R(0)\rangle)+\sqrt{\alpha}|rw(0)\rangle \to |RW(T)\rangle$$
+$$|\psi_L(T)\rangle = -|\psi_R(T)\rangle$$
+Replace $|rw\rangle$ with the detection bit $|D\rangle$ that remains unaffected by destructive cancellation of $|\psi_L\rangle$ and $|\psi_R\rangle$ at $t=T$ according to the unnormalized path integral formalism.
+In this fashion, we can hope for additional quantum computational powers - detecting the unnormalized destructive interference pattern means solving a search problem.
+But at this point we have to make up our mind. This only works if nonlinear EFTs constructed by the path integral formalism are valid. And I also am unsure what I should get out of this. Is this simply a result of improper quantizations? Maybe.
