@@ -1,3 +1,7 @@
+header:History (date-wise)
+A part of the below discussion submitted to Journal Quantum Information Processing (first submission round, mid-2024) - largely forgotten at this point.
+The submission could have been better - I could have elaborated more on the "effective" nature of path integrals involved, along with more advanced discussions that appear here.
+github.io description: June 1-9, 2025
 header:The non-unitarity puzzle of replica wormholes (simple thought experiment)
 Continuing from https://mkimacad.github.io/braneworld . Replica wormholes essentially argue that (since Euclidean space corrections amount to quantum state corrections):
 $$|\Psi(0)\rangle = \sqrt{1-\epsilon_0}|\psi(0)\rangle + \sqrt{\epsilon_0}|rw(0)\rangle$$
