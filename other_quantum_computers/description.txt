@@ -2,6 +2,7 @@ header:History (date-wise)
 A part of the below discussion submitted to Journal Quantum Information Processing (first submission round, mid-2024) - largely forgotten at this point.
 The submission could have been better - I could have elaborated more on the "effective" nature of path integrals involved, along with more advanced discussions that appear here.
 github.io description: June 1-9, 2025
+an analysis of the "apologia for islands" paper forked to https://mkimacad.github.io/review_apologia : June 13-14, 2025
 header:The non-unitarity puzzle of replica wormholes (simple thought experiment)
 Continuing from https://mkimacad.github.io/braneworld . Replica wormholes essentially argue that (since Euclidean space corrections amount to quantum state corrections):
 $$|\Psi(0)\rangle = \sqrt{1-\epsilon_0}|\psi(0)\rangle + \sqrt{\epsilon_0}|rw(0)\rangle$$
@@ -14,6 +15,7 @@ But the logical appeal of replica wormholes is that this is just a gravitational
 And then, why not? Yes, quantum observables are linear observables, but the JCM model (https://mkimacad.github.io/bh_jaynes_cummings ) provides a toy but fundamental, linear and unitary model. So we can map out observables easily.
 Note that the above issue is why replica wormholes are never considered in other contexts - they break either unitarity or linearity. Even if replica wormholes lead to new saddles in non-black hole contexts, they are considered invalid - though the circumstance may actually be more complicated. 
 header:A potential problem with the neck construction in Antonini et al. (2025) ("An Apologia for islands")
+See as well: https://mkimacad.github.io/review_apologia
 Antonini et al. (2025) (https://arxiv.org/abs/2506.04311 ) argues that we do not need an external reservoir (or KR branes, etc.) to reproduce islands via the neck construction - no massive graviton in other words.
 img:imgs/neck_construction.png
 (The image is from Antonini et al. (2025), license CC-BY 4.0)
