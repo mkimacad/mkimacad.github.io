@@ -1,5 +1,5 @@
 header:What this is about
-This is a short analysis attempt of paper "An apologia for islands" by Antonini et al. arxiv:2506.04311v1.
+This is a short analysis attempt of paper "An apologia for islands" by Antonini et al. arxiv:2506.04311v1 (http://arxiv.org/abs/2506.04311 ).
 header:Factorization problem
 My take of the factorization problem is of course given in A) https://mkimacad.github.io/bh_jaynes_cummings (and https://mkimacad.github.io/braneworld) and B) https://mkimacad.github.io/quantum_thermal_search .
 A) says: there is actually no factorization problem in (non-supersymmetric EFT version of) CFT, and the corresponding bulk theory is only approximate.
