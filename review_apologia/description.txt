@@ -1,0 +1,49 @@
+header:What this is about
+This is a short analysis attempt of paper "An apologia for islands" by Antonini et al. arxiv:2506.04311v1.
+header:Factorization problem
+My take of the factorization problem is of course given in A) https://mkimacad.github.io/bh_jaynes_cummings (and https://mkimacad.github.io/braneworld) and B) https://mkimacad.github.io/quantum_thermal_search .
+A) says: there is actually no factorization problem in (non-supersymmetric EFT version of) CFT, and the corresponding bulk theory is only approximate.
+After all, the single reason why the factorization problem is so hard to believe is that we accept islands only when we have black holes and throw out otherwise. But CFT is non-gravitational, and the boundary factorization should be as usual.
+Gauge theory considerations are not really the fundamental aspects. Entanglement wedge paradoxes are perfectly generated within scalar field theories.
+B) says: The bulk Hilbert space should over-count degrees of freedom, as indicated in the thought experiment of using a black hole for quantum thermal search. Supporting A).
+A good reminder is that semiclassical spacetime is entangled. So bulk EFT and the entanglement wedge duality are valid whenever states are close to these entangled states.
+The question of course is which one is more fundamental, and it is the entanglement wedge duality that seems to be more fundamental. The duality assures smooth semiclassical transitions of background spacetime, as EFT is corrected.
+What we mean by correcting EFT is actually complex. In the JCM model of A), I suggest that EFT is actually not problematic, and the way we use EFT is problematic. For black holes we effectively have two EFTs that we can derive from the same EFT.
+header:Massive graviton (being updated)
+Calculations based on bulk EFT are of course then unreliable. Indeed, the apologia paper goes over this more in detail. Also talks of different concepts for "massive gravitons"
+header:Page curve
+What do we expect when the Page curve is suggested? We expect our pretty non-gravitational QFT to work fine around the black hole horizon.
+Before observations and quantum state collapse, we expect that these non-gravitational observables witness proper entanglement behaviors without relying on gravitational theories.
+A response should actually be provided by the holography of information camp.
+Yes, it seems that null infinity has all information, and in a full quantum gravity the Page curve is meaningless. But by the same argument, we could say the information problem does not exist.
+The real psychological issue here is that the two sides seem to be suggesting that the information problem is solved, when it is not.
+I think the apologia paper is basically stating the same point. The Page curve is derived by not measuring something available in quantum gravity, but there are merits to what we can get out of radiations alone. Because they are what we safely expect in non-gravitational QFT.
+Somehow, it seems like this point is largely misinterpreted by the holography of information camp. Are they stating that semiclassical EFT is useless around the horizon, and we need precise quantum gravity calculations?
+Islands/replica wormholes do have the factorization problem, and they require a more thorough understanding of why this happens.
+Holography of information is likely to be true, just as with AdS/CFT. It is theoretically solid. However, approaches in AdS/CFT do not completely solve the information problem, unless they can be generalized to real black holes. The same applies, especially around a black hole horizon. 
+header:External reservoir
+I discuss this issue briefly in https://mkimacad.github.io/other_quantum_computers. We can remove external reservoirs and still generate islands. However, there is no unitarity proof for the underlying CFT.
+Somewhat resembles Terashima-Sugishita cases, where for some bulk theory on some spacetime, its holographic CFT is actually non-unitary.
+We can of course save unitarity by adopting EFT being non-linear (note: this is different from classical solutions being non-linear). Replica wormholes similarly can be justified on this ground, despite violating basic features of quantum mechanics.
+header:Perturbation theory gravitational dressing
+The basic argument of the apologia paper: do not confuse non-perturbative considerations with perturbative considerations. The entanglement wedge duality is concerned with the latter.
+So there being no compactly supported gauge-invariant operators non-perturbatively does not render the entanglement wedge duality to be invalid.
+Breakdown of spacetime symmetries almost always happens, so should be not a conncern. 
+header:Appendix A
+Kourkoulou-Maldacena (KM) at heart. The usual thermofield double setup, but vary the boundary condition for one side - let's say left side to SYK projector.
+This results in a one-sided black hole with the end-of-world (EoW) brane when viewed from the bulk.
+Now transform TFD instead such that the KM subspace of left CFT are now swapped with reservoir subspace. State-wise, this is just a shift of degrees of freedom.
+Right CFT mixed state does not change, and the resulting state can be written as an entangled state of right CFT and reservoir in the KM basis.
+So you could say this is a KM setup but with EoW brane that interacts or even encodes the reservoir.
+However, unlike Karch-Randall braneworld setup, the reservoir does not entangle with the left CFT. This is why we do not have massive graviton issues.
+A quantum error correction code subspace interpretation of this setup is that the original TFD state provides the purely interior picture, where everything is within the double-sided black hole, while the newly mapped dual reservoir-right CFT state provides the exterior picture.
+The map between TFD and the new KM-esque state is isometric but non-unitary - we are working under the expanded Hilbert space in the new state.
+Semiclassical EFT entanglement across spacetime regions breaks down in the exterior picture. So this cannot be a good "somewhat realistic" model of black hole evaporation.
+In islands we can reconstruct left (perturbation theory-level, gravitationally dressed) CFT operators.
+Is the enlarged reservoir-left-right EFT a proper linear and unitary quantum theory? I do not think so. However, it works as an effective theory, knowing that the acutal underlying state is TFD.
+If we take local EFT as the enlarged EFT, then we would need to correct states with something like replica wormholes.
+This local EFT is also very likely going to exhibit massive graviton. After all, locally around the brane this is just the usual braneworld thing going on.
+It is also one reason why we should not take bulk EFT "massive graviton" results too seriously, even if taken somewhat seriously.
+Once we break semiclassicality and linearity in local bulk EFT states, then we can have a dual and more fundamental picture that is perfectly consistent with massless gravity. This appendix example demonstrates this.
+The real issue that we do expect linear EFT to hold around black hole horizons, and this cannot be respected in this model. We should expect the same for the bulb-neck model.
+But nonlinear EFT can matter, because our observables may not match with fundamental linear observables.
