@@ -1,4 +1,4 @@
-Overview
+Overview (to be replaced with CV, later)
 overviews
 A JCM model of black holes
 bh_jaynes_cummings
@@ -16,15 +16,15 @@ Gravity needs quantization (forked from the JCM model)
 gravity_quantization
 Nonlinear quantum computing? (Non-publication memo, forked from gravity_quantization)
 other_quantum_computers
-CV (to be updated)
-cv
+An anlysis of the "Apologia for islands" paper
+review_apologia
 Random thoughts about quantum physics (not necessarily research)
 qm_random_thoughts
 Random thoughts about computation (not necessarily research, should largely be inactive)
 comp_random_thoughts
 Coffee (not necessarily research)
 coffee
-Music (not necessarily research)
+Music (not necessarily research, overlapping with deep learning)
 music
 Other thoughts (other theories, etc.)
 other_thoughts
