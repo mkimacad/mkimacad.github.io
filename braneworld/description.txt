@@ -1,6 +1,7 @@
 header:History (date-wise)
 Published: February 27, 2025
-Github.io paper description: May 24-27,2025 
+Github.io paper description: May 24-27,2025
+(See also: https://mkimacad.github.io/review_apologia , an analysis of the "Apologia for islands" paper: June 13-14, 2025)
 header:Published in Fortschritte der Physik - Progress of Physics
 https://doi.org/10.1002/prop.202400194
 header:Main lessons
