@@ -16,9 +16,17 @@ The conventional expectation is that the no-hair principle largely holds for bla
 One way to interpret this, combined with restoration of pure state evolution and unitarity for the black hole exterior, is that the empty Schwarzschild black hole state is uniquely given.
 Even without the no-hair principle, the intuition is that there is nothing inside the empty Schwarzschild black hole so its state should be unique if we continue to have interior-exterior effective field theory factorization.
 This is the key to demonstrating unitarity of the black hole exterior in the JCM model of black holes.
-header:Common storyline 3: what do we mean by effective field theory?
-(being updated)
-Combined with the fact that Schwarzschild spacetime and Minkowski spacetime feature entirely different understandings of
+header:Common storyline 3: three versions of semiclassical effective field theory (semiclassical EFT)
+By conventional semiclassical EFT, we usually mean that EFT on background spacetime obtained by averaging out stress-energy tensor.
+The argument in the JCM model is that we have to distinguish two (and eventually three) semiclassicality:
+A) mostly classical stability of background spacetime when viewed from the black hole exterior,
+B) conventional semiclassical EFT - EFT on background spacetime obtained by averaging out stress-energy tensor.
+A) holds, while B) eventually breaks down for late-time evaporation.
+The reason why conventional semiclassical EFT breaks down is that as aforementioned, Minkowski spacetime and Schwarzschild spacetime differ in terms of lasting radiations at asymptotic infinity. While we obtain Minkowski as the zero Schwarzschild radius limit of Schwarzschild spacetime, the former is not obtained as the zero-temperature limit of the latter.
+The JCM model suggests that we can safely all sorts of hairs and microstates within the black hole interior, but once we have a unique ground state of the black hole interior, then the black hole is forced to evaporate into the ground state, which means zero entanglement entropy.
+But there is another version of semiclassicality, which says:
+C) for black holes, we can safely apply EFT on each spacetime outcome, and form a superposition linearly. This continues to hold in the JCM model, and strictly quantum-gravitational calculations are unnecessary - EFT is fine.
+For A), we use the fact that black evaporation is a slow process involving extremely many effective "qubits". The central limit theorem then affords us normal distributions for small intervals, resulting in a largely classical description up to normal distribution variances - see the JCM model github page. Furthermore after the entanglement entropy turnaround point, variance has to start decreasing, which limits deviations from the average outcome. The calculation involves the total energy emitted up to some time t.
 header:Common storyline 4: black hole paradoxes arise due to degrees of freedom double counting in EFT with a black hole
 (being updated) 
 header:Slightly different views about the small corrections theorem within my papers
