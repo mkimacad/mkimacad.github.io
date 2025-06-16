@@ -1,5 +1,7 @@
 Overview (to be replaced with CV, later)
 overviews
+Black hole research papers overview and links
+blackholes
 A JCM model of black holes
 bh_jaynes_cummings
 Investigations of Karch-Randall braneworld, small corrections theorem and the toy qudit model of black holes
@@ -16,8 +18,8 @@ Gravity needs quantization (forked from the JCM model)
 gravity_quantization
 Nonlinear quantum computing? (Non-publication memo, forked from gravity_quantization)
 other_quantum_computers
-An analysis of the "Apologia for islands" paper
-review_apologia
+Study Notes
+studynotes
 Random thoughts about quantum physics (not necessarily research)
 qm_random_thoughts
 Random thoughts about computation (not necessarily research, should largely be inactive)
