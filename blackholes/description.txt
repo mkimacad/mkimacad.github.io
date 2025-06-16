@@ -18,8 +18,10 @@ Even without the no-hair principle, the intuition is that there is nothing insid
 This is the key to demonstrating unitarity of the black hole exterior in the JCM model of black holes.
 header:Common storyline 3: what do we mean by effective field theory?
 (being updated)
-Combined with the fact that Schwarzschild spacetime and Minkowski spacetime feature entirely different understandings of 
-header:Slightly different views about the small corrections theorem within my papers.
+Combined with the fact that Schwarzschild spacetime and Minkowski spacetime feature entirely different understandings of
+header:Common storyline 4: black hole paradoxes arise due to degrees of freedom double counting in EFT with a black hole
+(being updated) 
+header:Slightly different views about the small corrections theorem within my papers
 (being updated)
 header:On a black hole implementation of quantum thermal search
 (being updated)
