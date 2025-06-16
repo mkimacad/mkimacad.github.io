@@ -2,20 +2,12 @@ Overview (to be replaced with CV, later)
 overviews
 Black hole research papers overview and links
 blackholes
-A JCM model of black holes
-bh_jaynes_cummings
-Investigations of Karch-Randall braneworld, small corrections theorem and the toy qudit model of black holes
-braneworld
 Quantum Thermal Search
 quantum_thermal_search
-Black hole singularities can be beneficial
-philsci_time
 AdS/VAEBM: extending holographic gravity via deep learning
 ads_vaebm
 Imaginary-time deep learning
 imaginary_time_DL
-Gravity needs quantization (forked from the JCM model)
-gravity_quantization
 Nonlinear quantum computing? (Non-publication memo, forked from gravity_quantization)
 other_quantum_computers
 Study Notes
