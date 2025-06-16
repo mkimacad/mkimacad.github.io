@@ -32,8 +32,10 @@ See 'the analysis for the apologia paper' github page initially as well.
 The double counting understanding is essentially what is argued by the holography of information view. Proponents have, I think, successfully demonstrated that while quantum gravity does have some differences from conventional gauge theories, the Gauss law principle applies for gravity as well such that we can measure effectively non-locally from asymptotic infinity (such as null infinity).
 Non-perturbatively, a diffeomorphism-invariance quantum gravity observables cannot be local. However, the islands view suggests that perturbatively at each perturbation order, we can dress a local operator around a Wilson line such that local treatments remain and gauge invariance is not broken at each order.
 Nevertheless, eventually islands suggest that this local EFT treatment commits to double counting with visible effects, and we have to take out extra degrees of freedom - "islands," "replica wormholes" are all about taking extra dofs out.
-header:In relation to the common storyline 4: Different paths toward the empty black hole branch, but no hair at the end
-(being updated) 
+header:(In relation to the common storyline 4:) Different paths toward the empty black hole branch, but no hair at the end
+There are many paths for a black hole to become empty. The "average expectation" (conventional) semiclassical EFT on the interior assumes that it remembers all these paths.
+We do not have to assume that paths are forgotten before the black hole is emptied, but once the black hole is emptied, then the conventional semiclassical EFT is wrong, and these paths have to be forgotten completely, existing only as part of exterior radiations.
+If we do not modify EFT, then states or Hilbert space factorization has to be modified. Within the bulk EFT, this gives an illusion of non-unitarity or non-linearity in holographic gravity.
 header:Slightly different views about the small corrections theorem within my papers
 (being updated)
 header:On a black hole implementation of quantum thermal search
