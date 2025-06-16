@@ -1,9 +1,10 @@
-header:"Main" black hole research papers and notes involved
+header:Black hole research papers and notes involved
 A Jaynes-Cummings (JCM) model of black holes: https://mkimacad.github.io/bh_jaynes_cummings [Submitted to a journal]
-Investigating the Karch-Randall braneworld: https://mkimacad.github.io/braneworld [Published in Fortschritte der Physik - Progress of Physics]
+Investigating the Karch-Randall braneworld and the small corrections theorem: https://mkimacad.github.io/braneworld [Published in Fortschritte der Physik - Progress of Physics]
 Quantum thermal search (partially involving a black hole "eventually"): https://mkimacad.github.io/quantum_thermal_search [Published in Quantum Information Processing]
 A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Not yet submitted, just notes for now]
 An analysis (study note?) of "An apologia for islands" paper: https://mkimacad.github.io/review_apologia [Just an analysis]
+A minor "side" somewhat philosophical paper regarding the nature of singularities (time can be finite despite effectively also being infinite): https://mkimacad.github.io/philsci_time
 header:Common storyline 1: the question of temperature transitions
 Bekenstein-Hawking temperature gets hotter as black holes evaporate.
 This holds if the semiclassical Hawking picture is correct.
@@ -18,3 +19,5 @@ This is the key to demonstrating unitarity of the black hole exterior in the JCM
 header:Common storyline 3: what do we mean by effective field theory?
 (being updated)
 Combined with the fact that Schwarzschild spacetime and Minkowski spacetime feature entirely different understandings of 
+header:Slightly different views about the small corrections theorem within my papers.
+(being updated)
