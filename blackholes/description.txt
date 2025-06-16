@@ -1,0 +1,8 @@
+header:"Main" black hole research papers and notes involved
+A Jaynes-Cummings (JCM) model of black holes: https://mkimacad.github.io/bh_jaynes_cummings [Submitted to a journal]
+Investigating the Karch-Randall braneworld: https://mkimacad.github.io/braneworld [Published in Fortschritte der Physik - Progress of Physics]
+Quantum thermal search (partially involving a black hole "eventually"): https://mkimacad.github.io/quantum_thermal_search [Published in Quantum Information Processing]
+A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Not yet submitted, just notes for now]
+An analysis (study note?) of "An apologia for islands" paper: https://mkimacad.github.io/review_apologia [Just an analysis]
+header:A major storyline (being updated)
+(Being updated)
