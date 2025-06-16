@@ -9,6 +9,12 @@ Bekenstein-Hawking temperature gets hotter as black holes evaporate.
 This holds if the semiclassical Hawking picture is correct.
 The problem is that after complete evaporation, we expect tranquility, so temperature goes from extremely hot to suddenly cold for the horizon vacuum behavior.
 The empty black hole limit of Schwarzschild spacetime is just Minkowski spacetime. The former features lasting radiations at asymptotic infinity, while the latter features none of that.
-The black hole information problem suggests this is indeed problematic, as we cannot uphold unitarity. A fix is required such that effective temperature eventually decreases at very-late-time evaporation.
-header:Common storyline 2: what do we mean by effective field theory (EFT)? Are we carefully considering the empty black hole branch?
-(Being updated)
+The black hole information problem suggests this is indeed problematic, as since unitarity cannot be upheld. A fix is required such that effective temperature eventually decreases at very-late-time evaporation.
+header:Common storyline 2: a unique no-hair ground state: the empty black hole branch
+The conventional expectation is that the no-hair principle largely holds for black holes even in quantum contexts.
+One way to interpret this, combined with restoration of pure state evolution and unitarity for the black hole exterior, is that the empty Schwarzschild black hole state is uniquely given.
+Even without the no-hair principle, the intuition is that there is nothing inside the empty Schwarzschild black hole so its state should be unique if we continue to have interior-exterior effective field theory factorization.
+This is the key to demonstrating unitarity of the black hole exterior in the JCM model of black holes.
+header:Common storyline 3: what do we mean by effective field theory?
+(being updated)
+Combined with the fact that Schwarzschild spacetime and Minkowski spacetime feature entirely different understandings of 
