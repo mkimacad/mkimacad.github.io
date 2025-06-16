@@ -21,3 +21,5 @@ header:Common storyline 3: what do we mean by effective field theory?
 Combined with the fact that Schwarzschild spacetime and Minkowski spacetime feature entirely different understandings of 
 header:Slightly different views about the small corrections theorem within my papers.
 (being updated)
+header:On a black hole implementation of quantum thermal search
+(being updated)
