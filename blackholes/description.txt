@@ -4,5 +4,11 @@ Investigating the Karch-Randall braneworld: https://mkimacad.github.io/braneworl
 Quantum thermal search (partially involving a black hole "eventually"): https://mkimacad.github.io/quantum_thermal_search [Published in Quantum Information Processing]
 A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Not yet submitted, just notes for now]
 An analysis (study note?) of "An apologia for islands" paper: https://mkimacad.github.io/review_apologia [Just an analysis]
-header:A major storyline (being updated)
+header:Common storyline 1: the question of temperature transitions
+Bekenstein-Hawking temperature gets hotter as black holes evaporate.
+This holds if the semiclassical Hawking picture is correct.
+The problem is that after complete evaporation, we expect tranquility, so temperature goes from extremely hot to suddenly cold for the horizon vacuum behavior.
+The empty black hole limit of Schwarzschild spacetime is just Minkowski spacetime. The former features lasting radiations at asymptotic infinity, while the latter features none of that.
+The black hole information problem suggests this is indeed problematic, as we cannot uphold unitarity. A fix is required such that effective temperature eventually decreases at very-late-time evaporation.
+header:Common storyline 2: what do we mean by effective field theory (EFT)? Are we carefully considering the empty black hole branch?
 (Being updated)
