@@ -20,7 +20,7 @@ header:Common storyline 3: three versions of semiclassical effective field theor
 By conventional semiclassical EFT, we usually mean that EFT on background spacetime obtained by averaging out stress-energy tensor.
 The argument in the JCM model is that we have to distinguish two (and eventually three) semiclassicality:
 A) mostly classical stability of background spacetime when viewed from the black hole exterior,
-B) conventional semiclassical EFT - EFT on background spacetime obtained by averaging out stress-energy tensor.
+B) conventional semiclassical EFT (Møller-Rosenfeld semiclassical gravity) - EFT on background spacetime obtained by averaging out stress-energy tensor.
 A) holds, while B) eventually breaks down for late-time evaporation.
 The reason why conventional semiclassical EFT breaks down is that as aforementioned, Minkowski spacetime and Schwarzschild spacetime differ in terms of lasting radiations at asymptotic infinity. While we obtain Minkowski as the zero Schwarzschild radius limit of Schwarzschild spacetime, the former is not obtained as the zero-temperature limit of the latter.
 The JCM model suggests that we can safely all sorts of hairs and microstates within the black hole interior, but once we have a unique ground state of the black hole interior, then the black hole is forced to evaporate into the ground state, which means zero entanglement entropy.
@@ -35,7 +35,11 @@ Nevertheless, eventually islands suggest that this local EFT treatment commits t
 header:(In relation to the common storyline 4:) Different paths toward the empty black hole branch, but no hair at the end
 There are many paths for a black hole to become empty. The "average expectation" (conventional) semiclassical EFT on the interior assumes that it remembers all these paths.
 We do not have to assume that paths are forgotten before the black hole is emptied, but once the black hole is emptied, then the conventional semiclassical EFT is wrong, and these paths have to be forgotten completely, existing only as part of exterior radiations.
-If we do not modify EFT, then states or Hilbert space factorization has to be modified. Within the bulk EFT, this gives an illusion of non-unitarity or non-linearity in holographic gravity.
+If we do not modify EFT, then states or Hilbert space factorization has to be modified. Within the holographic bulk EFT, this gives an illusion of non-unitarity or non-linearity.
+header:Common storyline 5: on gravity quantization
+It is often said that collapse mechanisms can allow for "average expectation"-type Møller-Rosenfeld semiclassical gravity such that gravity does not need to be quantized.
+But the (Møller-Rosenfeld-)Hawking picture of black hole evaporation and the JCM model offer two contrasting pictures of black hole evaporation that do not involve measurements. The former results in a final mixed state for the black hole exterior, whereas the latter results in a final pure state.
+This arises due to the assumed nature of quantum gravity. Does gravity respond to each non-gravitational quantum outcome? Møller-Rosenfeld-Hawking says we can proceed if the answer is no. The JCM model says the answer is yes, even if gravity is not yet fully quantized.
 header:Slightly different views about the small corrections theorem within my papers
 (being updated)
 header:On a black hole implementation of quantum thermal search
