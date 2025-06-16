@@ -4,7 +4,7 @@ Investigating the Karch-Randall braneworld and the small corrections theorem: ht
 Quantum thermal search (partially involving a black hole "eventually"): https://mkimacad.github.io/quantum_thermal_search [Published in Quantum Information Processing]
 A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Not yet submitted, just notes for now]
 An analysis (study note?) of "An apologia for islands" paper: https://mkimacad.github.io/review_apologia [Just an analysis]
-A minor "side" somewhat philosophical paper regarding the nature of singularities (time can be finite despite effectively also being infinite, "black hole singularities can be beneficial"): https://mkimacad.github.io/philsci_time
+A minor "side" somewhat philosophical paper regarding the nature of singularities (time can be finite despite effectively also being infinite, "black hole singularities can be beneficial"): https://mkimacad.github.io/philsci_time [Published in Sophia]
 header:Common storyline 1: the question of temperature transitions
 Bekenstein-Hawking temperature gets hotter as black holes evaporate.
 This holds if the semiclassical Hawking picture is correct.
