@@ -36,11 +36,17 @@ header:(In relation to the common storyline 4:) Different paths toward the empty
 There are many paths for a black hole to become empty. The "average expectation" (conventional) semiclassical EFT on the interior assumes that it remembers all these paths.
 We do not have to assume that paths are forgotten before the black hole is emptied, but once the black hole is emptied, then the conventional semiclassical EFT is wrong, and these paths have to be forgotten completely, existing only as part of exterior radiations.
 If we do not modify EFT, then states or Hilbert space factorization has to be modified. Within the holographic bulk EFT, this gives an illusion of non-unitarity or non-linearity.
+header:(In relation to the common storyline 4:) On a black hole implementation of quantum thermal search (QTS)
+The idea behind QTS is to throw (the initial state of) system $S$ into a black hole. $S$ alone has Hamiltonian that depends on a given search problem. If every feasible input has same search results, then every state has same energy. If not, then there are ground states with energy different from excited states. If the black hole exterior $EXT$ has temperature colder than $S$, then heat and energy should flow out of $S$ to $EXT$.
+In QTS contexts, black holes serve to provide an interaction mechanism between $S$ and $EXT$ that does not care about the Hilbert space and Hamiltonian details of $S$.
+The only thing the interaction really cares about is whether $EXT$ exhausted all the energy to its ground state.
+If every state of $S$ has same energy, then there is no further evaporation than what the black hole without $EXT$ would have evaporated. If not, then there is additional evaporation, providing an implementation of QTS.
+This relies on the assumption that there is double counting of (infalling) $S$ in the black hole exterior and the interior.
+If this double counting is not the case, then $S$ newly falling into the black hole interior $IN$ is stated as absorbing the ground energy of $S$ as well according to the interior Hamiltonian $H_{IN}$. In such a case, however, the Hamiltonian information of $S$ would be lost after evaporation. This loss of information actually becomes worse for easy search problems, which suggests that double counting should be there.
 header:Common storyline 5: on gravity quantization
 It is often said that collapse mechanisms can allow for "average expectation"-type Møller-Rosenfeld semiclassical gravity such that gravity does not need to be quantized.
 But the (Møller-Rosenfeld-)Hawking picture of black hole evaporation and the JCM model offer two contrasting pictures of black hole evaporation that do not involve measurements. The former results in a final mixed state for the black hole exterior, whereas the latter results in a final pure state.
 This arises due to the assumed nature of quantum gravity. Does gravity respond to each non-gravitational quantum outcome? Møller-Rosenfeld-Hawking says we can proceed if the answer is no. The JCM model says the answer is yes, even if gravity is not yet fully quantized.
 header:Slightly different views about the small corrections theorem within my papers
-(being updated)
-header:On a black hole implementation of quantum thermal search
-(being updated)
+If we believe that information on a black hole is actually encoded in its horizon, then assumed local interaction behaviors change. This should be the case for double holography, which allows us to evade the small corrections theorem. (The braneworld paper view)
+However, such full holography is actually unnecessary, and we only need to properly account for the empty black hole outcome to escape the small corrections theorem. (The JCM model paper view)
