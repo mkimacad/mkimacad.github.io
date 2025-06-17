@@ -9,7 +9,7 @@ header:My interest
 Quantum (computation) insights applied to black holes and sometimes philosophy. But my fascination is with black holes, and I believe holography still provides the best way to study them.
 Currently heading toward theoretical (though all sorts of different areas) applications of the Jaynes-Cummings model, so this could be said to be the focal point as well.
 header:On (journal) published papers.
-These all partially involve black holes - see https://mkimacad.github.io/blackholes for the shared storylines behind the papers, analysis and notes. This github.io page should be the best starting point for understanding my perspectives toward quantum physics.
+These all partially involve black holes - see https://mkimacad.github.io/blackholes for the shared storylines behind the papers, analysis and notes. This github.io page should be the best starting point for understanding my perspectives toward quantum physics. Large chunks of what used to be in this overview moved to the linked page. 
 The papers involved:
 https://mkimacad.github.io/philsci_time, https://mkimacad.github.io/quantum_thermal_search, https://mkimacad.github.io/braneworld. Possibly on order of ascending importance.
 header:Black hole singularities can be beneficial? (Journal Sophia)
