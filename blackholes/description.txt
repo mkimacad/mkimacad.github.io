@@ -56,7 +56,7 @@ But since the black hole interaction is assumed to not care about the exact deta
 header:Common storyline 5: on gravity quantization
 It is often said that collapse mechanisms may allow for "average expectation"-type Møller-Rosenfeld semiclassical gravity such that gravity does not need to be quantized.
 But the (Møller-Rosenfeld-)Hawking picture of black hole evaporation and the JCM model offer two contrasting pictures of black hole evaporation that do not involve measurements. The former results in a final mixed state for the black hole exterior, whereas the latter results in a final pure state.
-This arises due to the assumed nature of quantum gravity. Does gravity respond to each non-gravitational quantum outcome? Møller-Rosenfeld-Hawking says we can proceed if the answer is no. The JCM model says the answer is yes, even if gravity is not yet fully quantized.
+This arises due to the assumed nature of quantum gravity. Does gravity respond to each non-gravitational quantum outcome? Møller-Rosenfeld-Hawking says we can proceed as if the answer is no. The JCM model says the answer is yes, even if gravity is not yet fully quantized.
 header:Common storyline 6: on Page curve
 Holography of information says that quantum gravity's observables are different from non-gravitational theory's observables.
 While quantum gravity is different from typical gauge theories, they share the Gauss law. Information is at asymptotic infinity (such as null infinity).
