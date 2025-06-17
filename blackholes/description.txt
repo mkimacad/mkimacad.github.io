@@ -1,9 +1,17 @@
 header:Black hole research papers and notes involved
+$$\textbf{What happened to empty black hole branches in a superposition?}$$
+$$\textbf{My semiclassical spacetime should still be safe!}$$
 A Jaynes-Cummings (JCM) model of black holes: https://mkimacad.github.io/bh_jaynes_cummings [Submitted to a journal]
+$$\textbf{Bulk Hilbert space factorization in holography, quo vadis?}$$
 Investigating the Karch-Randall braneworld and the small corrections theorem: https://mkimacad.github.io/braneworld [Published in Fortschritte der Physik - Progress of Physics]
+$$\textbf{Let's cool a quantum system to solve search problems but w/o varying } H\text{?}$$
+$$\textbf{Adiabatic quantum computing is dead(?), but quantum cooling alive?}$$
 Quantum thermal search (partially involving a black hole "eventually"): https://mkimacad.github.io/quantum_thermal_search [Published in Quantum Information Processing]
+$$\textbf{Collapse is irrelevant: expectation-based semiclassical gravity problematic!}$$
 A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Not yet submitted, just notes for now]
+$$\textbf{Can we please accept non-linearity in EFT?}$$
 An analysis (study note?) of "An apologia for islands" paper: https://mkimacad.github.io/review_apologia [Just an analysis]
+$$\textbf{Can't black holes impose finite timelines for everyone?}$$
 A minor "side" somewhat philosophical paper regarding the nature of singularities (time can be finite despite effectively also being infinite, "black hole singularities can be beneficial"): https://mkimacad.github.io/philsci_time [Published in Sophia]
 header:Common storyline 1: the question of temperature transitions
 Bekenstein-Hawking temperature gets hotter as black holes evaporate.
