@@ -41,7 +41,7 @@ Non-perturbatively, a diffeomorphism-invariant quantum gravity observables canno
 Nevertheless, eventually islands suggest that this local EFT treatment commits to double counting with visible effects, and we have to take out extra degrees of freedom - "islands," "replica wormholes" are all about taking extra dofs out.
 header:(In relation to the common storyline 4:) Different paths toward the empty black hole branch, but no hair at the end
 There are many paths for a black hole to become empty. The "average expectation" (conventional) semiclassical EFT remembers all these paths.
-In the JCM model before the black hole is completely emptied in some outcomes (of a superposition), the semiclassical EFT is completely fine, and these different paths do not need to be forgotten to restore unitary.
+In the JCM model before the black hole is completely emptied in some outcomes (of a superposition), the semiclassical EFT is completely fine, and these different paths do not need to be forgotten to restore unitarity.
 But for the empty black hole outcome, since this outcome is assumed to be uniquely given ("the" ground state of the black hole interior), these paths are forgotten, and path information radiates away to the exterior.
 If we do not modify EFT, then quantum states or Hilbert space factorization has to be modified. Within the holographic bulk EFT, this gives an illusion of non-unitarity or non-linearity.
 header:(In relation to the common storyline 4:) On a black hole implementation of quantum thermal search (QTS)
