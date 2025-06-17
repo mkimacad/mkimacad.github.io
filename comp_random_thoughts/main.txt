@@ -1,1 +1,9 @@
-
+header:Can we remain optimistic about LLM as before? (June 17, 2025)
+LLMs no longer scale well relative to additional resource.
+Also, while additional resource, better performance but more hallucinations.
+Chain-of-Thoughts (CoTs) not always good. Sometimes degrades performances.
+More computation time involved, degradation in performance as well: trade-off in CoT reasoning.
+Would self-reinforcement learning help? Maybe, but likely not far enough to resolve significant issues.
+Basically, LLMs continue to have difficult time dealing with what they consider as unfamiliar.
+Illusions of complexity. That LLMs solve familiar complex tasks gives us impressions that LLMs should eventually work.
+That may not be the case.
