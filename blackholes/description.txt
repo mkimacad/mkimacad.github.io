@@ -41,8 +41,9 @@ Non-perturbatively, a diffeomorphism-invariant quantum gravity observables canno
 Nevertheless, eventually islands suggest that this local EFT treatment commits to double counting with visible effects, and we have to take out extra degrees of freedom - "islands," "replica wormholes" are all about taking extra dofs out.
 header:(In relation to the common storyline 4:) Different paths toward the empty black hole branch, but no hair at the end
 There are many paths for a black hole to become empty. The "average expectation" (conventional) semiclassical EFT remembers all these paths.
-We do not have to assume that paths are forgotten before the black hole is emptied, but once the black hole is emptied, then the conventional semiclassical EFT is wrong, and these paths have to be forgotten completely, existing only as part of exterior radiations.
-If we do not modify EFT, then states or Hilbert space factorization has to be modified. Within the holographic bulk EFT, this gives an illusion of non-unitarity or non-linearity.
+In the JCM model before the black hole is completely emptied in some outcomes (of a superposition), the semiclassical EFT is completely fine, and these different paths do not need to be forgotten to restore unitary.
+But for the empty black hole outcome, since this outcome is assumed to be uniquely given ("the" ground state of the black hole interior), these paths are forgotten, and path information radiates away to the exterior.
+If we do not modify EFT, then quantum states or Hilbert space factorization has to be modified. Within the holographic bulk EFT, this gives an illusion of non-unitarity or non-linearity.
 header:(In relation to the common storyline 4:) On a black hole implementation of quantum thermal search (QTS)
 The idea behind QTS is to throw (the initial state of) system $S$ into a black hole. $S$ alone has Hamiltonian that depends on a given search problem. If every feasible input has same search results, then every state has same energy. If not, then there are ground states with energy different from excited states. If the black hole exterior $EXT$ has temperature colder than $S$, then heat and energy should flow out of $S$ to $EXT$.
 In QTS contexts, black holes serve to provide an interaction mechanism between $S$ and $EXT$ that does not care about the Hilbert space and Hamiltonian details of $S$.
