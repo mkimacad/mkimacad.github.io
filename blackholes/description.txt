@@ -55,6 +55,13 @@ header:Common storyline 5: on gravity quantization
 It is often said that collapse mechanisms can allow for "average expectation"-type Møller-Rosenfeld semiclassical gravity such that gravity does not need to be quantized.
 But the (Møller-Rosenfeld-)Hawking picture of black hole evaporation and the JCM model offer two contrasting pictures of black hole evaporation that do not involve measurements. The former results in a final mixed state for the black hole exterior, whereas the latter results in a final pure state.
 This arises due to the assumed nature of quantum gravity. Does gravity respond to each non-gravitational quantum outcome? Møller-Rosenfeld-Hawking says we can proceed if the answer is no. The JCM model says the answer is yes, even if gravity is not yet fully quantized.
+header:Common storyline 6: on Page curve
+Holography of information says that quantum gravity's observables are different from non-gravitational theory's observables.
+While quantum gravity is different from typical gauge theories, they share the Gauss law. Information is at asymptotic infinity (such as null infinity).
+This is very likely true. However, unitarity of quantum physics and AdS/CFT does not resolve the information problem.
+To resolve the information problem, we need to show what happens around the black hole horizon where we still expect non-gravitational EFT (on curved background spacetime) to mostly work.
+This is why the Page curve given in terms of non-gravitational observables is so important. 
+(See sidenote.txt in this sub-repo as well for storyline 4 and 5 in relevance to the braneworld paper.)
 header:Slightly different views about the small corrections theorem within my papers
 If we believe that information on a black hole is actually encoded in its horizon, then assumed local interaction behaviors change. This should be the case for double holography, which allows us to evade the small corrections theorem. (The braneworld paper view)
 However, such full holography is actually unnecessary, and we only need to properly account for the empty black hole outcome to escape the small corrections theorem. (The JCM model paper view)
