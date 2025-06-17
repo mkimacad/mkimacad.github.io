@@ -29,7 +29,7 @@ header:On Karch-Randall braneworld (Journal Fortschritte der Physik - Progress o
 $$\textbf{Bulk Hilbert space factorization, quo vadis?}$$
 In https://mkimacad.github.io/braneworld, I investigate the Karch-Randall braneworld and controversies.
 The lesson is that we should not take the bulk EFT too seriously, as it inevitably commits to double counting, and its Hilbert space, especially its spatial factorization is unreliable.
-See https://mkimacad.github.io/blackholes as the starting point.
+See https://mkimacad.github.io/blackholes as the starting point. See https://mkimacad.github.io/blackholes/sidenote.txt as well.
 (Published in Fortschritte der Physik - Progress of Physics)
 header:Additional research projects being worked on.
 https://mkimacad.github.io/ads_vaebm, https://mkimacad.github.io/bh_jaynes_cummings, https://mkimacad.github.io/imaginary_time_DL
