@@ -25,7 +25,6 @@ One way to interpret this, combined with restoration of pure state evolution and
 Even without the no-hair principle, the intuition is that there is nothing inside the empty Schwarzschild black hole so its state should be unique if we continue to have interior-exterior effective field theory factorization.
 This is the key to demonstrating unitarity of the black hole exterior in the JCM model of black holes.
 header:Common storyline 3: three versions of semiclassical effective field theory (semiclassical EFT)
-By conventional semiclassical EFT, we usually mean that EFT on background spacetime obtained by averaging out stress-energy tensor.
 The argument in the JCM model is that we have to distinguish two (and eventually three) semiclassicality:
 A) mostly classical stability of background spacetime when viewed from the black hole exterior,
 B) conventional semiclassical EFT (Møller-Rosenfeld semiclassical gravity) - EFT on background spacetime obtained by averaging out stress-energy tensor.
