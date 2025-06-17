@@ -27,9 +27,10 @@ Conventional qubit gate-based simulations of quantum thermal search are impossib
 (Published in Journal Quantum Information Processing)
 header:On Karch-Randall braneworld (Journal Fortschritte der Physik - Progress of Physics)
 $$\textbf{Bulk Hilbert space factorization, quo vadis?}$$
-In https://mkimacad.github.io/braneworld, I investigate the Karch-Randall braneworld and controversies. Holography of information says that quantum gravity's observables are different from non-gravitational theory's observables, and black hole information is already on the black hole exterior. This view is not necessarily in conflict with the Karch-Randall braneworld view, manifest as the Hilbert space factorization problem in the Karch-Randall braneworld.
-Basically the problem is that the bulk is shared by both the brane and the standard boundary, and the entanglement wedge of a boundary region can overlap with the brane. So bulk Hilbert space regional factorization-wise, there are information separation troubles, but this is not actually an issue, if we believe in holography of information. Nevertheless, holography of information alone ('Page curve unnecessary') does not resolve the black hole information problem, since it is possible that near-horizon behaviors can still be pathological, and this is what motivates many to replicate the Page curve.
-And indeed, we could say that while the Page curve is rendered obsolete in a full quantum gravity (QG) theory, it is not in a non-gravitational theory with our familiar and usual local quantum observables. Holography is special, in sense that a QG theory has a dual non-gravitational understanding with a lower spacetime dimension, so we can explore the Page curve in a non-gravitational theory. This is analyzed within the conventional Karch-Randall braneworld setup and the toy Karch-Randall braneworld qudit model, which develops into another paper in https://mkimacad.github.io/bh_jaynes_cummings . (Published in Progress of Physics)
+In https://mkimacad.github.io/braneworld, I investigate the Karch-Randall braneworld and controversies.
+The lesson is that we should not take the bulk EFT too seriously, as it inevitably commits to double counting, and its Hilbert space, especially its spatial factorization is unreliable.
+See https://mkimacad.github.io/blackholes as the starting point.
+(Published in Fortschritte der Physik - Progress of Physics)
 header:Additional research projects being worked on.
 https://mkimacad.github.io/ads_vaebm, https://mkimacad.github.io/bh_jaynes_cummings, https://mkimacad.github.io/imaginary_time_DL
 header:AdS/VAEBM - studying perturbations to AdS/CFT via deep learning? (Currently under Nuclear Physics B revision stage)
