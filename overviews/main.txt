@@ -31,6 +31,7 @@ header:On Karch-Randall braneworld (Journal Fortschritte der Physik - Progress o
 $$\textbf{Bulk Hilbert space factorization, quo vadis?}$$
 In https://mkimacad.github.io/braneworld, I investigate the Karch-Randall braneworld and controversies.
 The lesson is that we should not take the bulk EFT too seriously, as it inevitably commits to double counting, and its Hilbert space, especially its spatial factorization, is unreliable. This could be understood as an expected feature of quantum gravity (and holography of information) and EFT cannot ignore its quantum gravitational origin forever.
+While it is true that boundary and bulk Hilbert spaces are the same in the full non-EFT version of AdS/CFT and holographic gravity, we mostly work in the EFT version of AdS/CFT. Furthermore, even with the same Hilbert space, spatial factorizations are different matters.
 See https://mkimacad.github.io/blackholes as the starting point. See https://mkimacad.github.io/blackholes/sidenote.txt as well.
 (Published in Fortschritte der Physik - Progress of Physics)
 header:Additional research projects being worked on.
