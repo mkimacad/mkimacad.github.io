@@ -54,7 +54,7 @@ This relies on the assumption that there is (Hilbert space, Hamiltonian-wise) do
 If the assumption is not the case, then we have to ask whether the ground energy of $S$ is understood as additional energy that would be radiated away to the exterior as well.
 But since the black hole interaction is assumed to not care about the exact details of $S$, the Hamiltonian information about $S$ would then be lost if the ground energy of $S$ is also additionally radiated away. This loss of information actually becomes worse for easy search problems, which suggests that double counting should be there.
 header:Common storyline 5: on gravity quantization
-It is often said that collapse mechanisms can allow for "average expectation"-type Møller-Rosenfeld semiclassical gravity such that gravity does not need to be quantized.
+It is often said that collapse mechanisms may allow for "average expectation"-type Møller-Rosenfeld semiclassical gravity such that gravity does not need to be quantized.
 But the (Møller-Rosenfeld-)Hawking picture of black hole evaporation and the JCM model offer two contrasting pictures of black hole evaporation that do not involve measurements. The former results in a final mixed state for the black hole exterior, whereas the latter results in a final pure state.
 This arises due to the assumed nature of quantum gravity. Does gravity respond to each non-gravitational quantum outcome? Møller-Rosenfeld-Hawking says we can proceed if the answer is no. The JCM model says the answer is yes, even if gravity is not yet fully quantized.
 header:Common storyline 6: on Page curve
