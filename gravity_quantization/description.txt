@@ -1,6 +1,7 @@
 header:History (date-wise)
 Forked from https://mkimacad.github.io/bh_jaynes_cummings: May 31-June 2, 2025
 Major update (v1): June 5-6, 2025
+Manuscript v1, along with the page update: June 21-22, 2025
 header:I do believe in quantum gravity, but a general issue with attempts to demonstrate the necessity of quantum gravity
 In general, attempts to demonstrate the necessity of gravity quantization resort to quantum measurement results.
 If we accept the standard postulates of quantum mechanics on measurements - linearity and Born rule, then these results largely follow.
