@@ -8,7 +8,7 @@ $$\textbf{Let's cool a quantum system to solve search problems but w/o varying }
 $$\textbf{Adiabatic quantum computing is dead(?), but quantum cooling alive?}$$
 Quantum thermal search (partially involving a black hole "eventually"): https://mkimacad.github.io/quantum_thermal_search [Published in Quantum Information Processing]
 $$\textbf{Collapse is irrelevant: expectation-based semiclassical gravity problematic!}$$
-A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Not yet submitted, just notes for now]
+A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Submitted to a philosophy of science journal]
 $$\textbf{Can we please accept non-linearity in EFT?}$$
 An analysis (study note?) of "An apologia for islands" paper: https://mkimacad.github.io/review_apologia [Just an analysis]
 $$\textbf{Can't black holes impose finite timelines for everyone?}$$
