@@ -1,7 +1,7 @@
 header:History (date-wise)
 Forked from https://mkimacad.github.io/bh_jaynes_cummings: May 31-June 2, 2025
 Major update (v1): June 5-6, 2025
-Manuscript v1, along with the page update: June 21-22, 2025
+Manuscript v1, along with the page update: June 21-23, 2025
 header:A problem with conventional thought experiments that establish the necessity of quantum gravity
 Attempts to demonstrate the necessity of gravity quantization typically resort to quantum measurement results or are susceptible to wavefunction collapse mechanisms.
 In many ways, the original spirit of Feynman-Bohr-Rosenfeld has not changed much for more modern no-go thought experiments. We often try to show that because semiclassical gravity applies the same gravitational field to every outcome in a superposition, each outcome branch eventually notices effects of other outcomes which should be prohibited by these outcomes being mutually orthogonal. It is more difficult to prove inconsistencies directly on the full superposition - after all, QFT on curved spacetime is consistent whenever it is well-defined, if not considering backreactions. And whenever we measure each outcome to reveal inconsistencies, this all depends on how the measurement process is modeled, which leads to problems. After all, a collapse mechanism may alter gravitational fields such that the gravitational version of the correspondence principle is respected while maintaining semiclassical gravity. 
