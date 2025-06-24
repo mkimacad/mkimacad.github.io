@@ -1,4 +1,6 @@
 header:History (date-wise, to be updated)
+Submitted to IJQI a year ago but reviewer availability issues + misunderstanding issues.
+New perspectives a year later, especially with regards to the Peres-Terno hybrid classical-quantum system argument.
 (To be updated)
 header:General idea
 A classical subsystem defined not as a subspace of the universe Hilbert space, but more as a dynamically changing subsapce of the unvierse Hamiltonian.
