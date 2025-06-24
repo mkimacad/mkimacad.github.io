@@ -28,7 +28,7 @@ As said in the header. These computed ground states constrain $H_{cl}$. The corr
 header:Intuition 4: we really need to assure $H_{cl}(t)$ to change slowly
 This is because Intuition 1 only works when $H_{cl}(t)$ changes slowly. Therefore, we cannot make the ground states of $H_{cl}(t)$ to exactly fit the computed ground states from the semiclassical equations of motion - we need to find a smooth out the evolutions such that variation of $H_{cl}$ is slow enough.
 header:End result
-We have classical system $cl$ evolving purely, approximated as the evolution in instaneous ground states, which match with the semiclassical equations of motion approximately. Meanwhile quantum system $qm$ is unaffected by the change in factorizations. System $z$ absorbs the entanglement that $cl$ threw away.
+We have classical system $cl$ evolving purely, approximated as the evolution in instantaneous ground states, which match with the semiclassical equations of motion approximately. Meanwhile quantum system $qm$ is unaffected by the change in factorizations. System $z$ absorbs the entanglement that $cl$ threw away.
 In this picture, there is no fixed time-independent Hilbert space factorization between $cl$, $qm$ and $z$, and factorization is time-dependent:
 $$\mathcal H \neq \mathcal H_{cl} \otimes \mathcal H_z \otimes \mathcal H_{qm}$$
 $$\mathcal H = \mathcal H_c \otimes \mathcal H_{qm}$$
