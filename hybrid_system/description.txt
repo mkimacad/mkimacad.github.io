@@ -10,7 +10,7 @@ This is actually consistent with the fact that a classical system is non-linear.
 Combine this with the fact that in quantum gravity, Hilbert space factorization becomes very unsettling. (See https://mkimacad.github.io/braneworld .)
 We want the classical (sub)system to have commuting observables, while also satisfying the correspondence principle when interacting with the quantum (sub)system.
 Suppose we have time-independent Hamiltonian $H$. Divide it as follows:
-$$H = H_{cl}(t) + H_{qm} + H_I(t)$ = H_c + H_{qm} + H_{I,qm}$
+$$H = H_{cl}(t) + H_{qm} + H_I(t) = H_c + H_{qm} + H_{I,qm}$$
 $H_I$ can be thought of as the interaction Hamiltonian, but here it takes more of a residual role as to make $H_{cl}(t)$ work.
 $H_{cl}$: (actual) classical system Hamiltonian, $H_{qm}$: quantum system Hamiltonian (pre-defined). 
 Note time-dependence of $H_{cl}$ and $H_I$.
