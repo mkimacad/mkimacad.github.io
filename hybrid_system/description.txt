@@ -30,6 +30,6 @@ This is because Intuition 1 only works when $H_{cl}(t)$ changes slowly. Therefor
 header:
 header:End result
 We have classical system $cl$ evolving purely, approximated as the evolution in instaneous ground states, which match with the semiclassical equations of motion approximately. Meanwhile quantum system $qm$ is unaffected by the change in factorizations. System $z$ absorbs the entanglement that $cl$ threw away.
-In this picture, there is no fixed Hilbert space factorization between $cl$, $qm$ and $z$:
+In this picture, there is no fixed time-independent Hilbert space factorization between $cl$, $qm$ and $z$, and factorization is time-dependent:
 $$\mathcal H \neq \mathcal H_{cl} \otimes \mathcal H_z \otimes \mathcal H_{qm}$$
 $$\mathcal H = \mathcal H_c \otimes \mathcal H_{qm}$$
