@@ -22,3 +22,5 @@ For quantum gravity, we can separate the empty black hole branch from non-empty 
 In contrast, semiclassical gravity cannot separate the empty black hole branch from non-empty ones and the original Hawking argument + small corrections theorem prevent purification of the black hole exterior.
 This is all that need to be stated, and refer to the manuscript for the review of historical no-go thought experiments.
 (The manuscript makes the previously misleading discussion regarding Feynman-Bohr-Rosenfeld arguments clearer. Furthermore, I felt that in-depth discussions about postquantum gravity are unneessary, and these are removed in this version of the github page on June 22, 2025.)
+header:On modeling a hybrid classical-quantum system: there is something more than Peres-Terno!
+See https://mkimacad.github.io/hybrid_system .
