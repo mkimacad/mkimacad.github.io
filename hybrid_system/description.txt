@@ -4,22 +4,25 @@ New perspectives a year later, especially with regards to the Peres-Terno hybrid
 (To be updated)
 header:Main question
 How do we treat a classical system in quantum mechanics? Can we really discuss a hybrid classical-quantum system that makes sense within quantum mechanics?
-header:General idea
+The Peres-Terno argument suggests that this is infeasible. But is it?
+header:Setup
 A classical subsystem defined not as a subspace of the universe Hilbert space, but more as a dynamically changing subsapce of the unvierse Hamiltonian.
 This is actually consistent with the fact that a classical system is non-linear.
 Combine this with the fact that in quantum gravity, Hilbert space factorization becomes very unsettling. (See https://mkimacad.github.io/braneworld .)
 We want the classical (sub)system to have commuting observables, while also satisfying the correspondence principle when interacting with the quantum (sub)system.
-Suppose we have time-independent Hamiltonian $H$. Divide it as follows:
-$$H = H_{cl}(t) + H_{qm} + H_I(t) = H_c + H_{qm} + H_{I,qm}$$
-$H_I$ can be thought of as the interaction Hamiltonian, but here it takes more of a residual role as to make $H_{cl}(t)$ work.
+Suppose we have time-independent Hamiltonian $H$. Factorize it in two descriptions (or factorizations):
+$$H = H_{cl}(t) + H_{qm} + H_z(t) = H_c + H_{qm} + H_I$$
 $H_{cl}$: (actual) classical system Hamiltonian, $H_{qm}$: quantum system Hamiltonian (pre-defined). 
-Note time-dependence of $H_{cl}$ and $H_I$.
-$H_c$: the usual time-independent pre-quantized classical system Hamiltonian we write. Similarly, $H_{I,qm}$ is the usual time-independent interaction Hamiltonian we write.
-However, if we use the $H_c$ description, then the classical system is actually quantum. 
+Note time-dependence of $H_{cl}$ and $H_z$.
+$H_c$: the usual time-independent pre-quantized classical system Hamiltonian we write. If we use the $H_c$ description, then the classical system is actually quantum. 
+header:Intuition 1: adiabatic computing ground state logic
 If $H_{cl}(t)$ changes slowly, and the initial classical system is a classical state, then we know from adiabatic quantum computing that if the classical system evolves only by $H_{cl}(t)$ then the evolution is approximately a sequence of instantaneous ground states.
+header:Intuition 2: energy shifting limited by ground state
+Let the classical system at $t=0$ be in the ground state $H_{cl}(0)$. (being updated..)
+header:(Being updated..)
 We want the correspondence principle - on average, the classical equations of motion should be followed.
 The intitial state of the quantum system gives us the initial mean-field (or mean-observable) configuration.
 Use the initial states of both systems as the initial condition for the classical equations of motion, treating both systems pre-quantized / classical.
 The resulting classical evolution of the classical system provides instantaneous ground states of $H_{cl}(t)$.
 We know that the correspondence principle is followed when the $H_c+H_{qm}+H_{I,qm}$ description is used.
-So as long as the same classical equations of motion is involved, the average behavior of the quantum system remains unchanged.
+So as long as the same classical equations of motion is involved, the average behavior of the quantum system remains unchanged regardless of the description used.
