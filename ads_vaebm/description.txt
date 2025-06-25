@@ -1,6 +1,6 @@
 header:History (date-wise)
 V1 draft (Nuclear Physics B submission): March 6, 2025
-Significant updates of this page while working toward the revision - September 25-July 6, 2025
+Significant updates of this page while working toward the revision - June 25-July 6, 2025
 V2 (NPB revision submission): Expected July 6, 2025.
 header:Insight 1:Holography is essentially autoencoder renormalization
 As stated in Hashimoto (2019).
