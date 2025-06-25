@@ -1,10 +1,25 @@
 header:History (date-wise)
 V1 draft (Nuclear Physics B submission): March 6, 2025
-V2 (NPB revision submission): Expected around early to mid-June.
-header:Lesson 1: Deep learning can naturally study perturbations to AdS/CFT
+Significant updates of this page while working toward the revision - September 25-July 6, 2025
+V2 (NPB revision submission): Expected July 6, 2025.
+header:Insight 1:Holography is essentially autoencoder renormalization
+As stated in Hashimoto (2019).
+header:Insight 2: Deep learning can naturally study perturbations to AdS/CFT
 To be updated, just bulk EFT path integral in Euclidean time..
-header:Lesson 2: On probabilistic independence of IR states from UV states
+header:Insight 3: On probabilistic independence of IR states from UV states
 While IR states encode and compress information on IR states, probabilistically they are independent in AdS/DL (AdS/DBM and AdS/VAEBM). This means much in terms of how we should think of IR measurements in our world.
-IR states are the compressed states of affairs, and therefore they provide limited information about dynamics. We could think of measurements as picking out one IR branch of the bulk and the dual UV boundary state. And the whole AdS/DL machinery suggests how a single UV state, non-probabilistically interpreted, can arise to multiple IR state results probabilistically via holography.    
+IR states are the compressed states of affairs, and therefore they provide limited information about dynamics. We could think of measurements as picking out one IR branch of the bulk and the dual UV boundary state. And the whole AdS/DL machinery suggests how a single UV state, non-probabilistically interpreted, can arise to multiple IR state results probabilistically via holography.
+header:Insight 4: Braneworld intuitions - one (or more) additional empirically irrelevant dimension to make sense of the (classical) reality.
+In braneworld scenarios, we have cases where gravitons are confined to four-dimensional branes such that physics on the branes can be described separately in four-dimensional EFT.
+Extrapolating on this, people consider whether it would be possible to have de Sitter (dS) branes on Anti de Sitter (AdS) spaces.
+This can be studied with the tools of deep learning, and in fact we can go further.
+How should we model a classical system within quantum mechanics? So far, unsatisfactory answers.
+(For those who believe we have a satisfactory answer: a hybrid classical-quantum system in quantum mechanics would then have been an addressed issue. But the opposite is true.)
+Now we can use additional holography dimensions to implement autoencoder renormalization.. to the level of classical observables.
+The resulting bulk geometry is not the empirical geometry we observe, but it shows how classical observables must be constructed by coarse-graining on the original quantum observables. Classical observables are in general non-linear, as expected from classical chaos.
+In other words, gravity provides how different empirical observables down to classical observables must be defined.
+Gravity coarse-grains and renormalizes. 
+header:Issues to be addressed 1: gauge ambiguities in path integrals
+(to be updated)
 header:To be further updated
 To be updated
