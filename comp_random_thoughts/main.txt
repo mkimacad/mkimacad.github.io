@@ -1,4 +1,8 @@
-header:Can we remain optimistic about LLM as before? (June 17, 2025)
+header:MoE and prompt engineering (July 10, 2025 - ?)
+(To be updated)
+header:So-called top 50 interview questions about LLM (July 10, 2025 - ?)
+(To be updated)
+header:Can we remain optimistic about LLM as before? (very shallow, June 17, 2025)
 LLMs no longer scale well relative to additional resource.
 Also, while additional resource, better performance but more hallucinations.
 Chain-of-Thoughts (CoTs) not always good. Sometimes degrades performances.
