@@ -1,5 +1,6 @@
 header:1
 A
+$$\alpha$$
 header:2
 B
 header:3
@@ -23,9 +24,9 @@ B
 header:12
 C
 header:13
-A
+$\beta$
 header:14
-B
+$$\beta$$
 header:15
 C
 header:16
