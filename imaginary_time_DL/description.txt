@@ -22,3 +22,11 @@ And there are cases where polynomials are clearly unsuited, especially in high-d
 header:How do we "preserve" high-order derivative information of a signal?
 Directly providing high-order derivatives so that neural networks match to them is infeasible.
 Instead, we work in complex-valued domain and expand to complex-valued output. We move away from real analysis to complex analysis.
+header:Holomorphic function
+If we assume that our signals are holomorphic, then a significantly constraining constraint can be provided - Cauchy-Riemann equations.
+So our neural nets evaluate and punish Cauchy-Rimeann equation residuals so that neural networks properly learn smooth interpolation and extrapolation.
+This is much better than penalizing neural nets for non-smoothness measures directly. It is samples that tell us how to be (more) smooth (or not), not interpolated results.
+header:Two ways to implement complex MLP
+The first direct method involves utilizing Cauchy-Riemann equations. 
+The other method is to utilize and match a scalar potential function that generates our target data as first-order gradients. There, the Laplace equation is used as the main constraint.
+Which one is better? The direct method is, and this gives us some numerical lessons about solving the Laplace equation as well.
