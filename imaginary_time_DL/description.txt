@@ -48,7 +48,7 @@ This model computes scalar real-valued training data $\psi_{\text{target}}(\math
 From the DirectUVMLP case, define as follows:
 $$u_{\text{true}} = \frac{\partial \psi_{\text{target}}}{\partial x},\,\,v_{\text{true}} = - \frac{\psi_{\text{target}}}{\partial y}$$
 Then one of the Cauchy-Riemann equations is automatically satisfied, so we only need to impose the other, which gives us the Laplace equation:
-$$\nable^2 \psi_{\text{target}} = 0$$
+$$\nabla^2 \psi_{\text{target}} = 0$$
 The potential data MSE loss goes as:
 $$\mathcal{L}_{\psi\_\text{data}} = \frac{1}{N} \sum_{i=1}^{N} \left( \hat{\psi}(\mathbf{z}_i) - \psi_{\text{true}}(\mathbf{z}_i) \right)^2$$
 The Laplace equation penalty goes as:
