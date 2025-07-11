@@ -7,7 +7,7 @@ header:On the [-1,1] "constraint" of neural networks - is extrapolation on neura
 Assume, for simplification, one-dimensional input domain.
 If you think about it, if we can extract information well on [-1,1], then as long as the interpolating function is smooth, we know everything.
 But neural networks do not behave like this. Outside of the interpolating domain where sample data are available, they behave poorly.
-This is largely due to the nature of activation functions.
+This is largely due to the nature of activation functions. See https://dl.acm.org/doi/10.5555/3495724.3495858 ("Neural networks fail to learn periodic functions and how to fix it" - though Snake is only a limited solution - it only shows that an approximation can be done with the network structure but whether this approximation is reachable is not described.)
 The worst case is RELU activation, where we high-order derivatives are all zero. So neural networks with RELU are essentially interpolating memorizers.
 No RELU for extrapolation.
 But what about other smooth activation functions? Can we do well by obtaining high-order derivative data?
