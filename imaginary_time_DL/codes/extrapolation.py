@@ -141,21 +141,79 @@ def calculate_run_parameters():
 
 # =========================================================================================
 # --- CHECKPOINTING & CURRICULUM HELPERS ---
+# =========================================================================================
 def save_checkpoint(path: str, params, opt_state, dw_state, phase_index: int, key):
-    state_dict = {'params': to_bytes(params), 'opt_state': to_bytes(opt_state), 'dw_state': dw_state, 'phase_index': phase_index, 'key': key.__array__()}
-    with open(path, "wb") as f: f.write(to_bytes(state_dict))
+    """Saves the full training state. Serializes the entire state dict in one go."""
+    # The dictionary should contain the raw JAX PyTrees and the key as an array.
+    state_dict = {
+        'params': params,
+        'opt_state': opt_state,
+        'dw_state': dw_state,
+        'phase_index': phase_index,
+        'key': key.__array__() # Save key as its array representation for robustness
+    }
+    # Use flax.serialization.to_bytes on the entire dictionary.
+    serialized_state = to_bytes(state_dict)
+    with open(path, "wb") as f:
+        f.write(serialized_state)
 
 def load_checkpoint(path: str, init_params, init_opt_state, init_dw_state, init_key):
-    if not os.path.exists(path): return init_params, init_opt_state, init_dw_state, 0, init_key
-    with open(path, "rb") as f: loaded_bytes = f.read()
-    template_state = {'params': init_params, 'opt_state': init_opt_state, 'dw_state': init_dw_state, 'phase_index': 0, 'key': init_key}
-    try:
-        state_dict = from_bytes(template_state, loaded_bytes)
-        print(f"  -> Checkpoint found. Resuming from phase {state_dict['phase_index']}.")
-        return state_dict['params'], state_dict['opt_state'], state_dict['dw_state'], state_dict['phase_index'], random.PRNGKey(state_dict['key'])
-    except Exception as e:
-        print(f"  -> WARNING: Could not load checkpoint from '{path}'. Error: {e}. Starting from scratch.")
+    """Loads the training state. Handles both new and old (faulty) checkpoint formats."""
+    if not os.path.exists(path):
         return init_params, init_opt_state, init_dw_state, 0, init_key
+
+    with open(path, "rb") as f:
+        loaded_bytes = f.read()
+
+    # Define the structure for deserialization, using initial states as templates.
+    # The key template should be its array form.
+    template_state_new = {
+        'params': init_params,
+        'opt_state': init_opt_state,
+        'dw_state': init_dw_state,
+        'phase_index': 0,
+        'key': init_key.__array__()
+    }
+
+    try:
+        # --- Attempt 1: Try to load as the NEW, correct format ---
+        state_dict = from_bytes(template_state_new, loaded_bytes)
+        # Re-constitute the key from its array representation
+        key = jnp.asarray(state_dict['key'], dtype=jnp.uint32)
+        print(f"  -> Checkpoint found (new format). Resuming from phase {state_dict['phase_index']}.")
+        return state_dict['params'], state_dict['opt_state'], state_dict['dw_state'], state_dict['phase_index'], key
+
+    except Exception as e_new:
+        # --- Attempt 2: If new format fails, try to load as the OLD, faulty format ---
+        print(f"  -> Could not load as new format ({e_new}). Trying old format...")
+        try:
+            # Define the template for the old, doubly-serialized format
+            template_state_old = {
+                'params': b'', 'opt_state': b'', 'dw_state': init_dw_state,
+                'phase_index': 0, 'key': init_key.__array__()
+            }
+            outer_dict = from_bytes(template_state_old, loaded_bytes)
+
+            # Deserialize the inner PyTrees from their raw bytes
+            params = from_bytes(init_params, outer_dict['params'])
+            opt_state = from_bytes(init_opt_state, outer_dict['opt_state'])
+            dw_state = outer_dict['dw_state']
+            phase_index = outer_dict['phase_index']
+            
+            # **THE FIX IS HERE**: Directly use the loaded array as the key.
+            # Do not try to re-create it with PRNGKey().
+            key = jnp.asarray(outer_dict['key'], dtype=jnp.uint32)
+
+            print(f"  -> Checkpoint found (old format). Resuming from phase {phase_index}.")
+            # Save the checkpoint in the new, correct format immediately
+            print("  -> Resaving checkpoint in the new, corrected format...")
+            save_checkpoint(path, params, opt_state, dw_state, phase_index, key)
+
+            return params, opt_state, dw_state, phase_index, key
+
+        except Exception as e_old:
+            print(f"  -> WARNING: Could not load checkpoint from '{path}' using either new or old format. Error: {e_old}. Starting from scratch.")
+            return init_params, init_opt_state, init_dw_state, 0, init_key
 
 def _generate_circling_curriculum(half_width: float, interval_size: float) -> List[List[Tuple[Tuple[float, float], Tuple[float, float]]]]:
     s = interval_size / 2.0; L_max = int(jnp.floor((half_width / s - 1) / 2.0))
