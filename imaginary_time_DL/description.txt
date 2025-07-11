@@ -30,10 +30,12 @@ header:Two ways to implement complex-variable physics-informed MLP neural networ
 The first direct method involves utilizing Cauchy-Riemann equations. ($\textbf{DirectUVMLP}$)
 The other method is to utilize and match a scalar potential function that generates our target data as first-order gradients. There, the Laplace equation is used as the main constraint. ($\textbf{ScalarPotentialMLP}$)
 Which one is better? The direct method is, and this gives us some numerical lessons about solving the Laplace equation as well.
-Being updated. Laplace and Cauchy-Riemann connections.
 header:DirectUVMLP
-This model computes training data $f_{target}(\mathbf{z}) = (u_true(z),v_true(z))$, which has complex-valued input $z$ and complex-valued output.
+This model computes training data $f_{\text{target}}(\mathbf{z}) = (u_{\text{true}}(z),v_{\text{true}}(z))$, which has complex-valued input $z=(x,y)$ and complex-valued output.
 "UV" in DirectUVMLP refers to the output being complex-valued, with $u$ being the real part of the output and $v$ being the imaginary part.
+For holomorhpic functions, we have Cauchy-Riemann constraints, which state that:
+$$\frac{\partial u_{\text{true}}}{\partial x} = \frac{\partial v_{\text{true}}}{\partial y},\,\, \frac{\partial u_{\text{true}}}{\partial y} = -\frac{\partial v_{\text{true}}}{\partial x}$$
+This informs us the Cauchy-Riemann penalty to be used as part of the loss function.
 Non-physics (non-Cauchy-Riemann) training data MSE loss goes as:
 $$\mathcal{L}_{\text{uv\_data}} = \frac{1}{N} \sum_{i=1}^{N} \left\| f_\theta(\mathbf{z}_i) - (u_{\text{true}}(\mathbf{z}_i), v_{\text{true}}(\mathbf{z}_i)) \right\|^2$$
 The Cauchy-Riemann penalty goes as:
@@ -42,11 +44,16 @@ The kink penalty that penalizes varying Cauchy-Riemann residuals (so that we do 
 $$\mathcal{L}_{\text{kink}} = \frac{1}{M} \sum_{j=1}^{M} \left\| \nabla R_{\text{CR}}(\mathbf{z}_j) \right\|^2$$
 These losses are then weighted, either by fixed weights or by dynamic weighting. By default, dynamic weighting is used, to be described below.
 header:ScalarPotentialMLP
-This model computes scalar real-valued training data $\psi_{target}(\mathbf{z})$ from the available target function $f_{target}(\mathbf{z})$ and mainly fits this potential $\psi_{target}$ instead.
+This model computes scalar real-valued training data $\psi_{\text{target}}(\mathbf{z})$ from the available target function $f_{\text{target}}(\mathbf{z})$ and mainly fits this potential $\psi_{\text{target}}$ instead.
+From the DirectUVMLP case, define as follows:
+$$u_{\text{true}} = \frac{\partial \psi_{\text{target}}}{\partial x},\,\,v_{\text{true}} = - \frac{\psi_{\text{target}}}{\partial y}$$
+Then one of the Cauchy-Riemann equations is automatically satisfied, so we only need to impose the other, which gives us the Laplace equation:
+$$\nable^2 \psi_{\text{target}} = 0$$
 The potential data MSE loss goes as:
 $$\mathcal{L}_{\psi\_\text{data}} = \frac{1}{N} \sum_{i=1}^{N} \left( \hat{\psi}(\mathbf{z}_i) - \psi_{\text{true}}(\mathbf{z}_i) \right)^2$$
 The Laplace equation penalty goes as:
 $$\mathcal{L}_{\text{laplace}} = \frac{1}{M} \sum_{j=1}^{M} \left( \nabla^2 \hat{\psi}(\mathbf{z}_j) \right)^2 = \frac{1}{M} \sum_{j=1}^{M} \left( \frac{\partial^2 \hat{\psi}}{\partial x^2} + \frac{\partial^2 \hat{\psi}}{\partial y^2} \right)^2$$
+Despite equivalence for the target functions, neural network training works differently, and automatic satisfaction of $\frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}$ actually kills a valuable training signal that can be used to make neural nets converge to correct holomorphic solutions.
 header:Dynamic weighting in training both complex MLPs
 To be updated
 header:SGD theoretical justifications of the circling explore-consolidate training approach
