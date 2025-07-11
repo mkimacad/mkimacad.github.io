@@ -29,7 +29,8 @@ SAVE_MODELS = True
 # --- Curriculum Control Parameters ---
 TOTAL_CURRICULUM_REPETITIONS = 7
 EPOCHS_PER_PHASE = 15000
-FINAL_POLISH_EPOCHS = 30000
+CONSOLIDATION_EPOCHS_OVERRIDE = 60000 # If None, then EPOCHS_PER_PHASE
+FINAL_POLISH_EPOCHS = 60000
 LOG_EVERY_N_EPOCHS = max(EPOCHS_PER_PHASE//3, 2000) # This now only controls the print frequency within a phase
 
 # --- Data-Fitting Curriculum Configuration ---
@@ -257,20 +258,42 @@ def _generate_circling_finetune_curriculum(inner_hw: float, outer_hw: float, ste
     
 def _build_curriculum_plan():
     print("Building curriculum plan...")
+
+    # Determine the number of epochs for consolidation phases based on the override
+    consolidation_epochs = CONSOLIDATION_EPOCHS_OVERRIDE if CONSOLIDATION_EPOCHS_OVERRIDE is not None else EPOCHS_PER_PHASE
+    if CONSOLIDATION_EPOCHS_OVERRIDE is not None:
+        print(f"  -> Using custom {consolidation_epochs} epochs for consolidation phases.")
+    else:
+        print(f"  -> Using default {consolidation_epochs} epochs for consolidation phases.")
+
     plan = []
     for rep in range(TOTAL_CURRICULUM_REPETITIONS):
         data_curriculum_shells = _generate_circling_curriculum(INTERPOLATION_HALF_WIDTH, SEQUENTIAL_INTERVAL_SIZE)
         cumulative_data_boxes = []
         for l_idx, shell in enumerate(data_curriculum_shells):
-            for b_idx, box in enumerate(shell): plan.append({'type': 'data_explore', 'rep': rep, 'shell': l_idx, 'box': b_idx, 'box_def': [box], 'epochs': EPOCHS_PER_PHASE})
-            cumulative_data_boxes.extend(shell); plan.append({'type': 'data_consolidate', 'rep': rep, 'shell': l_idx, 'cumulative_boxes': list(cumulative_data_boxes), 'epochs': EPOCHS_PER_PHASE})
+            # Data Explore phase uses the standard epoch count
+            for b_idx, box in enumerate(shell):
+                plan.append({'type': 'data_explore', 'rep': rep, 'shell': l_idx, 'box': b_idx, 'box_def': [box], 'epochs': EPOCHS_PER_PHASE})
+            
+            # Data Consolidate phase uses the new consolidation_epochs variable
+            cumulative_data_boxes.extend(shell)
+            plan.append({'type': 'data_consolidate', 'rep': rep, 'shell': l_idx, 'cumulative_boxes': list(cumulative_data_boxes), 'epochs': consolidation_epochs})
+
         if USE_PHYSICS_FINETUNING_CURRICULUM:
             finetune_shells = _generate_circling_finetune_curriculum(INTERPOLATION_HALF_WIDTH, EXTRAPOLATION_HALF_WIDTH, PHYSICS_SHELL_STEP_SIZE)
             cumulative_physics_boxes = []
             for l_idx, shell in enumerate(finetune_shells):
-                for b_idx, box in enumerate(shell): plan.append({'type': 'phys_explore', 'rep': rep, 'shell': l_idx, 'box': b_idx, 'box_def': [box], 'data_boxes': cumulative_data_boxes, 'epochs': EPOCHS_PER_PHASE})
-                cumulative_physics_boxes.extend(shell); plan.append({'type': 'phys_consolidate', 'rep': rep, 'shell': l_idx, 'cumulative_boxes': list(cumulative_physics_boxes), 'data_boxes': cumulative_data_boxes, 'epochs': EPOCHS_PER_PHASE})
+                # Physics Explore phase uses the standard epoch count
+                for b_idx, box in enumerate(shell):
+                    plan.append({'type': 'phys_explore', 'rep': rep, 'shell': l_idx, 'box': b_idx, 'box_def': [box], 'data_boxes': cumulative_data_boxes, 'epochs': EPOCHS_PER_PHASE})
+                
+                # Physics Consolidate phase uses the new consolidation_epochs variable
+                cumulative_physics_boxes.extend(shell)
+                plan.append({'type': 'phys_consolidate', 'rep': rep, 'shell': l_idx, 'cumulative_boxes': list(cumulative_physics_boxes), 'data_boxes': cumulative_data_boxes, 'epochs': consolidation_epochs})
+        
+        # Final Polish phase has its own dedicated epoch count
         plan.append({'type': 'final_polish', 'rep': rep, 'data_boxes': cumulative_data_boxes, 'epochs': FINAL_POLISH_EPOCHS})
+
     print(f"Curriculum plan built with {len(plan)} phases.")
     return plan
 
