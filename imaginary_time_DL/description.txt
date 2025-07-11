@@ -110,10 +110,10 @@ To summarize, the Circling Explore-Consolidate curriculum is a sophisticated tra
 header:Why complexification is powerful
 Complexification is powerful because it effectively provides high-order derivative and frequency information.
 Even when we only have real-valued real-input data, it may be that we have additional information about their frequency details, such as the data being low-frequency data within some bounded frequency domain. Constructing at least an approximate holomorphic function modeling these data allows us to encode this information and use it for further training and extrapolating from neural nets.
-We can also think of Cauchy's integral formula - for simple closed piecewise-smooth and counterclockwise-oriented boundary $D$ contained in some open subset $U$ and for every complex-valued $a$ on the interior of $D$,
+We can also think of Cauchy's integral formula - for simple closed piecewise-smooth and counterclockwise-oriented boundary $\gamma$ contained in some open subset $U$ and for every complex-valued $a$ on the interior of $D$ enclosed by $\gamma$,
 $$f(a) = \frac{1}{2\pi i} \oint_\gamma \frac{f(z)}{z-a}\,dz$$
 $$f^{(n)}(a) = \frac{n!}{2\pi i} \oint_\gamma \frac{f(z)}{\left(z-a\right)^{n+1}}\,dz$$
-where $\gamma$ is the circle oriented counter-clockwise forming the boundary of $D$ and $f:U \rightarrow \mathbb{C}$ is assumed to be holomorphic. Furthermore, for holomorphic functions, if some function $g(x) = f(x)$ for every real-axis input within $D$, then $g(x)=f(x)$ everywhere.
+where $f:U \rightarrow \mathbb{C}$ is assumed to be holomorphic. Furthermore, for holomorphic functions, if some function $g(x) = f(x)$ for every real-axis input within $D$, then $g(x)=f(x)$ everywhere.
 header:Slight digression: neural networks work as lowpass interpolators and bounded lowpass extrapolators
 In a significantly bounded way, due to the F-principle of neural networks where it takes almost exponential time for neural nets to learn high-frequency signals to the point that they never do, high-frequency signals tend to be filtered out.
 This means that in some cases, even without complexifications, neural nets can be used for significantly bounded extrapolation. We can see this in the below image.
