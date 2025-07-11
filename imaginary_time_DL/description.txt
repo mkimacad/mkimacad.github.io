@@ -1,6 +1,10 @@
 header:History (dates-wise)
-To be updated, updates upcoming..
-header:On the [-1,1] "constraint" of neural networks
+v1 code (July 10-11, 2025)
+Updating further soon
+header:Codes
+The initial v1 code can be viewed from the below repo viewer, located at codes/extrapolation.py. (July 10-11, 2025)
+header:On the [-1,1] "constraint" of neural networks - is extrapolation on neural networks really possible?
+Assume, for simplification, one-dimensional input domain.
 If you think about it, if we can extract information well on [-1,1], then as long as the interpolating function is smooth, we know everything.
 But neural networks do not behave like this. Outside of the interpolating domain where sample data are available, they behave poorly.
 This is largely due to the nature of activation functions.
@@ -10,7 +14,11 @@ But what about other smooth activation functions? Can we do well by obtaining hi
 Problem: high-order differentiation of neural nets is quite expensive. And we are doing additional differentiations on the loss function for derivative matching.
 You may consider finite difference methods, but they are bound to different numerical issues.
 Neural nets can only approximate some smooth function, so there will be some cases where derivatives are significantly wrong for correct computation of high-order derivatives.
-So we need different ways to have good extrapolation behaviors.
-what about expanding the interpolation domain? But we are then met with two problems.
-1) Interpolation issues.
-2) Theoretical extrapolation conundrum. 
+So we need different ways to have good extrapolation behaviors. Expanding the sample input domain is not an option, as aforementioned.
+header:Why not polynomials for extrapolation?
+Polynomials do provide good bounded extrapolation performance for sufficiently low-derivative signals.
+Nevertheless, they unnecessarily lose valuable high-order derivative information. Furthermore, it is not like we cannot extrapolate forever.
+And there are cases where polynomials are clearly unsuited, especially in high-dimensional input high-dimensional output cases, along with non-linear optimization cases.
+header:How do we "preserve" high-order derivative information of a signal?
+Directly providing high-order derivatives so that neural networks match to them is infeasible.
+Instead, we work in complex-valued domain and expand to complex-valued output. We move away from real analysis to complex analysis.
