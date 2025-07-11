@@ -124,3 +124,4 @@ Unfortunately, this is a relatively lucky case and in other cases this miracle i
 So we need complexification.
 header:Some empirical training insights
 1. For most cases, the kink penalty significantly improves training performance. The kink penalty is well-justified since the Cauchy-Riemann residuals should be zero so their high-order and first-order derivatives should always be zero.
+2. Snake activation function provides much better training performance, and this relates to the theoretical analysis of Snake on extrapolation.
