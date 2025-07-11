@@ -27,7 +27,7 @@ RUN_DYNAMIC_WEIGHTING_CONFIGS = True
 SAVE_MODELS = True
 
 # --- Curriculum Control Parameters ---
-TOTAL_CURRICULUM_REPETITIONS = 6
+TOTAL_CURRICULUM_REPETITIONS = 7
 EPOCHS_PER_PHASE = 15000
 FINAL_POLISH_EPOCHS = 30000
 LOG_EVERY_N_EPOCHS = max(EPOCHS_PER_PHASE//3, 2000) # This now only controls the print frequency within a phase
@@ -42,7 +42,7 @@ PHYSICS_SHELL_STEP_SIZE = 2.0
 N_CONSTRAINT_POINTS_OVERRIDE = 1000
 # Number of extra points from the extrapolation shell to add to every physics phase
 N_EXTRAPOLATION_CONSTRAINT_POINTS = N_CONSTRAINT_POINTS_OVERRIDE
-USE_KINK_PENALTY = False # Global switch for the new higher-order penalty
+USE_KINK_PENALTY = True # Global switch for the new higher-order penalty
 KINK_PENALTY_WEIGHT = 20.0 # Weight for the kink penalty term
 
 # --- Training Data Generation Strategy ---
