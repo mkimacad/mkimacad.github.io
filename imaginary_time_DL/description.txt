@@ -55,7 +55,23 @@ The Laplace equation penalty goes as:
 $$\mathcal{L}_{\text{laplace}} = \frac{1}{M} \sum_{j=1}^{M} \left( \nabla^2 \hat{\psi}(\mathbf{z}_j) \right)^2 = \frac{1}{M} \sum_{j=1}^{M} \left( \frac{\partial^2 \hat{\psi}}{\partial x^2} + \frac{\partial^2 \hat{\psi}}{\partial y^2} \right)^2$$
 Despite equivalence for the target functions, neural network training works differently, and automatic satisfaction of $\frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}$ actually kills a valuable training signal that can be used to make neural nets converge to correct holomorphic solutions.
 header:Dynamic weighting in training both complex MLPs
-To be updated
+The dynamic weighting algorithm aims to automatically balance the contributions of different loss terms during optimization, adjusting the weight of each physics-based loss term at every training step to match the gradient magnitude of the data-driven loss terms. This prevents any single loss term from dominating the gradient updates, ensuring a more stable and balanced training process. (see https://doi.org/10.1016/j.cma.2022.114823 )
+For a given set of model parameters $\theta$, the gradient of the loss function $\mathcal{L}_k$ is computed for every term $k$ in the total loss (both data and physics terms). The gradient $\mathbf{g}_k$ is a vector containing the partial derivatives of the loss with respect to each model parameter.
+$$\mathbf{g}_k = \nabla_\theta \mathcal{L}_k(\theta)$$
+A reference gradient magnitude is established using only the data-driven loss terms (e.g., $\mathcal{L}_{\text{uv\_data}}$, $\mathcal{L}_{\psi\_\text{data}}$). We compute the maximum absolute value of the gradient for each data loss term and then take the mean of these maximums. This value, $\lambda_{\text{ref}}$, represents the typical gradient scale produced by the data. This calculation is excluded from the gradient tape for the main optimization step, meaning its own derivative is not computed.
+$$\lambda_{\text{ref}} = \underset{k \in \text{data\_losses}}{\text{mean}} \left( \max(|\mathbf{g}_k|) \right)$$
+For each physics-based loss term $j$ (e.g., $\mathcal{L}_{\text{laplace}}$, $\mathcal{L}_{\text{cr}}$, $\mathcal{L}_{\text{kink}}$), a dynamic weight $w_j$ is calculated.
+The gradient statistic for the physics loss, $\lambda_j$, is computed in the same way as the reference:
+$$\lambda_j = \max(|\mathbf{g}_j|)$$
+A raw weight, $\hat{w}_j$, is calculated as the ratio of the reference statistic to the physics statistic. This raw weight aims to rescale the physics gradient to the same order of magnitude as the data gradients.
+$$\hat{w}_j = \frac{\lambda_{\text{ref}}}{\lambda_j + \epsilon}$$
+where $\epsilon$ is a small constant (e.g., $10^{-8}$) for numerical stability.
+To prevent erratic fluctuations between training steps, the final weight $w_j$ is updated using an Exponential Moving Average (EMA). This smooths the weight over time, blending the newly calculated raw weight with the weight from the previous step, $w_j^{\text{prev}}$.
+$$w_j = \alpha \cdot w_j^{\text{prev}} + (1 - \alpha) \cdot \hat{w}_j$$
+Here, $\alpha$ is the EMA decay rate, a hyperparameter typically close to 1 (e.g., 0.99).
+The final gradient, $\mathbf{g}_{\text{total}}$, used to update the model parameters $\theta$ is a sum of the unweighted data gradients and the dynamically weighted physics gradients.
+$$\mathbf{g}_{\text{total}} = \sum_{k \in \text{data\_losses}} \mathbf{g}_k + \sum_{j \in \text{physics\_losses}} w_j \cdot \mathbf{g}_j$$
+This combined gradient is then passed to the optimizer (e.g., Adam) to perform the parameter update.
 header:SGD theoretical justifications of the circling explore-consolidate training approach
 To be updated
 header:Slight digression: neural networks work as lowpass interpolators and bounded lowpass extrapolators
