@@ -29,8 +29,8 @@ SAVE_MODELS = True
 # --- Curriculum Control Parameters ---
 TOTAL_CURRICULUM_REPETITIONS = 7
 EPOCHS_PER_PHASE = 15000
-CONSOLIDATION_EPOCHS_OVERRIDE = 60000 # If None, then EPOCHS_PER_PHASE
-FINAL_POLISH_EPOCHS = 60000
+CONSOLIDATION_EPOCHS_OVERRIDE = 200000 # If None, then EPOCHS_PER_PHASE
+FINAL_POLISH_EPOCHS = 200000
 LOG_EVERY_N_EPOCHS = max(EPOCHS_PER_PHASE//3, 2000) # This now only controls the print frequency within a phase
 
 # --- Data-Fitting Curriculum Configuration ---
