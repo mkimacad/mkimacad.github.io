@@ -27,7 +27,7 @@ RUN_DYNAMIC_WEIGHTING_CONFIGS = True
 SAVE_MODELS = True
 
 # --- Curriculum Control Parameters ---
-TOTAL_CURRICULUM_REPETITIONS = 5
+TOTAL_CURRICULUM_REPETITIONS = 6
 EPOCHS_PER_PHASE = 15000
 FINAL_POLISH_EPOCHS = 30000
 LOG_EVERY_N_EPOCHS = max(EPOCHS_PER_PHASE//3, 2000) # This now only controls the print frequency within a phase
@@ -42,23 +42,23 @@ PHYSICS_SHELL_STEP_SIZE = 2.0
 N_CONSTRAINT_POINTS_OVERRIDE = 1000
 # Number of extra points from the extrapolation shell to add to every physics phase
 N_EXTRAPOLATION_CONSTRAINT_POINTS = N_CONSTRAINT_POINTS_OVERRIDE
-USE_KINK_PENALTY = True # Global switch for the new higher-order penalty
+USE_KINK_PENALTY = False # Global switch for the new higher-order penalty
 KINK_PENALTY_WEIGHT = 20.0 # Weight for the kink penalty term
 
 # --- Training Data Generation Strategy ---
-USE_BOUNDARY_SAMPLING = True # If True, concentrates training points near the data domain boundary.
+USE_BOUNDARY_SAMPLING = False # If True, concentrates training points near the data domain boundary.
 BOUNDARY_SAMPLING_FOCUS_RATIO = 0.5 # Proportion of points to place in the boundary shell.
 BOUNDARY_SAMPLING_SHELL_WIDTH = 0.1 # Width of the boundary shell (e.g., 0.1 means shell is [0.9, 1.0]).
 
 # --- Physics Point Generation Strategy ---
-USE_PHYSICS_BOUNDARY_SAMPLING = True # If True, concentrates physics points around the data domain boundary.
+USE_PHYSICS_BOUNDARY_SAMPLING = False # If True, concentrates physics points around the data domain boundary.
 PHYSICS_BOUNDARY_FOCUS_RATIO = 0.5   # Proportion of physics points to place in this boundary shell.
 # This is the width on EACH side of the boundary - e.g., 0.1 means the shell is [0.9, 1.1].
 PHYSICS_BOUNDARY_SHELL_WIDTH = 0.1   
 N_PHYSICS_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE # Number of points for this focused sampling.
 
 # --- Kink Penalty Point Generation Strategy ---
-FOCUS_KINK_PENALTY_ON_BOUNDARY = True # If True, kink penalty points are sampled from the data boundary.
+FOCUS_KINK_PENALTY_ON_BOUNDARY = False # If True, kink penalty points are sampled from the data boundary.
 N_KINK_PENALTY_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE # Number of points for this focused penalty.
 
 # --- Model and Domain Configuration ---
@@ -476,14 +476,24 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
             z_kink_penalty = sample_from_box_boundary(kink_key, N_KINK_PENALTY_BOUNDARY_POINTS, INTERPOLATION_HALF_WIDTH)
         
         # --- 5. ASSEMBLE THE FINAL SET OF PHYSICS POINTS ---
-        # Note: The focused physics points might overlap with data points, which is fine.
-        # It just means the model is penalized for both data mismatch and physics violation there.
-        z_physics = jnp.concatenate([
-            z_physics_phase, 
-            z_physics_extrapolation_anchor,
-            z_physics_boundary
-        ], axis=0)
+        # The logic is now conditional based on the phase type.
         
+        # For a 'phys_explore' phase, we ONLY want to apply physics loss on the new box.
+        if phase_info['type'] == 'phys_explore':
+            # In this specific phase, we only use the points from the newly explored box.
+            z_physics = z_physics_phase
+            print(f"    -> Physics Explore phase: Using {z_physics.shape[0]} points ONLY from the new box.")
+        else:
+            # For all other phases (data phases, consolidation, final polish), we use the
+            # broader set of physics points to ensure global consistency and prevent forgetting.
+            z_physics = jnp.concatenate([
+                z_physics_phase,
+                z_physics_extrapolation_anchor,
+                z_physics_boundary
+            ], axis=0)
+            if z_physics.shape[0] > 0:
+                print(f"    -> Standard/Consolidate phase: Using {z_physics.shape[0]} total physics points (phase + anchor + boundary).")
+
         # --- Execution ---
         print(log_msg)
         loss_defs = _create_full_loss_fns(z_train, z_physics, z_kink_penalty)
