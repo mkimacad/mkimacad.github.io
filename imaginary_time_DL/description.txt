@@ -26,18 +26,33 @@ header:Holomorphic function
 If we assume that our signals are holomorphic, then a significantly constraining constraint can be provided - Cauchy-Riemann equations.
 So our neural nets evaluate and punish Cauchy-Rimeann equation residuals so that neural networks properly learn smooth interpolation and extrapolation.
 This is much better than penalizing neural nets for non-smoothness measures directly. It is samples that tell us how to be (more) smooth (or not), not interpolated results.
-header:Two ways to implement complex MLP
-The first direct method involves utilizing Cauchy-Riemann equations. 
-The other method is to utilize and match a scalar potential function that generates our target data as first-order gradients. There, the Laplace equation is used as the main constraint.
+header:Two ways to implement complex-variable physics-informed MLP neural network (complex PINN) 
+The first direct method involves utilizing Cauchy-Riemann equations. ($\textbf{DirectUVMLP}$)
+The other method is to utilize and match a scalar potential function that generates our target data as first-order gradients. There, the Laplace equation is used as the main constraint. ($\textbf{ScalarPotentialMLP}$)
 Which one is better? The direct method is, and this gives us some numerical lessons about solving the Laplace equation as well.
 Being updated. Laplace and Cauchy-Riemann connections.
-header:Slight digression:neural networks work as lowpass interpolators and bounded lowpass extrapolators
+header:DirectUVMLP
+This model computes training data $f_{target}(\mathbf{z}) = (u_true(z),v_true(z))$, which has complex-valued input $z$ and complex-valued output.
+"UV" in DirectUVMLP refers to the output being complex-valued, with $u$ being the real part of the output and $v$ being the imaginary part.
+Non-physics (non-Cauchy-Riemann) training data MSE loss goes as:
+$$\mathcal{L}_{\text{uv\_data}} = \frac{1}{N} \sum_{i=1}^{N} \left\| f_\theta(\mathbf{z}_i) - (u_{\text{true}}(\mathbf{z}_i), v_{\text{true}}(\mathbf{z}_i)) \right\|^2$$
+The Cauchy-Riemann penalty goes as:
+$$\mathcal{L}_{\text{cr}} = \frac{1}{M} \sum_{j=1}^{M} \left[ \left( \frac{\partial \hat{u}}{\partial x} - \frac{\partial \hat{v}}{\partial y} \right)^2 + \left( \frac{\partial \hat{u}}{\partial y} + \frac{\partial \hat{v}}{\partial x} \right)^2 \right]$$
+The kink penalty that penalizes varying Cauchy-Riemann residuals (so that we do not see sudden kinks as we move away from the interpolation domain) goes as:
+$$\mathcal{L}_{\text{kink}} = \frac{1}{M} \sum_{j=1}^{M} \left\| \nabla R_{\text{CR}}(\mathbf{z}_j) \right\|^2$$
+These losses are then weighted, either by fixed weights or by dynamic weighting. By default, dynamic weighting is used, to be described below.
+header:ScalarPotentialMLP
+This model computes scalar real-valued training data $\psi_{target}(\mathbf{z})$ from the available target function $f_{target}(\mathbf{z})$ and mainly fits this potential $\psi_{target}$ instead.
+The potential data MSE loss goes as:
+$$\mathcal{L}_{\psi\_\text{data}} = \frac{1}{N} \sum_{i=1}^{N} \left( \hat{\psi}(\mathbf{z}_i) - \psi_{\text{true}}(\mathbf{z}_i) \right)^2$$
+The Laplace equation penalty goes as:
+$$\mathcal{L}_{\text{laplace}} = \frac{1}{M} \sum_{j=1}^{M} \left( \nabla^2 \hat{\psi}(\mathbf{z}_j) \right)^2 = \frac{1}{M} \sum_{j=1}^{M} \left( \frac{\partial^2 \hat{\psi}}{\partial x^2} + \frac{\partial^2 \hat{\psi}}{\partial y^2} \right)^2$$
+header:Dynamic weighting in training both complex MLPs
+To be updated
+header:Slight digression: neural networks work as lowpass interpolators and bounded lowpass extrapolators
 In a significantly bounded way, due to the F-principle of neural networks where it takes almost exponential time for neural nets to learn high-frequency signals to the point that they never do, high-frequency signals tend to be filtered out.
 This means that in some cases, even without complexifications, neural nets can be used for significantly bounded extrapolation. We can see this in the below image.
 img:imgs/naive_extrapolation.png
 The standard MLP (without even residual connections) of width 10 and depth 10 and tanh activation function with 5000 training points accompanied by first-order derivatives on [-25,25] was used.
 Extrapolation to [-50,50] was successful. So first-order derivatives were sufficient for some extrapolation.
 Unfortunately, this is a relatively lucky case and in other cases this miracle is more constrained, though there are some limited extrapolation successes.
-
-
-
