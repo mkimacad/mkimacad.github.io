@@ -26,8 +26,13 @@ GROUPS_TO_RUN = ['UV2', 6, 'U_ONLY']
 RUN_DYNAMIC_WEIGHTING_CONFIGS = True
 SAVE_MODELS = True
 
+# --- Training Data Generation Strategy ---
+USE_BOUNDARY_SAMPLING = True # If True, concentrates training points near the data domain boundary.
+BOUNDARY_SAMPLING_FOCUS_RATIO = 0.5 # Proportion of points to place in the boundary shell.
+BOUNDARY_SAMPLING_SHELL_WIDTH = 0.1 # Width of the boundary shell (e.g., 0.1 means shell is [0.9, 1.0]).
+
 # --- Curriculum Control Parameters ---
-TOTAL_CURRICULUM_REPETITIONS = 3
+TOTAL_CURRICULUM_REPETITIONS = 4
 EPOCHS_PER_PHASE = 15000
 FINAL_POLISH_EPOCHS = 30000
 LOG_EVERY_N_EPOCHS = max(EPOCHS_PER_PHASE//3, 2000) # This now only controls the print frequency within a phase
@@ -46,7 +51,7 @@ USE_KINK_PENALTY = True # Global switch for the new higher-order penalty
 KINK_PENALTY_WEIGHT = 20.0 # Weight for the kink penalty term
 
 # --- Kink Penalty Point Generation Strategy ---
-FOCUS_KINK_PENALTY_ON_BOUNDARY = True # If True, kink penalty points are sampled from the data boundary.
+FOCUS_KINK_PENALTY_ON_BOUNDARY = False # If True, kink penalty points are sampled from the data boundary.
 N_KINK_PENALTY_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE # Number of points for this focused penalty.
 
 # --- Model and Domain Configuration ---
@@ -274,6 +279,24 @@ def sample_from_shell(key, num_points: int, outer_hw: float, inner_hw: float) ->
     return jnp.concatenate(accepted_points, axis=0)[:num_points]
 
 # --- NEW SAMPLING HELPER ---
+def sample_with_boundary_focus(key, num_points: int, inner_box_hw: float, outer_box_hw: float, focus_ratio: float):
+    """
+    Samples points within a box, with a higher concentration in a shell near the boundary.
+    'focus_ratio' determines the proportion of points sampled from the boundary shell.
+    """
+    key1, key2 = random.split(key)
+
+    num_boundary_pts = int(num_points * focus_ratio)
+    num_interior_pts = num_points - num_boundary_pts
+
+    # Sample points from the boundary shell
+    boundary_pts = sample_from_shell(key1, num_boundary_pts, outer_box_hw, inner_box_hw)
+
+    # Sample points from the interior box
+    interior_pts = random.uniform(key2, (num_interior_pts, 2), minval=-inner_box_hw, maxval=inner_box_hw)
+
+    return jnp.concatenate([boundary_pts, interior_pts], axis=0)
+
 def sample_from_box_boundary(key, num_points: int, half_width: float) -> jnp.ndarray:
     """Samples points uniformly from the boundary of a square centered at the origin."""
     if num_points == 0: return jnp.empty((0, 2))
@@ -298,10 +321,12 @@ def sample_from_box_boundary(key, num_points: int, half_width: float) -> jnp.nda
 
 
 ### MAIN TRAINING FUNCTION ###
+### MAIN TRAINING FUNCTION ###
 def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weighting, save_dir, group_id, run_name_for_save):
     uv_target_fn, psi_target_fn, dudx_target_fn = target_fns
     run_params = calculate_run_parameters()
     model_width, model_depth, n_train, n_constraint = (run_params['width'], run_params['depth'], run_params['n_train'], run_params['n_constraint'])
+
     model_type = config.get('model_type', 'Potential')
     if model_type == 'UV': model = DirectUVMLP(width=model_width, depth=model_depth, activation_fn=ACTIVATION_FUNCTION)
     elif model_type == 'U_ONLY': model = UOnlyMLP(width=model_width, depth=model_depth, activation_fn=ACTIVATION_FUNCTION)
@@ -311,18 +336,21 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
     optimizer = optax.chain(optax.clip_by_global_norm(GRADIENT_CLIP_VALUE), optax.adam(learning_rate=PEAK_LR))
     init_opt_state = optimizer.init(init_params)
     init_dw_state = {}
+    
     checkpoint_path = os.path.join(save_dir, f"checkpoint_group_{group_id}_{run_name_for_save}.msgpack")
     params, opt_state, dw_state, loaded_phase_idx, key = load_checkpoint(checkpoint_path, init_params, init_opt_state, init_dw_state, key)
+    
     loss_history = []
     curriculum_plan = _build_curriculum_plan()
 
-    def _sample_from_boxes(k, num_points, boxes):
+    def _sample_from_boxes(k, num_points, boxes): # Original helper, still used for physics points
         num_boxes = len(boxes)
         if num_boxes == 0: return jnp.empty((0, 2))
         points_per_box = num_points // num_boxes; remaining = num_points % num_boxes
         all_samples = []
         for i, box in enumerate(boxes):
-            k, subkey = random.split(k); n_samples = points_per_box + (1 if i < remaining else 0)
+            k, subkey = random.split(k)
+            n_samples = points_per_box + (1 if i < remaining else 0)
             if n_samples == 0: continue
             min_v = jnp.array([box[0][0], box[1][0]]); max_v = jnp.array([box[0][1], box[1][1]])
             all_samples.append(random.uniform(subkey, (n_samples, 2), minval=min_v, maxval=max_v))
@@ -330,10 +358,7 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
 
     def _create_full_loss_fns(z_train, z_physics, z_kink):
         loss_fns, static_weights, data_loss_names, physics_loss_names = {}, {}, [], []
-        
-        # Determine which points to use for the kink penalty
         kink_points = z_kink if FOCUS_KINK_PENALTY_ON_BOUNDARY and z_kink.shape[0] > 0 else z_physics
-        
         if model_type == 'Potential':
             if config.get('USE_UV_DATA_LOSS', False) and z_train.shape[0] > 0:
                 y_target = uv_target_fn(z_train); vmapped_uv = vmap(get_uv_from_potential, (None, None, 0))
@@ -388,27 +413,51 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
                 print(f"  {log_prefix} | Ep {total_epochs_in_phase}/{num_epochs} | Data={data_loss_val:.2e}, Physics={physics_loss_val:.2e}, Kink={kink_loss_val:.2e}")
         return p, opt_s, dw_s, total_epochs_in_phase
 
+    # === MAIN TRAINING EXECUTION ===
+    # Generate anchor extrapolation points ONCE from the full extrapolation shell [1, extrapolation_half_width]
     key, subkey = random.split(key)
     z_physics_extrapolation_anchor = sample_from_shell(subkey, N_EXTRAPOLATION_CONSTRAINT_POINTS, EXTRAPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH)
+
     for phase_idx, phase_info in enumerate(curriculum_plan):
-        if phase_idx < loaded_phase_idx: continue
+        if phase_idx < loaded_phase_idx:
+            continue
+        
+        # --- Point Generation (resampled each phase) with new Boundary Sampling logic ---
+        z_train = jnp.empty((0,2))
+        z_physics_phase = jnp.empty((0,2))
         log_msg = f"Phase {phase_idx+1}/{len(curriculum_plan)} (Rep {phase_info['rep']+1}) | {phase_info['type']}"
+        
         key, data_key, phys_key, kink_key = random.split(key, 4)
         
-        # --- Generate points for the current phase ---
-        if phase_info['type'] in ['data_explore', 'data_consolidate']:
-            z_train = _sample_from_boxes(data_key, n_train, phase_info.get('box_def') or phase_info.get('cumulative_boxes'))
+        # Determine the boxes for training data in this phase
+        data_boxes = phase_info.get('box_def') or phase_info.get('cumulative_boxes') or phase_info.get('data_boxes')
+        
+        # --- NEW SAMPLING LOGIC ---
+        if data_boxes:
+            if USE_BOUNDARY_SAMPLING:
+                # Use focused sampling only on the full [-1, 1] domain, not on smaller curriculum boxes.
+                # This is most effective during consolidation and final polish phases.
+                is_full_domain = any(box == ((-1.0, 1.0), (-1.0, 1.0)) for box in data_boxes)
+                if is_full_domain or phase_info['type'] == 'final_polish':
+                     z_train = sample_with_boundary_focus(data_key, n_train, 
+                                                          inner_box_hw=INTERPOLATION_HALF_WIDTH - BOUNDARY_SAMPLING_SHELL_WIDTH, 
+                                                          outer_box_hw=INTERPOLATION_HALF_WIDTH, 
+                                                          focus_ratio=BOUNDARY_SAMPLING_FOCUS_RATIO)
+                else: # For smaller curriculum boxes, use standard uniform sampling
+                    z_train = _sample_from_boxes(data_key, n_train, data_boxes)
+            else: # If boundary sampling is off, always use standard uniform sampling
+                z_train = _sample_from_boxes(data_key, n_train, data_boxes)
+
+        # Generate physics points based on phase type
+        if phase_info['type'] in ['data_explore', 'data_consolidate', 'final_polish']:
             z_physics_phase = random.uniform(phys_key, (n_constraint, 2), minval=-EXTRAPOLATION_HALF_WIDTH, maxval=EXTRAPOLATION_HALF_WIDTH)
         elif phase_info['type'] in ['phys_explore', 'phys_consolidate']:
-            z_train = _sample_from_boxes(data_key, n_train, phase_info['data_boxes'])
             z_physics_phase = _sample_from_boxes(phys_key, n_constraint, phase_info.get('box_def') or phase_info.get('cumulative_boxes'))
-        elif phase_info['type'] == 'final_polish':
-            z_train = _sample_from_boxes(data_key, n_train, phase_info['data_boxes'])
-            z_physics_phase = random.uniform(phys_key, (n_constraint, 2), minval=-EXTRAPOLATION_HALF_WIDTH, maxval=EXTRAPOLATION_HALF_WIDTH)
         
+        # Augment phase-specific physics points with the fixed anchor points
         z_physics = jnp.concatenate([z_physics_phase, z_physics_extrapolation_anchor], axis=0)
         
-        # --- NEW: Generate dedicated kink penalty points if specified ---
+        # Generate dedicated kink penalty points if specified
         z_kink_penalty = jnp.empty((0, 2))
         if USE_KINK_PENALTY and FOCUS_KINK_PENALTY_ON_BOUNDARY:
             z_kink_penalty = sample_from_box_boundary(kink_key, N_KINK_PENALTY_BOUNDARY_POINTS, INTERPOLATION_HALF_WIDTH)
@@ -418,7 +467,9 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
         loss_defs = _create_full_loss_fns(z_train, z_physics, z_kink_penalty)
         params, opt_state, dw_state, _ = _run_training_loop(phase_info['epochs'], params, opt_state, dw_state, loss_defs, log_msg)
         
-        if SAVE_MODELS: save_checkpoint(checkpoint_path, params, opt_state, dw_state, phase_idx + 1, key)
+        # --- Checkpoint after phase completion ---
+        if SAVE_MODELS:
+            save_checkpoint(checkpoint_path, params, opt_state, dw_state, phase_idx + 1, key)
 
     return model, params, loss_history, run_params
 
