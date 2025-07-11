@@ -26,13 +26,8 @@ GROUPS_TO_RUN = ['UV2', 6, 'U_ONLY']
 RUN_DYNAMIC_WEIGHTING_CONFIGS = True
 SAVE_MODELS = True
 
-# --- Training Data Generation Strategy ---
-USE_BOUNDARY_SAMPLING = True # If True, concentrates training points near the data domain boundary.
-BOUNDARY_SAMPLING_FOCUS_RATIO = 0.5 # Proportion of points to place in the boundary shell.
-BOUNDARY_SAMPLING_SHELL_WIDTH = 0.1 # Width of the boundary shell (e.g., 0.1 means shell is [0.9, 1.0]).
-
 # --- Curriculum Control Parameters ---
-TOTAL_CURRICULUM_REPETITIONS = 4
+TOTAL_CURRICULUM_REPETITIONS = 5
 EPOCHS_PER_PHASE = 15000
 FINAL_POLISH_EPOCHS = 30000
 LOG_EVERY_N_EPOCHS = max(EPOCHS_PER_PHASE//3, 2000) # This now only controls the print frequency within a phase
@@ -50,8 +45,20 @@ N_EXTRAPOLATION_CONSTRAINT_POINTS = N_CONSTRAINT_POINTS_OVERRIDE
 USE_KINK_PENALTY = True # Global switch for the new higher-order penalty
 KINK_PENALTY_WEIGHT = 20.0 # Weight for the kink penalty term
 
+# --- Training Data Generation Strategy ---
+USE_BOUNDARY_SAMPLING = True # If True, concentrates training points near the data domain boundary.
+BOUNDARY_SAMPLING_FOCUS_RATIO = 0.5 # Proportion of points to place in the boundary shell.
+BOUNDARY_SAMPLING_SHELL_WIDTH = 0.1 # Width of the boundary shell (e.g., 0.1 means shell is [0.9, 1.0]).
+
+# --- Physics Point Generation Strategy ---
+USE_PHYSICS_BOUNDARY_SAMPLING = True # If True, concentrates physics points around the data domain boundary.
+PHYSICS_BOUNDARY_FOCUS_RATIO = 0.5   # Proportion of physics points to place in this boundary shell.
+# This is the width on EACH side of the boundary - e.g., 0.1 means the shell is [0.9, 1.1].
+PHYSICS_BOUNDARY_SHELL_WIDTH = 0.1   
+N_PHYSICS_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE # Number of points for this focused sampling.
+
 # --- Kink Penalty Point Generation Strategy ---
-FOCUS_KINK_PENALTY_ON_BOUNDARY = False # If True, kink penalty points are sampled from the data boundary.
+FOCUS_KINK_PENALTY_ON_BOUNDARY = True # If True, kink penalty points are sampled from the data boundary.
 N_KINK_PENALTY_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE # Number of points for this focused penalty.
 
 # --- Model and Domain Configuration ---
@@ -321,7 +328,6 @@ def sample_from_box_boundary(key, num_points: int, half_width: float) -> jnp.nda
 
 
 ### MAIN TRAINING FUNCTION ###
-### MAIN TRAINING FUNCTION ###
 def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weighting, save_dir, group_id, run_name_for_save):
     uv_target_fn, psi_target_fn, dudx_target_fn = target_fns
     run_params = calculate_run_parameters()
@@ -343,7 +349,7 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
     loss_history = []
     curriculum_plan = _build_curriculum_plan()
 
-    def _sample_from_boxes(k, num_points, boxes): # Original helper, still used for physics points
+    def _sample_from_boxes(k, num_points, boxes):
         num_boxes = len(boxes)
         if num_boxes == 0: return jnp.empty((0, 2))
         points_per_box = num_points // num_boxes; remaining = num_points % num_boxes
@@ -414,7 +420,6 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
         return p, opt_s, dw_s, total_epochs_in_phase
 
     # === MAIN TRAINING EXECUTION ===
-    # Generate anchor extrapolation points ONCE from the full extrapolation shell [1, extrapolation_half_width]
     key, subkey = random.split(key)
     z_physics_extrapolation_anchor = sample_from_shell(subkey, N_EXTRAPOLATION_CONSTRAINT_POINTS, EXTRAPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH)
 
@@ -422,45 +427,62 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
         if phase_idx < loaded_phase_idx:
             continue
         
-        # --- Point Generation (resampled each phase) with new Boundary Sampling logic ---
-        z_train = jnp.empty((0,2))
-        z_physics_phase = jnp.empty((0,2))
         log_msg = f"Phase {phase_idx+1}/{len(curriculum_plan)} (Rep {phase_info['rep']+1}) | {phase_info['type']}"
+        key, data_key, phys_key, kink_key, phys_boundary_key = random.split(key, 5)
         
-        key, data_key, phys_key, kink_key = random.split(key, 4)
-        
-        # Determine the boxes for training data in this phase
+        # --- 1. GENERATE TRAINING DATA POINTS (with optional boundary focus) ---
+        z_train = jnp.empty((0,2))
         data_boxes = phase_info.get('box_def') or phase_info.get('cumulative_boxes') or phase_info.get('data_boxes')
-        
-        # --- NEW SAMPLING LOGIC ---
         if data_boxes:
             if USE_BOUNDARY_SAMPLING:
-                # Use focused sampling only on the full [-1, 1] domain, not on smaller curriculum boxes.
-                # This is most effective during consolidation and final polish phases.
                 is_full_domain = any(box == ((-1.0, 1.0), (-1.0, 1.0)) for box in data_boxes)
                 if is_full_domain or phase_info['type'] == 'final_polish':
                      z_train = sample_with_boundary_focus(data_key, n_train, 
                                                           inner_box_hw=INTERPOLATION_HALF_WIDTH - BOUNDARY_SAMPLING_SHELL_WIDTH, 
                                                           outer_box_hw=INTERPOLATION_HALF_WIDTH, 
                                                           focus_ratio=BOUNDARY_SAMPLING_FOCUS_RATIO)
-                else: # For smaller curriculum boxes, use standard uniform sampling
+                else:
                     z_train = _sample_from_boxes(data_key, n_train, data_boxes)
-            else: # If boundary sampling is off, always use standard uniform sampling
+            else:
                 z_train = _sample_from_boxes(data_key, n_train, data_boxes)
 
-        # Generate physics points based on phase type
+        # --- 2. GENERATE GENERAL PHYSICS POINTS (from curriculum or full domain) ---
+        z_physics_phase = jnp.empty((0,2))
         if phase_info['type'] in ['data_explore', 'data_consolidate', 'final_polish']:
             z_physics_phase = random.uniform(phys_key, (n_constraint, 2), minval=-EXTRAPOLATION_HALF_WIDTH, maxval=EXTRAPOLATION_HALF_WIDTH)
         elif phase_info['type'] in ['phys_explore', 'phys_consolidate']:
             z_physics_phase = _sample_from_boxes(phys_key, n_constraint, phase_info.get('box_def') or phase_info.get('cumulative_boxes'))
         
-        # Augment phase-specific physics points with the fixed anchor points
-        z_physics = jnp.concatenate([z_physics_phase, z_physics_extrapolation_anchor], axis=0)
-        
-        # Generate dedicated kink penalty points if specified
+        # --- 3. GENERATE FOCUSED PHYSICS POINTS (if enabled) ---
+        z_physics_boundary = jnp.empty((0,2))
+        if USE_PHYSICS_BOUNDARY_SAMPLING:
+            num_pts = int(N_PHYSICS_BOUNDARY_POINTS * PHYSICS_BOUNDARY_FOCUS_RATIO)
+            
+            # **THE FIX IS HERE**: Define a shell that straddles the boundary
+            inner_shell_hw = INTERPOLATION_HALF_WIDTH - PHYSICS_BOUNDARY_SHELL_WIDTH
+            outer_shell_hw = INTERPOLATION_HALF_WIDTH + PHYSICS_BOUNDARY_SHELL_WIDTH
+
+            z_physics_boundary = sample_from_shell(phys_boundary_key, num_pts,
+                                                   outer_hw=outer_shell_hw,
+                                                   inner_hw=inner_shell_hw)
+            
+            n_general_physics = n_constraint - num_pts
+            if n_general_physics < 0: n_general_physics = 0
+            z_physics_phase = z_physics_phase[:n_general_physics]
+
+        # --- 4. GENERATE KINK PENALTY POINTS (if enabled) ---
         z_kink_penalty = jnp.empty((0, 2))
         if USE_KINK_PENALTY and FOCUS_KINK_PENALTY_ON_BOUNDARY:
             z_kink_penalty = sample_from_box_boundary(kink_key, N_KINK_PENALTY_BOUNDARY_POINTS, INTERPOLATION_HALF_WIDTH)
+        
+        # --- 5. ASSEMBLE THE FINAL SET OF PHYSICS POINTS ---
+        # Note: The focused physics points might overlap with data points, which is fine.
+        # It just means the model is penalized for both data mismatch and physics violation there.
+        z_physics = jnp.concatenate([
+            z_physics_phase, 
+            z_physics_extrapolation_anchor,
+            z_physics_boundary
+        ], axis=0)
         
         # --- Execution ---
         print(log_msg)
