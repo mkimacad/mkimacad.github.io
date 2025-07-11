@@ -22,7 +22,17 @@ from typing import Callable, Tuple, Dict, Any, List
 jax.config.update("jax_enable_x64", False)
 
 # ================== GLOBAL CONFIGURATION ==================
-GROUPS_TO_RUN = ['UV2', 6, 'U_ONLY']
+# --- NEW: Set to True to run only the single configuration defined below ---
+TRAIN_SINGLE_CONFIG = False
+SINGLE_CONFIG_TO_RUN = {
+    'name': "U-Only + dU/dX Data",
+    'config': {
+        'model_type': 'U_ONLY',
+        'use_penalty': True
+    }
+}
+
+GROUPS_TO_RUN = ['UV2']
 RUN_DYNAMIC_WEIGHTING_CONFIGS = True
 SAVE_MODELS = True
 
@@ -55,7 +65,7 @@ BOUNDARY_SAMPLING_SHELL_WIDTH = 0.1 # Width of the boundary shell (e.g., 0.1 mea
 USE_PHYSICS_BOUNDARY_SAMPLING = False # If True, concentrates physics points around the data domain boundary.
 PHYSICS_BOUNDARY_FOCUS_RATIO = 0.5   # Proportion of physics points to place in this boundary shell.
 # This is the width on EACH side of the boundary - e.g., 0.1 means the shell is [0.9, 1.1].
-PHYSICS_BOUNDARY_SHELL_WIDTH = 0.1   
+PHYSICS_BOUNDARY_SHELL_WIDTH = 0.1
 N_PHYSICS_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE # Number of points for this focused sampling.
 
 # --- Kink Penalty Point Generation Strategy ---
@@ -429,17 +439,43 @@ def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weig
 
     def _run_training_loop(num_epochs, p, opt_s, dw_s, loss_defs, log_prefix):
         loss_names_t, loss_fns_t, static_weights, data_loss_names_t, physics_loss_names_t = loss_defs
-        if not loss_fns_t: return p, opt_s, dw_s, 0
+        if not loss_fns_t:
+            print(f"  {log_prefix} | No active loss functions. Skipping training loop.")
+            return p, opt_s, dw_s, 0
+
         total_epochs_in_phase = 0
         for epoch in range(num_epochs):
-            if use_dynamic_weighting and physics_loss_names_t: p, opt_s, dw_s, _, losses_jax = dynamic_training_step(p, opt_s, dw_s, optimizer, loss_names_t, loss_fns_t, data_loss_names_t, physics_loss_names_t)
-            else: p, opt_s, _, losses_jax = static_training_step(p, opt_s, optimizer, loss_names_t, loss_fns_t, static_weights)
+            # Perform the training step
+            if use_dynamic_weighting and physics_loss_names_t:
+                p, opt_s, dw_s, _, losses_jax = dynamic_training_step(p, opt_s, dw_s, optimizer, loss_names_t, loss_fns_t, data_loss_names_t, physics_loss_names_t)
+            else:
+                p, opt_s, _, losses_jax = static_training_step(p, opt_s, optimizer, loss_names_t, loss_fns_t, static_weights)
+            
             total_epochs_in_phase += 1
+
+            # --- REFACTORED LOGGING ---
             if total_epochs_in_phase % LOG_EVERY_N_EPOCHS == 0:
-                data_loss_val = losses_jax.get('uv_data', losses_jax.get('psi_data', losses_jax.get('u_data', 0.0)))
-                physics_loss_val = losses_jax.get('laplace', losses_jax.get('cr_penalty', 0.0))
-                kink_loss_val = losses_jax.get('kink_penalty', 0.0)
-                print(f"  {log_prefix} | Ep {total_epochs_in_phase}/{num_epochs} | Data={data_loss_val:.2e}, Physics={physics_loss_val:.2e}, Kink={kink_loss_val:.2e}")
+                # Define human-readable names for logging
+                loss_name_map = {
+                    'uv_data': 'UV_Data',
+                    'psi_data': 'Psi_Data',
+                    'u_data': 'U_Data',
+                    'dudx_data': 'dU/dX',
+                    'laplace': 'Laplace',
+                    'cr_penalty': 'CR',
+                    'kink_penalty': 'Kink'
+                }
+                
+                # Build a string of all active losses and their values
+                loss_parts = []
+                for name in loss_name_map:
+                    if name in losses_jax:
+                        loss_parts.append(f"{loss_name_map[name]}={losses_jax[name]:.2e}")
+                
+                log_loss_str = ", ".join(loss_parts) if loss_parts else "N/A"
+                
+                print(f"  {log_prefix} | Ep {total_epochs_in_phase}/{num_epochs} | Losses: {log_loss_str}")
+
         return p, opt_s, dw_s, total_epochs_in_phase
 
     # === MAIN TRAINING EXECUTION ===
@@ -625,51 +661,115 @@ def setup_save_directory():
     return base_dir
 
 def main():
-    start_time = time.time(); base_save_dir = setup_save_directory()
-    FLAG_MAPPING = {'USE_UV_DATA_LOSS': 'UV', 'USE_POTENTIAL_LOSS': 'Psi', 'USE_LAPLACE_LOSS': 'Lap'}
-    potential_configs = [{'name': " + ".join([FLAG_MAPPING[k] for k, v in dict(zip(FLAG_MAPPING.keys(), combo)).items() if v]), 'config': dict(zip(FLAG_MAPPING.keys(), combo))} for combo in itertools.product([False, True], repeat=len(FLAG_MAPPING)) if combo[0] or combo[1]]
-    FLAG_MAPPING_UV = {'use_penalty': 'CR'}; uv_configs = []
+    start_time = time.time()
+    base_save_dir = setup_save_directory()
+
+    # --- Define all possible configurations ---
+    FLAG_MAPPING_POTENTIAL = {'USE_UV_DATA_LOSS': 'UV', 'USE_POTENTIAL_LOSS': 'Psi', 'USE_LAPLACE_LOSS': 'Lap'}
+    potential_configs = [
+        {'name': " + ".join([FLAG_MAPPING_POTENTIAL[k] for k, v in dict(zip(FLAG_MAPPING_POTENTIAL.keys(), combo)).items() if v]),
+         'config': dict(zip(FLAG_MAPPING_POTENTIAL.keys(), combo))}
+        for combo in itertools.product([False, True], repeat=len(FLAG_MAPPING_POTENTIAL))
+        if combo[0] or combo[1]  # Must use at least UV or Psi data loss
+    ]
+
+    FLAG_MAPPING_UV = {'use_penalty': 'CR'}
+    uv_configs = []
     for combo in itertools.product([False, True], repeat=len(FLAG_MAPPING_UV)):
-        config = dict(zip(FLAG_MAPPING_UV.keys(), combo)); config['model_type'] = 'UV'
-        name_parts = ["UV Direct"] + [flag_name for flag, flag_name in FLAG_MAPPING_UV.items() if config[flag]]; name = " + ".join(name_parts)
+        config = dict(zip(FLAG_MAPPING_UV.keys(), combo))
+        config['model_type'] = 'UV'
+        name_parts = ["UV Direct"] + [flag_name for flag, flag_name in FLAG_MAPPING_UV.items() if config[flag]]
+        name = " + ".join(name_parts)
         uv_configs.append({'name': name, 'config': config})
         
-    key = random.PRNGKey(42); key, subkey = random.split(key); target_fns = generate_initial_target(subkey)
-    weighting_strategies = ([True] if RUN_DYNAMIC_WEIGHTING_CONFIGS else []) + [False]
-    
-    for use_dynamic_weighting in weighting_strategies:
-        weighting_mode = "Dynamic" if use_dynamic_weighting else "Static"
-        SAVE_DIR = os.path.join(base_save_dir, f"results_{weighting_mode.lower()}"); os.makedirs(SAVE_DIR, exist_ok=True)
-        print("\n" + "="*80 + f"\n###  STARTING ALL GROUPS WITH {weighting_mode.upper()} WEIGHTS  ###\n" + "="*80)
+    u_only_configs = [
+        {'name': "U-Only", 'config': {'model_type':'U_ONLY', 'use_penalty':False}},
+        {'name': "U-Only + dU/dX Data", 'config': {'model_type':'U_ONLY', 'use_penalty':True}}
+    ]
+
+    # --- Determine which tasks to run based on global flags ---
+    tasks = []
+    if TRAIN_SINGLE_CONFIG:
+        # ***** THE FIX IS HERE *****
+        # Ensure the '/' character is sanitized for the group_id to prevent creating unintended directories.
+        safe_name = SINGLE_CONFIG_TO_RUN['name'].replace(' ', '_').replace('+', '').replace('(', '').replace(')', '').replace('/', '_per_')
+        tasks.append({
+            'group_id': f"single_{safe_name}",
+            'configs': [SINGLE_CONFIG_TO_RUN]
+        })
+        print(f"### RUNNING SINGLE CONFIGURATION: {SINGLE_CONFIG_TO_RUN['name']} ###")
+    else:
+        print(f"### RUNNING IN GROUP MODE FOR: {GROUPS_TO_RUN} ###")
         for group_id in GROUPS_TO_RUN:
-            print(f"\n--- Running Group: {str(group_id).upper()} ---"); group_run_data, configs_in_group = [], []
+            configs_in_group = []
             if isinstance(group_id, int):
-                if 1 <= group_id <= len(potential_configs): configs_in_group = [potential_configs[group_id - 1]]
+                if 1 <= group_id <= len(potential_configs):
+                    configs_in_group = [potential_configs[group_id - 1]]
             elif str(group_id).upper() == 'UV1':
                 if len(uv_configs) >= 1: configs_in_group = [uv_configs[0]]
             elif str(group_id).upper() == 'UV2':
                 if len(uv_configs) >= 2: configs_in_group = [uv_configs[1]]
             elif str(group_id).upper() == 'U_ONLY':
-                configs_in_group = [{'name': "U-Only", 'config': {'model_type':'U_ONLY', 'use_penalty':False}},
-                                    {'name': "U-Only + dU/dX Data", 'config': {'model_type':'U_ONLY', 'use_penalty':True}}]
-            if not configs_in_group:
-                print(f"  -> Group {group_id} is empty or not defined, skipping."); continue
+                configs_in_group = u_only_configs
             
+            if configs_in_group:
+                tasks.append({'group_id': group_id, 'configs': configs_in_group})
+            else:
+                print(f"  -> Group {group_id} is empty or not defined, skipping.")
+
+    # --- Execute the training tasks ---
+    key = random.PRNGKey(42)
+    key, subkey = random.split(key)
+    target_fns = generate_initial_target(subkey)
+    weighting_strategies = ([True] if RUN_DYNAMIC_WEIGHTING_CONFIGS else []) + [False]
+
+    for use_dynamic_weighting in weighting_strategies:
+        weighting_mode = "Dynamic" if use_dynamic_weighting else "Static"
+        SAVE_DIR = os.path.join(base_save_dir, f"results_{weighting_mode.lower()}")
+        os.makedirs(SAVE_DIR, exist_ok=True)
+        print("\n" + "="*80 + f"\n###  STARTING ALL TASKS WITH {weighting_mode.upper()} WEIGHTS  ###\n" + "="*80)
+
+        for task in tasks:
+            group_id = task['group_id']
+            configs_in_group = task['configs']
+            
+            print(f"\n--- Running Task/Group: {str(group_id).upper()} ---")
+            group_run_data = []
+
             for run_info in configs_in_group:
                 full_name = f"{run_info['name']} ({weighting_mode})"
                 safe_name = full_name.replace(' ', '_').replace('+', 'and').replace('(', '').replace(')', '').replace('/', '_per_')
                 print(f"\nTraining: {full_name}")
                 key, subkey = random.split(key)
+                
                 if USE_SEQUENTIAL_TRAINING:
-                    model, params, history, run_params = run_sequential_training_for_config(subkey, run_info['config'], target_fns, use_dynamic_weighting, SAVE_DIR, group_id, safe_name)
+                    model, params, history, run_params = run_sequential_training_for_config(
+                        subkey, run_info['config'], target_fns, use_dynamic_weighting, SAVE_DIR, group_id, safe_name
+                    )
                 else:
-                    print("Standard training is not implemented in this version, skipping."); continue
-                if SAVE_MODELS: save_final_model(params, SAVE_DIR, group_id, full_name)
+                    print("Standard training is not implemented in this version, skipping.")
+                    continue
+                
+                if SAVE_MODELS:
+                    save_final_model(params, SAVE_DIR, group_id, full_name)
+                    
                 plot_and_display_single_result(model, params, run_info, weighting_mode, target_fns, SAVE_DIR, group_id, run_params)
-                group_run_data.append({'name': full_name, 'params': params, 'loss_history': history, 'model': model, 'config': run_info['config'], 'run_params': run_params})
-            if group_run_data: save_group_results(str(group_id), group_run_data, target_fns, SAVE_DIR)
+                
+                group_run_data.append({
+                    'name': full_name, 
+                    'params': params, 
+                    'loss_history': history, 
+                    'model': model, 
+                    'config': run_info['config'], 
+                    'run_params': run_params
+                })
+
+            # Only save group comparison plot if there's more than one result in the group
+            if len(group_run_data) > 1:
+                save_group_results(str(group_id), group_run_data, target_fns, SAVE_DIR)
             
-    end_time = time.time(); print(f"\nTotal execution time: {end_time - start_time:.2f} seconds.")
+    end_time = time.time()
+    print(f"\nTotal execution time: {end_time - start_time:.2f} seconds.")
 
 if __name__ == '__main__':
     main()
