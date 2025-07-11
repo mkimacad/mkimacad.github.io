@@ -1,2 +1,16 @@
 header:History (dates-wise)
 To be updated, updates upcoming..
+header:On the [-1,1] "constraint" of neural networks
+If you think about it, if we can extract information well on [-1,1], then as long as the interpolating function is smooth, we know everything.
+But neural networks do not behave like this. Outside of the interpolating domain where sample data are available, they behave poorly.
+This is largely due to the nature of activation functions.
+The worst case is RELU activation, where we high-order derivatives are all zero. So neural networks with RELU are essentially interpolating memorizers.
+No RELU for extrapolation.
+But what about other smooth activation functions? Can we do well by obtaining high-order derivative data?
+Problem: high-order differentiation of neural nets is quite expensive. And we are doing additional differentiations on the loss function for derivative matching.
+You may consider finite difference methods, but they are bound to different numerical issues.
+Neural nets can only approximate some smooth function, so there will be some cases where derivatives are significantly wrong for correct computation of high-order derivatives.
+So we need different ways to have good extrapolation behaviors.
+what about expanding the interpolation domain? But we are then met with two problems.
+1) Interpolation issues.
+2) Theoretical extrapolation conundrum. 
