@@ -51,7 +51,8 @@ USE_PHYSICS_FINETUNING_CURRICULUM = True
 PHYSICS_SHELL_STEP_SIZE = 2.0
 N_CONSTRAINT_POINTS_OVERRIDE = 200
 N_EXTRAPOLATION_CONSTRAINT_POINTS = N_CONSTRAINT_POINTS_OVERRIDE
-USE_KINK_PENALTY = True
+# MODIFIED: Kink penalty disabled by default to improve stability.
+USE_KINK_PENALTY = False
 KINK_PENALTY_WEIGHT = 20.0
 
 # --- Training Data Generation Strategy ---
@@ -82,7 +83,10 @@ POTENTIAL_DATA_WEIGHT = 1.0
 LAPLACE_WEIGHT = 50.0
 CR_PENALTY_WEIGHT = 50.0
 U_DERIV_DATA_WEIGHT = 0.5
-DYNAMIC_WEIGHT_EMA_ALPHA = 0.99
+# MODIFIED: EMA Alpha reduced for faster weight adaptation.
+DYNAMIC_WEIGHT_EMA_ALPHA = 0.90
+# NEW: Tunable ceiling for dynamic weights to prevent explosion.
+DYNAMIC_WEIGHT_MAX_CLAMP_VALUE = 1000.0
 PEAK_LR = 1e-4
 GRADIENT_CLIP_VALUE = 1.0
 
@@ -92,6 +96,8 @@ print(f"### Data domain is fixed to [-1, 1]^2. Extrapolation domain is [{-EXTRAP
 if USE_KINK_PENALTY:
     strategy = "the data domain boundary" if FOCUS_KINK_PENALTY_ON_BOUNDARY else "the general physics domain"
     print(f"### KINK PENALTY ENABLED (w={KINK_PENALTY_WEIGHT}), focused on {strategy}. ###")
+else:
+    print(f"### KINK PENALTY DISABLED BY DEFAULT. ###")
 
 
 # ================== NEURAL NETWORK ARCHITECTURES AND CORE HELPERS ==================
@@ -254,7 +260,13 @@ def dynamic_training_step(params, opt_state, dw_state, optimizer, loss_names: Tu
         if name in grads:
             stat = get_grad_norm_statistic(grads[name])
             w_raw = ref_grad_stat / (stat + 1e-8)
-            w = DYNAMIC_WEIGHT_EMA_ALPHA * dw_state.get(name, 1.0) + (1 - DYNAMIC_WEIGHT_EMA_ALPHA) * w_raw
+            
+            # MODIFIED: Clamp the raw weight to prevent explosions from tiny physics gradients.
+            w_clamped = jnp.clip(w_raw, 0.0, DYNAMIC_WEIGHT_MAX_CLAMP_VALUE)
+            
+            # Use the clamped weight for the EMA update.
+            w = DYNAMIC_WEIGHT_EMA_ALPHA * dw_state.get(name, 1.0) + (1 - DYNAMIC_WEIGHT_EMA_ALPHA) * w_clamped
+            
             new_dw_state[name] = w
             total_grads = tree_util.tree_map(lambda g, h: g + w * h, total_grads, grads[name])
             total_loss += w * losses[name]
@@ -581,7 +593,7 @@ def generate_info_text(config, weighting_mode, run_params):
     lines.append(f"Losses: {' + '.join(loss_parts)}")
     lines.append(f"Weights: {weighting_mode}")
     if weighting_mode == "Dynamic":
-        lines.append(f"  (Alpha: {DYNAMIC_WEIGHT_EMA_ALPHA})")
+        lines.append(f"  (Alpha: {DYNAMIC_WEIGHT_EMA_ALPHA}, Clamp: {DYNAMIC_WEIGHT_MAX_CLAMP_VALUE})")
     return "\n".join(lines)
 
 def save_final_model(params, save_dir, group_id, full_name):
