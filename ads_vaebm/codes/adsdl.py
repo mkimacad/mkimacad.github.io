@@ -5,7 +5,7 @@ import jax
 jax.config.update("jax_enable_x64", True)
 
 import jax.numpy as jnp
-from jax import random, jit, value_and_grad, lax
+from jax import random, jit, value_and_grad
 from flax.training import train_state
 import flax.linen as nn
 import optax
@@ -21,22 +21,32 @@ config = {
     'z_max': 5.0,   'epsilon': 1e-3, 'num_epochs': 300, 'steps_per_epoch': 150,
     'batch_size': 64,  'latent_dim': 16, 'latent_search_steps': 200,
     'peak_lr': 3e-5, 'gradient_clip_value': 1.0, 'generator_width': 256,
+
+    'phi_reconstruction_weight': 1.0,
+    'eom_weight': 100.0,
     'ir_weight': 1.0, 'einstein_weight_final': 0.1, 'einstein_weight_initial': 1e-5,
-    'loss_avg_beta': 0.99, 'stage1_fraction': 0.1, 'stage2_fraction': 0.4,
+    'stage1_fraction': 0.1, 'stage2_fraction': 0.4,
     'stage3_fraction': 0.5, 'm_bulk_sq': 0.0
 }
 
-# ===== CUSTOM TRAIN STATE TO TRACK LOSS AVERAGES ==============================
+# ===== CUSTOM TRAIN STATE ========================================
 class CustomTrainState(train_state.TrainState):
-    l_rec_avg: float = 0.0
-    l_eom_avg: float = 0.0
+    pass
 
-# ===== GRIDS ==========================================================
+# ===== GRIDS & WEIGHTS =====================================================
 z_grid = jnp.linspace(config['epsilon'], config['z_max'], config['num_points_z'])
 x_grid = jnp.linspace(-1.0, 1.0, config['num_points_x'])
 dz, dx = z_grid[1] - z_grid[0], x_grid[1] - x_grid[0]
 
+# --- NEW: Create a weight mask for the EOM loss ---
+# This forces the model to prioritize getting the physics right near the
+# boundary (small z), and prevents it from settling on trivial solutions
+# like a constant field in the bulk (large z).
+eom_z_weight = 1.0 / (z_grid**2 + 0.1) # Add a small constant for stability at z=0
+eom_z_weight = eom_z_weight[None, :, None] # Reshape for broadcasting with batch
+
 # ===== MODEL ==========================================================
+# (No changes)
 class CausalGenerator(nn.Module):
     width: int
     @nn.compact
@@ -48,7 +58,8 @@ class CausalGenerator(nn.Module):
         h = nn.swish(nn.Dense(self.width)(h)); h = nn.Dense(3*config['num_points_z']*config['num_points_x'])(h)
         h = h.reshape((-1,3,config['num_points_z'],config['num_points_x'])); return phi, h[:,0], h[:,1], h[:,2]
 
-# ===== PHYSICS HELPERS (FULLY OPTIMIZED) =====================================
+# ===== PHYSICS HELPERS ===============================================
+# (No changes to most helpers)
 @jit
 def first_derivatives(field, dx, dz):
     d_dz = (jnp.roll(field, shift=-1, axis=1) - jnp.roll(field, shift=1, axis=1)) / (2 * dz)
@@ -76,10 +87,13 @@ def loss_einstein_true(h_tt,h_zz,h_xx, phi):
     T = calculate_energy_momentum_tensor(phi, *get_full_metric(h_tt,h_zz,h_xx), config['m_bulk_sq'])
     mse_norm = lambda g,t: jnp.mean(((g/jnp.sqrt(jnp.mean(g**2)+1e-8)) - (t/jnp.sqrt(jnp.mean(t**2)+1e-8)))**2)
     return sum(mse_norm(Gi, Ti) for Gi,Ti in zip(G,T))
-def loss_eom(phi, g_tt, g_zz, g_xx):
+
+# --- EOM loss now accepts weights ---
+def loss_eom(phi, g_tt, g_zz, g_xx, weights):
     lap_phi = laplacian(phi, dx, dz)
     resid = (1/g_zz) * lap_phi - config['m_bulk_sq'] * phi
-    return jnp.mean(resid**2)
+    # Apply the z-dependent weights before averaging
+    return jnp.mean(weights * resid**2)
 
 # ===== ANALYTICAL TEACHER ====================================================
 def create_analytical_teacher_batch(key, batch_size):
@@ -109,25 +123,26 @@ def train_step(state, key, teacher, stage, ein_w):
         phi, h_tt, h_zz, h_xx = state.apply_fn({'params': params}, z)
         phi = phi.at[:,0,:].set(teacher[:,0,:])
         g_tt, g_zz, g_xx = get_full_metric(h_tt, h_zz, h_xx)
+
+        # --- LOSS CALCULATIONS (EOM is now weighted) ---
         l_rec = jnp.mean((phi - teacher)**2)
-        l_eom = loss_eom(phi, g_tt, g_zz, g_xx)
-        beta = config['loss_avg_beta']
-        new_l_rec_avg = lax.cond(state.l_rec_avg != 0.0, lambda: beta * state.l_rec_avg + (1.0 - beta) * l_rec, lambda: l_rec)
-        new_l_eom_avg = lax.cond(state.l_eom_avg != 0.0, lambda: beta * state.l_eom_avg + (1.0 - beta) * l_eom, lambda: l_eom)
-        lambda_eom = lax.stop_gradient(new_l_rec_avg / (new_l_eom_avg + 1e-8))
-        total_loss = l_rec + lambda_eom * l_eom
+        l_eom = loss_eom(phi, g_tt, g_zz, g_xx, eom_z_weight) # Pass weights here
+
+        total_loss = (config['phi_reconstruction_weight'] * l_rec +
+                      config['eom_weight'] * l_eom)
+
         l_ein, l_ir = 0.0, 0.0
         if stage == 3:
             l_ein = loss_einstein_true(h_tt, h_zz, h_xx, phi)
             l_ir = loss_free_field_ir(phi[:, -1, :])
             total_loss += ein_w * l_ein + config['ir_weight'] * l_ir
-        metrics = {'rec': l_rec, 'eom': l_eom, 'ein': l_ein, 'ir': l_ir, 
-                   'lambda_eom': lambda_eom, 'l_rec_avg': new_l_rec_avg, 'l_eom_avg': new_l_eom_avg}
+
+        metrics = {'rec': l_rec, 'eom': l_eom, 'ein': l_ein, 'ir': l_ir}
         return total_loss, metrics
+
     (loss, metrics), grads = value_and_grad(loss_fn, has_aux=True)(state.params)
-    new_state = state.apply_gradients(grads=grads)
-    new_state = new_state.replace(l_rec_avg=metrics['l_rec_avg'], l_eom_avg=metrics['l_eom_avg'])
-    return new_state, metrics
+    state = state.apply_gradients(grads=grads)
+    return state, metrics
 
 # ===== MAIN LOOP ============================================================
 if __name__ == '__main__':
@@ -137,9 +152,11 @@ if __name__ == '__main__':
     total_steps = config['num_epochs'] * config['steps_per_epoch']
     sched = optax.warmup_cosine_decay_schedule(0.0, config['peak_lr'], int(0.1 * total_steps), int(0.9 * total_steps))
     tx = optax.chain(optax.clip_by_global_norm(config['gradient_clip_value']), optax.adamw(sched))
-    state = CustomTrainState.create(apply_fn=model.apply, params=params, tx=tx, l_rec_avg=0.0, l_eom_avg=0.0)
+    state = CustomTrainState.create(apply_fn=model.apply, params=params, tx=tx)
+
     s1_epochs, s2_epochs = int(config['stage1_fraction'] * config['num_epochs']), int(config['stage2_fraction'] * config['num_epochs'])
     s3_epochs = config['num_epochs'] - s1_epochs - s2_epochs
+
     print(f"--- Starting Stage 1: Supervised Reconstruction ({s1_epochs} epochs) ---")
     for epoch in range(s1_epochs):
         metrics = collections.defaultdict(float)
@@ -149,6 +166,7 @@ if __name__ == '__main__':
             state, l_rec = reconstruction_step(state, sub, teacher)
             metrics['rec'] += l_rec / config['steps_per_epoch']
             pbar.set_postfix({'rec': f"{metrics['rec']:.6f}"})
+
     print(f"\n--- Starting Stage 2: Fast Adaptive EOM Training ({s2_epochs} epochs) ---")
     for epoch in range(s2_epochs):
         metrics = collections.defaultdict(float)
@@ -157,7 +175,8 @@ if __name__ == '__main__':
             key, sub = random.split(key); teacher = create_analytical_teacher_batch(sub, config['batch_size'])
             state, mets = train_step(state, sub, teacher, stage=2, ein_w=0.0)
             for k,v in mets.items(): metrics[k] += v/config['steps_per_epoch']
-            pbar.set_postfix({'rec': f"{metrics['rec']:.5f}", 'eom': f"{metrics['eom']:.2e}", 'lambda': f"{metrics['lambda_eom']:.2e}"})
+            pbar.set_postfix({'rec': f"{metrics['rec']:.5f}", 'eom': f"{metrics['eom']:.2e}"})
+
     print(f"\n--- Starting Stage 3: Full Physics Training ({s3_epochs} epochs) ---")
     for epoch in range(s3_epochs):
         anneal_prog = min(1.0, epoch / (s3_epochs * 0.9))
@@ -168,13 +187,11 @@ if __name__ == '__main__':
             key, sub = random.split(key); teacher = create_analytical_teacher_batch(sub, config['batch_size'])
             state, mets = train_step(state, sub, teacher, stage=3, ein_w=ein_w)
             for k,v in mets.items(): metrics[k] += v/config['steps_per_epoch']
-            # --- FIX: Added 'eom' to the reporting dictionary ---
             pbar.set_postfix({
-                'rec': f"{metrics['rec']:.4f}",
-                'eom': f"{metrics['eom']:.2e}",
-                'ein': f"{metrics['ein']:.4f}",
-                'lambda': f"{metrics['lambda_eom']:.2e}"
+                'rec': f"{metrics['rec']:.4f}", 'eom': f"{metrics['eom']:.2e}",
+                'ein': f"{metrics['ein']:.4f}"
             })
+
     print("\nTraining complete.")
 
     # --- ANALYSIS ---
