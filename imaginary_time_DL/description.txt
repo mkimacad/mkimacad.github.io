@@ -1,6 +1,7 @@
 header:History (dates-wise)
 v1 code (July 10-11, 2025)
 Updating further soon
+Significant code/explanation update upcoming - for now please use this as basic information
 header:Codes
 The initial v1 code can be viewed from the below repo viewer, located at codes/extrapolation.py. (July 10-11, 2025)
 header:On the [-1,1] "constraint" of neural networks - is extrapolation on neural networks really possible?
@@ -122,6 +123,14 @@ The standard MLP (without even residual connections) of width 10 and depth 10 an
 Extrapolation to [-50,50] was successful. So first-order derivatives were sufficient for some extrapolation.
 Unfortunately, this is a relatively lucky case and in other cases this miracle is more constrained, though there are some limited extrapolation successes.
 So we need complexification.
+header:Some smoothness measures commonly used for interpolation and extrapolation
+The most common and general smoothness regularization is Tikhonov regularization: 
+$$\min_{f} \; \underbrace{\|y - f(x)\|_{2}^{2}}_{\text{data fidelity}} \;+\;\lambda\; \underbrace{\|L\,f\|_{L^{2}}^{2}}_{\text{regularization}}$$
+where depending on operator $L$ that can be identity, high-order differential operator and so forth, we have different smoothness regularization. (Sobolev-space regularization such as $\textbf{H}^1$ regularization, $\textbf{H}^2$ regularization and so forth.) 
+We can also have total variations regularization:
+$$\min_{f}\;\|y - f(x)\|_{2}^{2}\;+\;\lambda\,\mathrm{TV}(f), \quad \mathrm{TV}(f)=\int_{\Omega}\|\nabla f(x)\|_{2}\,dx.$$
+But all these regularizations simply value smoothness regardless of underlying data such as high-order derivative data.
+So clever ways needed.
 header:Some empirical training insights
 1. For most cases, the kink penalty significantly improves training performance. The kink penalty is well-justified since the Cauchy-Riemann residuals should be zero so their high-order and first-order derivatives should always be zero.
 2. Snake activation function provides much better training performance, and this relates to the theoretical analysis of Snake on extrapolation.
