@@ -1,232 +1,424 @@
-# ===================================================================
-# --- AdSP/CFTP: no longer AdS/VAEBM. VAE no longer needed ---
+# =================================================================== #
+# --- AdSP/DL: no longer AdS/VAEBM. VAE no longer needed ---
 # --- Still matches UV and IR partition functions by scoring ---
-# --- Plots still missing ---
-# ===================================================================
-# --- Part 1: Setup and Dependencies ---
-# ===================================================================
+# =================================================================== #
+import os
+import sys
 import jax
 import jax.numpy as jnp
+from jax import tree_util as jax_tree
 import flax.linen as nn
 import optax
-from flax.training import train_state
+from flax.training import train_state, checkpoints
+from flax.traverse_util import path_aware_map
 from dataclasses import dataclass, field
 from functools import partial
 from tqdm.notebook import tqdm
+from typing import Tuple, Any, Dict
 import matplotlib.pyplot as plt
 
-# ===================================================================
-# --- Part 2: Tunable Configuration ---
-# ===================================================================
+# ---------------- CONFIGURATION ----------------
 @dataclass(frozen=True)
 class HolographicConfig:
-    """A single, comprehensive configuration for the entire experiment."""
-    # --- Physics Parameters ---
-    n_x: int = 64; n_t: int = 64; n_z: int = 100; z_ir: float = 10.0
+    n_x: int = 30
+    n_t: int = 30
+    n_z: int = 10
+    z_ir: float = 10.0
     num_ir_params: int = 1
-    # --- Optimizer Settings ---
-    learning_rate: float = 3e-4; gradient_clip_norm: float = 1.0
-    # --- Loss Weights (Used only if dynamic_weighting is False) ---
-    score_loss_weight: float = 1.0; action_min_weight: float = 0.1
-    path_smoothness_weight: float = 1.0; bulk_amplitude_weight: float = 0.1
-    perturb_regularization: float = 0.01
-    # --- Network Architecture ---
-    action_nn_features: int = 128; action_nn_depth: int = 2
-    path_solver_features: int = 256; path_solver_depth: int = 3
-    # --- Training Parameters ---
-    num_epochs: int = 10000; batch_size: int = 32
-    # --- Toggles for Advanced Training Techniques ---
-    use_dynamic_weighting: bool = True
-    use_lr_scheduler: bool = True
-    # --- Hyperparameters for Advanced Techniques ---
-    dynamic_weighting_ema_alpha: float = 0.99
-    lr_warmup_epochs: int = 500
 
-# ===================================================================
-# --- Part 3: Physical System Definition ---
-# ===================================================================
-@partial(jax.jit, static_argnums=(0, 2))
-def generate_cft_samples(config: HolographicConfig, key: jax.random.PRNGKey, batch_size: int):
-    shape = (batch_size, config.n_x, config.n_t); kx = jnp.fft.fftfreq(config.n_x) * config.n_x; kt = jnp.fft.fftfreq(config.n_t) * config.n_t
-    k_grid_x, k_grid_t = jnp.meshgrid(kx, kt, indexing='ij'); k_squared = k_grid_x**2 + k_grid_t**2
-    k_squared = k_squared.at[0, 0].set(1.0); propagator = 1.0 / jnp.sqrt(k_squared)
-    propagator = propagator.at[0, 0].set(0.0); white_noise = jax.random.normal(key, shape)
-    f_white_noise = jnp.fft.fft2(white_noise, axes=(1, 2)); f_correlated_noise = f_white_noise * propagator
-    correlated_samples = jnp.fft.ifft2(f_correlated_noise, axes=(1, 2)).real
-    return correlated_samples
-def free_scalar_action(phi, dx, dt):
-    grad_x_phi, grad_t_phi = jnp.gradient(phi, dx, dt); integrand = 0.5 * (grad_x_phi**2 + grad_t_phi**2); return jnp.sum(integrand * dx * dt)
-def get_target_theories(config: HolographicConfig):
-    dx = 1.0 / config.n_x; dt = 1.0 / config.n_t; cft_action_fn = partial(free_scalar_action, dx=dx, dt=dt); cft_score_fn = jax.grad(cft_action_fn)
-    def ir_perturbed_action_fn(phi, ir_params):
-        mass_term = ir_params[0] * 0.5 * jnp.sum(phi**2) * dx * dt; return cft_action_fn(phi) + mass_term
-    ir_perturbed_score_fn = jax.grad(ir_perturbed_action_fn); return cft_action_fn, cft_score_fn, ir_perturbed_action_fn, ir_perturbed_score_fn
+    gradient_clip_norm: float = 1.0
+    
+    pretrain_p_steps: int = 5
+    pretrain_epochs_per_p: int = 2000
+    
+    finetune_p_steps: int = 10
+    finetune_epochs_per_p: int = 5000
+    
+    pretrain_path_solver_lr: float = 5e-4
+    pretrain_action_net_lr: float = 1e-5
+    
+    finetune_path_solver_lr: float = 5e-5 
+    finetune_action_net_lr: float = 1e-6
+    
+    score_weight: float = 1.0
+    action_weight: float = 0.1
+    dev_smoothness_weight: float = 1.0
+    dev_amplitude_weight: float = 0.01
+    p0_regularization_weight: float = 0.5
 
-# ===================================================================
-# --- Part 4: ResNet-based Neural Network Architecture ---
-# ===================================================================
+    path_solver_features: int = 768
+    path_solver_depth: int = 6
+    path_cnn_features: Tuple[int, ...] = field(default_factory=lambda: (24, 48, 96, 192))
+    
+    action_nn_features: int = 256
+    action_nn_depth: int = 3
+    action_cnn_features: Tuple[int, ...] = field(default_factory=lambda: (16, 32))
+    cnn_kernel_size: int = 5
+
+    batch_size: int = 8
+    training_p_max: float = 10.0
+    log_frequency: int = 200
+    checkpoint_base_dir: str = 'checkpoints'
+    plot_base_dir: str = 'plots'
+    validation_seed: int = 0
+
+# ---------------- INITIALIZERS / GENERATOR / THEORIES ----------------
+def small_kick_init(key, shape, dtype=jnp.float32): return jax.random.normal(key, shape, dtype) * 1e-2
+class CFTSampleGenerator:
+    def __init__(self, config: HolographicConfig):
+        self.config = config; kx = jnp.fft.fftfreq(config.n_x) * config.n_x; kt = jnp.fft.fftfreq(config.n_t) * config.n_t
+        kx, kt = jnp.meshgrid(kx, kt, indexing='ij'); k2 = kx**2 + kt**2; k2 = k2.at[0,0].set(1.0)
+        propagator = 1.0 / jnp.sqrt(k2); self.propagator = propagator.at[0,0].set(0.0)
+        self._gen = jax.jit(self._gen_impl, static_argnums=1)
+    def _gen_impl(self, key, batch_size: int):
+        shape = (batch_size, self.config.n_x, self.config.n_t); wn = jax.random.normal(key, shape)
+        f = jnp.fft.fft2(wn, axes=(1,2)) * self.propagator; return jnp.fft.ifft2(f, axes=(1,2)).real
+    def generate(self, key, batch_size): return self._gen(key, batch_size)
+@jax.jit
+def free_scalar_action(phi, dx, dt): grad_x, grad_t = jnp.gradient(phi, dx, dt); return jnp.sum(0.5 * (grad_x**2 + grad_t**2)) * dx * dt
+def get_target_theories(cfg: HolographicConfig):
+    dx, dt = 1.0/cfg.n_x, 1.0/cfg.n_t; cft_act = partial(free_scalar_action, dx=dx, dt=dt)
+    cft_score = jax.jit(jax.grad(lambda p: cft_act(p)))
+    @jax.jit
+    def ir_act(phi, ir): return cft_act(phi) + ir[0] * 0.5 * jnp.sum(phi**2) * dx * dt
+    ir_score = jax.jit(jax.grad(ir_act, argnums=0)); return cft_act, cft_score, ir_act, ir_score
+
+# ---------------- MODEL DEFINITION ----------------
+class ActionPerturbationCNN(nn.Module):
+    cfg: HolographicConfig
+    @nn.compact
+    def __call__(self, p1, p2, ir):
+        x = jnp.stack([p1, p2], -1)
+        for i, f in enumerate(self.cfg.action_cnn_features):
+            x = nn.Conv(f, (self.cfg.cnn_kernel_size,)*2, padding='SAME')(x); x = nn.gelu(x)
+            if i < len(self.cfg.action_cnn_features)-1: x = nn.avg_pool(x, (2,2), (2,2))
+        x = jnp.mean(x, axis=(1,2)); v = jnp.concatenate([x, ir], -1)
+        for _ in range(self.cfg.action_nn_depth): v = nn.Dense(self.cfg.action_nn_features)(v); v = nn.gelu(v)
+        return nn.Dense(1, kernel_init=small_kick_init)(v).squeeze()
 class ResNetBlock(nn.Module):
     features: int
     @nn.compact
     def __call__(self, x):
-        y = nn.Dense(features=self.features)(x); y = nn.relu(y)
-        y = nn.Dense(features=self.features)(y)
+        y = nn.GroupNorm(min(32, self.features))(x); y = nn.gelu(y); y = nn.Dense(self.features)(y)
+        y = nn.GroupNorm(min(32, self.features))(y); y = nn.gelu(y); y = nn.Dense(self.features)(y)
         return x + y
-
-class BulkActionNN(nn.Module):
-    config: HolographicConfig
+class PathSolverCNN(nn.Module):
+    cfg: HolographicConfig
     @nn.compact
-    def __call__(self, phi1, phi2, ir_params):
-        input_vec = jnp.concatenate([phi1.ravel(), phi2.ravel(), ir_params])
-        x = nn.Dense(features=self.config.action_nn_features)(input_vec); x = nn.relu(x)
-        for _ in range(self.config.action_nn_depth): x = ResNetBlock(features=self.config.action_nn_features)(x)
-        x = nn.relu(x); x = nn.Dense(features=1)(x)
-        return nn.softplus(x.squeeze())
-
-class ClassicalPathSolverNN(nn.Module):
-    config: HolographicConfig
+    def __call__(self, phi):
+        x = phi[..., None]
+        for f in self.cfg.path_cnn_features:
+            x = nn.Conv(f, (self.cfg.cnn_kernel_size,)*2, strides=(2,2))(x); x = nn.GroupNorm(min(8, f))(x); x = nn.gelu(x)
+        return x.ravel()
+class StabilizedClassicalPathSolverNN(nn.Module):
+    cfg: HolographicConfig
     @nn.compact
-    def __call__(self, z_coords, phi_uv, phi_ir):
-        def generate_slice(z, phi_uv, phi_ir):
-            z_norm = z / self.config.z_ir
-            linear_path = (1 - z_norm) * phi_uv + z_norm * phi_ir
-            z_embedding = nn.Dense(features=self.config.path_solver_features // 4)(jnp.array([z_norm, 1-z_norm, z_norm**2, z_norm*(1-z_norm)]))
-            boundary_embedding = nn.Dense(features=self.config.path_solver_features)(jnp.concatenate([phi_uv.ravel(), phi_ir.ravel()]))
-            initial_vec = jnp.concatenate([z_embedding, boundary_embedding])
-            x = nn.Dense(features=self.config.path_solver_features)(initial_vec); x = nn.relu(x)
-            for _ in range(self.config.path_solver_depth): x = ResNetBlock(features=self.config.path_solver_features)(x)
-            x = nn.relu(x)
-            deviation = nn.Dense(features=phi_uv.size)(x).reshape(phi_uv.shape)
-            return linear_path + z * (1 - z / self.config.z_ir) * deviation
-        return jax.vmap(generate_slice, in_axes=(0, None, None))(z_coords, phi_uv, phi_ir)
-
+    def __call__(self, z_coords, p_uv, p_ir, ir):
+        encoder = PathSolverCNN(self.cfg); eu = encoder(p_uv); ei = encoder(p_ir); be = jnp.concatenate([eu, ei], -1)
+        zn = z_coords / self.cfg.z_ir; zf = jnp.stack([zn, 1-zn, zn**2, zn*(1-zn)], -1)
+        ze = nn.Dense(self.cfg.path_solver_features // 4, name="z_embedding")(zf)
+        num_z_pts = z_coords.shape[0]; be_b = jnp.broadcast_to(be, (num_z_pts, be.shape[-1])); ir_b = jnp.broadcast_to(ir, (num_z_pts, ir.shape[-1]))
+        v0 = jnp.concatenate([ze, be_b, ir_b], -1)
+        v = nn.Dense(self.cfg.path_solver_features, name="input_dense")(v0); v = nn.gelu(v)
+        for i in range(self.cfg.path_solver_depth): v = ResNetBlock(self.cfg.path_solver_features, name=f"resnet_{i}")(v)
+        v = nn.gelu(v); dev = nn.Dense(p_uv.size, kernel_init=small_kick_init, name="output_dense")(v)
+        dev = dev.reshape((num_z_pts,) + p_uv.shape); zn_reshaped = zn.reshape(-1, 1, 1)
+        path_envelope = self.cfg.z_ir * zn_reshaped * (1 - zn_reshaped)
+        path = (1 - zn_reshaped) * p_uv + zn_reshaped * p_ir + path_envelope * dev; return path, dev
 class HolographicModel(nn.Module):
-    config: HolographicConfig; cft_action_fn: callable
-    def setup(self):
-        self.action_nn = BulkActionNN(self.config, name="action_net")
-        self.path_solver = ClassicalPathSolverNN(self.config, name="path_solver")
+    cfg: HolographicConfig; cft_act: Any
+    def setup(self): self.anet = ActionPerturbationCNN(self.cfg); self.psol = StabilizedClassicalPathSolverNN(self.cfg)
+    def get_action_pert(self, p1, p2, ir): return self.anet(p1, p2, ir)
     @nn.compact
-    def __call__(self, phi_uv, phi_ir, ir_params):
-        z_coords = jnp.linspace(0, self.config.z_ir, self.config.n_z + 1); phi_cl_path = self.path_solver(z_coords, phi_uv, phi_ir)
-        def single_step_action(phi_i, phi_i_plus_1):
-            original_action = self.cft_action_fn((phi_i + phi_i_plus_1) / 2.0); learned_perturbation = self.action_nn(phi_i, phi_i_plus_1, ir_params)
-            return original_action + learned_perturbation
-        total_action = jnp.sum(jax.vmap(single_step_action)(phi_cl_path[:-1], phi_cl_path[1:])); return total_action, phi_cl_path
+    def __call__(self, puv, pir, ir, use_path=True) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+        z = jnp.linspace(0, self.cfg.z_ir, self.cfg.n_z + 1)
+        if use_path: path, dev = self.psol(z, puv, pir, ir)
+        else: path = (1-z[:,None,None]/self.cfg.z_ir)*puv + (z[:,None,None]/self.cfg.z_ir)*pir; dev = jnp.zeros_like(path)
+        def step(a, b): c_act = self.cft_act((a + b) / 2); p_act = self.anet(a, b, ir); return c_act + p_act, p_act
+        tot_acts, pert_acts = jax.vmap(step)(path[:-1], path[1:])
+        return jnp.sum(tot_acts), path, jnp.sum(pert_acts), dev
 
-# ===================================================================
-# --- Part 5: Loss Function and Training State ---
-# ===================================================================
-class CustomTrainState(train_state.TrainState):
-    loss_emas: dict = field(default_factory=dict)
-
-def create_loss_fn(config: HolographicConfig, model: nn.Module, target_fns: tuple):
-    cft_action_fn, cft_score_fn, ir_perturbed_action_fn, ir_perturbed_score_fn = target_fns
-    get_total_action_and_path_fn = lambda params, phi_uv, phi_ir, ir_params: model.apply({'params': params}, phi_uv, phi_ir, ir_params)
-    get_action_for_grad = lambda *args: get_total_action_and_path_fn(*args)[0]
-    total_action_scorer = jax.grad(get_action_for_grad, argnums=(1, 2))
-    score_loss_normalizer = (config.n_x)**4
-    def loss_fn(params, batch, loss_emas):
-        phi_uv_batch, phi_ir_batch, ir_params_batch = batch
-        total_actions, phi_cl_paths = jax.vmap(get_total_action_and_path_fn, in_axes=(None, 0, 0, 0))(params, phi_uv_batch, phi_ir_batch, ir_params_batch)
-        model_scores_uv, model_scores_ir = jax.vmap(total_action_scorer, in_axes=(None, 0, 0, 0))(params, phi_uv_batch, phi_ir_batch, ir_params_batch)
-        target_scores_uv = jax.vmap(cft_score_fn)(phi_uv_batch); target_scores_ir = jax.vmap(ir_perturbed_score_fn)(phi_ir_batch, ir_params_batch)
-        loss_score = (jnp.mean(jnp.sum((model_scores_uv - target_scores_uv)**2, axis=(1, 2))) + jnp.mean(jnp.sum((model_scores_ir - target_scores_ir)**2, axis=(1, 2)))) / score_loss_normalizer
-        loss_action = jnp.mean(total_actions)
-        loss_smoothness = jnp.mean((phi_cl_paths[:, :-1, :, :] - phi_cl_paths[:, 1:, :, :])**2)
-        loss_amplitude = jnp.mean(phi_cl_paths**2)
-        def get_single_perturbation(phi1, phi2, ir_params):
-            return model.apply({'params': params}, phi1, phi2, ir_params, method=lambda mdl, p1, p2, p_ir: mdl.action_nn(p1, p2, p_ir))
-        loss_reg = jnp.mean(jax.vmap(get_single_perturbation)(jnp.zeros_like(phi_uv_batch), jnp.zeros_like(phi_ir_batch), jnp.zeros_like(ir_params_batch))**2)
-        unweighted_losses = {'score': loss_score, 'action': loss_action, 'smoothness': loss_smoothness, 'amplitude': loss_amplitude, 'reg': loss_reg}
-        if config.use_dynamic_weighting:
-            new_emas = {k: config.dynamic_weighting_ema_alpha * loss_emas[k] + (1 - config.dynamic_weighting_ema_alpha) * unweighted_losses[k] for k in unweighted_losses}
-            weights = {k: 1.0 / (new_emas[k] + 1e-8) for k in new_emas}; norm_factor = sum(weights.values()); final_weights = {k: v / norm_factor for k, v in weights.items()}
-            total_loss = sum(final_weights[k] * unweighted_losses[k] for k in unweighted_losses)
-        else:
-            weights = {'score': config.score_loss_weight, 'action': config.action_min_weight, 'smoothness': config.path_smoothness_weight, 'amplitude': config.bulk_amplitude_weight, 'reg': config.perturb_regularization}
-            total_loss = sum(weights[k] * unweighted_losses[k] for k in unweighted_losses); new_emas = loss_emas
-        return total_loss, {"unweighted": unweighted_losses, "updated_emas": new_emas}
+# ---------------- LOSS & SCALING ----------------
+def create_loss_fn(cfg: HolographicConfig, model: nn.Module, fns: tuple):
+    _, cft_s, _, ir_s = fns; norm = float(cfg.n_x * cfg.n_t)
+    def loss_fn(params, batch, loss_scales: Dict[str, float]) -> Tuple[jnp.ndarray, Dict[str, jnp.ndarray]]:
+        puv, pir, ir = batch
+        def model_apply_fn(p, u, v, z): return model.apply({'params': p}, u, v, z, use_path=True)
+        _, _, pert_actions, devs = jax.vmap(model_apply_fn, in_axes=(None, 0, 0, 0))(params, puv, pir, ir)
+        grad_target_fn = lambda p, u, v, z: model_apply_fn(p, u, v, z)[0]
+        ms_uv = jax.vmap(jax.grad(grad_target_fn, argnums=1), in_axes=(None, 0, 0, 0))(params, puv, pir, ir)
+        ms_ir = jax.vmap(jax.grad(grad_target_fn, argnums=2), in_axes=(None, 0, 0, 0))(params, puv, pir, ir)
+        ts_uv = jax.vmap(cft_s)(puv); ts_ir = jax.vmap(ir_s)(pir, ir)
+        def p0_pert_fn(p, u, v): return model.apply({'params': p}, u, v, jnp.zeros((cfg.num_ir_params,)), method=HolographicModel.get_action_pert)
+        p0_perts = jax.vmap(p0_pert_fn, in_axes=(None, 0, 0))(params, puv, pir)
+        losses = {
+            'score': (jnp.mean(jnp.sum((ms_uv-ts_uv)**2, (1, 2))) + jnp.mean(jnp.sum((ms_ir-ts_ir)**2, (1, 2)))) / norm,
+            'p0_reg': jnp.mean(p0_perts**2), 'pert_action': jnp.mean(pert_actions**2),
+            'dev_smoothness': jnp.mean((devs[:, :-1] - devs[:, 1:])**2), 'dev_amplitude': jnp.mean(devs**2)
+        }
+        return sum(loss_scales[k] * v for k, v in losses.items()), losses
     return loss_fn
+def calculate_gradient_scales(cfg, loss_fn, params, batch, is_finetune=False):
+    base_weights = {
+        'score': cfg.score_weight, 'p0_reg': cfg.p0_regularization_weight, 'pert_action': cfg.action_weight, 
+        'dev_smoothness': cfg.dev_smoothness_weight, 'dev_amplitude': cfg.dev_amplitude_weight
+    }
+    if not is_finetune:
+        print("Using score-only loss for pre-training.")
+        return {k: (1.0 if k == 'score' else 0.0) for k in base_weights}
+    
+    print("Calculating gradient scales for fine-tuning loss balancing...")
+    loss_scales = {}
+    for loss_name in base_weights:
+        scales_for_one_loss = {k: (1.0 if k == loss_name else 0.0) for k in base_weights}
+        if base_weights[loss_name] == 0:
+            loss_scales[loss_name] = 0.0; print(f"  - Grad norm for '{loss_name}': SKIPPED (weight is zero)"); continue
+        grad_fn = jax.grad(lambda p, b: loss_fn(p, b, scales_for_one_loss)[0])
+        grads = grad_fn(params, batch)
+        total_norm = jnp.sqrt(sum(jnp.sum(g**2) for g in jax_tree.tree_leaves(grads)))
+        loss_scales[loss_name] = base_weights[loss_name] / (total_norm + 1e-8)
+        print(f"  - Grad norm for '{loss_name}': {total_norm:.4f}, final scale: {loss_scales[loss_name]:.4f}")
+    return loss_scales
 
-# ===================================================================
-# --- Part 6: Main Execution Block ---
-# ===================================================================
-if __name__ == '__main__':
-    config = HolographicConfig(
-        n_z=100, z_ir=10.0, action_nn_features=256, action_nn_depth=3,
-        path_solver_features=512, path_solver_depth=4, num_epochs=10000,
-        use_dynamic_weighting=True, use_lr_scheduler=True, learning_rate=3e-4,
-        score_loss_weight=1.0, action_min_weight=1.0, path_smoothness_weight=1.0,
-        bulk_amplitude_weight=1.0, perturb_regularization=1.0
-    )
-    print(f"--- Running Experiment with Config: ---\n{config}\n")
-    key = jax.random.PRNGKey(42)
-    target_fns = get_target_theories(config)
-    cft_action_fn, _, _, _ = target_fns
-    model = HolographicModel(config, cft_action_fn=cft_action_fn)
-    key, init_key = jax.random.split(key)
-    dummy_phi = jnp.zeros((config.n_x, config.n_t)); dummy_ir_params = jnp.zeros((config.num_ir_params,))
-    params = model.init(init_key, dummy_phi, dummy_phi, dummy_ir_params)['params']
-    if config.use_lr_scheduler:
-        print("Using learning rate scheduler with warmup.")
-        lr_schedule = optax.warmup_cosine_decay_schedule(init_value=0.0, peak_value=config.learning_rate, warmup_steps=config.lr_warmup_epochs, decay_steps=config.num_epochs - config.lr_warmup_epochs, end_value=config.learning_rate / 10.0)
-        optimizer = optax.chain(optax.clip_by_global_norm(config.gradient_clip_norm), optax.adamw(lr_schedule))
+# ---------------- ENVIRONMENT SETUP (with Google Drive) ----------------
+def setup_environment(cfg):
+    in_colab = 'google.colab' in sys.modules
+    if in_colab:
+        print("--- Detected Google Colab environment. Mounting Google Drive. ---")
+        from google.colab import drive
+        drive.mount('/content/drive')
+        gdrive_path = '/content/drive/MyDrive/holographic_model'
+        checkpoint_dir = os.path.join(gdrive_path, cfg.checkpoint_base_dir)
+        plot_dir = os.path.join(gdrive_path, cfg.plot_base_dir)
     else:
-        print("Using fixed learning rate.")
-        optimizer = optax.chain(optax.clip_by_global_norm(config.gradient_clip_norm), optax.adamw(config.learning_rate))
-    initial_emas = {'score': 1.0, 'action': 1.0, 'smoothness': 1.0, 'amplitude': 1.0, 'reg': 1.0}
-    state = CustomTrainState.create(apply_fn=model.apply, params=params, tx=optimizer, loss_emas=initial_emas)
-    loss_calculator = create_loss_fn(config, model, target_fns)
+        print("--- Detected local environment. Using current directory. ---")
+        checkpoint_dir = f'./{cfg.checkpoint_base_dir}'
+        plot_dir = f'./{cfg.plot_base_dir}'
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    os.makedirs(plot_dir, exist_ok=True)
+    return checkpoint_dir, plot_dir
+
+# ---------------- TRAINING LOOP (Resumption Logic) ----------------
+def run_training(cfg):
+    checkpoint_dir, plot_dir = setup_environment(cfg)
+    
+    master_key = jax.random.PRNGKey(42)
+    training_keys, val_key_base = jax.random.split(master_key)
+    total_pretrain_steps = cfg.pretrain_p_steps * cfg.pretrain_epochs_per_p
+    total_finetune_steps = cfg.finetune_p_steps * cfg.finetune_epochs_per_p
+    training_keys = jax.random.split(training_keys, total_pretrain_steps + total_finetune_steps + 1)
+
+    generator = CFTSampleGenerator(cfg)
+    target_fns = get_target_theories(cfg)
+    model = HolographicModel(cfg, cft_act=target_fns[0])
+    
+    # --- Corrected Initialization ---
+    init_params = model.init(training_keys[0], jnp.zeros((cfg.n_x, cfg.n_t)), jnp.zeros((cfg.n_x, cfg.n_t)), jnp.zeros((cfg.num_ir_params,)), True)['params']
+    
+    # Define a template optimizer for state shape inference.
+    # The actual optimizer with the correct LR schedule will be created for each phase.
+    template_tx = optax.multi_transform(
+        {'anet': optax.adam(0.0), 'psol': optax.adam(0.0)},
+        path_aware_map(lambda path, _: 'anet' if 'anet' in path else 'psol', init_params))
+    
+    # Create the template state.
+    state = train_state.TrainState.create(apply_fn=model.apply, params=init_params, tx=template_tx)
+    
+    latest_ckpt = checkpoints.latest_checkpoint(checkpoint_dir)
+    if latest_ckpt:
+        print(f"--- Resuming training from checkpoint: {latest_ckpt} ---")
+        # Restore into the template state. It will overwrite params and the optimizer state.
+        state = checkpoints.restore_checkpoint(latest_ckpt, target=state)
+        start_step = int(state.step)
+    else:
+        print("--- Starting new training run ---")
+        start_step = 0
+    
+    loss_fn = create_loss_fn(cfg, model, target_fns)
+    
     @jax.jit
-    def train_step(state, batch):
-        (loss, aux), grads = jax.value_and_grad(loss_calculator, argnums=0, has_aux=True)(state.params, batch, state.loss_emas)
-        state = state.apply_gradients(grads=grads)
-        state = state.replace(loss_emas=aux['updated_emas'])
-        metrics = {'total_loss': loss, **aux['unweighted']}
-        return state, metrics
-    print("Starting training...")
-    history = {k: [] for k in ['total_loss', 'score', 'action', 'smoothness', 'amplitude', 'reg']}
-    pbar = tqdm(range(config.num_epochs), desc="Training Progress")
-    for epoch in pbar:
-        key, uv_key, ir_key, params_key = jax.random.split(key, 4)
-        phi_uv_batch = generate_cft_samples(config, uv_key, config.batch_size)
-        phi_ir_batch = generate_cft_samples(config, ir_key, config.batch_size)
-        ir_params_batch = jax.random.uniform(params_key, (config.batch_size, config.num_ir_params))
-        batch = (phi_uv_batch, phi_ir_batch, ir_params_batch)
-        state, metrics = train_step(state, batch)
-        for k in history.keys(): history[k].append(metrics[k])
-        if (epoch + 1) % 200 == 0:
-            pbar.set_postfix({'Loss': f"{metrics['total_loss']:.3f}", 'Score': f"{metrics['score']:.4f}", 'Action': f"{metrics['action']:.2f}", 'Amp': f"{metrics['amplitude']:.4f}"})
-    print("Training finished.")
-    # (Verification and Visualization part is unchanged)
-    print("\n--- Running Verification and Visualization ---")
-    trained_params = state.params; key, uv_key, ir_key = jax.random.split(key, 3)
-    test_phi_uv = generate_cft_samples(config, uv_key, 1)[0]; test_phi_ir = generate_cft_samples(config, ir_key, 1)[0]
-    print("\n[1] Verifying the p=0 (unperturbed) case...")
-    p_zero = jnp.zeros((config.num_ir_params,)); _, path_p_zero = model.apply({'params': trained_params}, test_phi_uv, test_phi_ir, p_zero)
-    z_coords = jnp.linspace(0, config.z_ir, config.n_z + 1)
-    ideal_path = jax.vmap(lambda z: (1 - z/config.z_ir) * test_phi_uv + (z/config.z_ir) * test_phi_ir)(z_coords)
-    p0_path_deviation = jnp.mean((path_p_zero - ideal_path)**2)
-    print(f"--> Deviation from ideal straight-line path: {p0_path_deviation:.6f}")
-    if p0_path_deviation < 1e-3: print("--> SUCCESS: The learned path for p=0 is a nearly perfect straight line.")
-    else: print("--> WARNING: The path for p=0 deviates significantly from a straight line.")
-    print("\n[2] Visualizing the RG flow for p > 0...")
-    p_one = jnp.ones((config.num_ir_params,)); _, path_p_one = model.apply({'params': trained_params}, test_phi_uv, test_phi_ir, p_one)
-    indices_to_plot = jnp.array([0, config.n_z // 3, 2 * config.n_z // 3, config.n_z]); slices_to_plot = path_p_one[indices_to_plot]
-    vmin = slices_to_plot.min(); vmax = slices_to_plot.max(); fig, axes = plt.subplots(1, 4, figsize=(24, 6))
-    for i, slice_idx in enumerate(indices_to_plot):
-        ax = axes[i]; im = ax.imshow(slices_to_plot[i], cmap='viridis', vmin=vmin, vmax=vmax, origin='lower')
-        z_val = z_coords[slice_idx]; ax.set_title(f"RG Flow at z = {z_val:.2f}"); ax.set_xlabel("x"); ax.set_ylabel("t")
-    fig.colorbar(im, ax=axes.ravel().tolist(), shrink=0.6); plt.suptitle("Holographic RG Flow: High-frequency modes are smoothed out from UV (z=0) to IR", fontsize=16); plt.show()
-    print("\n[3] Probing the bulk response to the perturbation parameter 'p'...")
-    p_values = jnp.linspace(0, 2.0, 20)
+    def train_step(st, batch, scales):
+        (loss, loss_dict), grads = jax.value_and_grad(loss_fn, has_aux=True)(st.params, batch, scales)
+        return st.apply_gradients(grads=grads), loss, loss_dict
+
     @jax.jit
-    def get_s_perturb(params, phi_uv, phi_ir, p_val):
-        _, path = model.apply({'params': params}, phi_uv, phi_ir, p_val)
-        def get_step_perturb(phi1, phi2):
-            return model.apply({'params': params}, phi1, phi2, p_val, method=lambda mdl, p1, p2, p_ir: mdl.action_nn(p1, p2, p_ir))
-        return jnp.sum(jax.vmap(get_step_perturb)(path[:-1], path[1:]))
-    s_perturb_values = []
-    for p_val in tqdm(p_values, desc="Probing geometry"):
-        s_perturb_values.append(get_s_perturb(trained_params, test_phi_uv, test_phi_ir, jnp.array([p_val])))
-    plt.figure(figsize=(8, 6)); plt.plot(p_values, s_perturb_values, 'o-'); plt.xlabel("Perturbation strength 'p' (squared mass m²)"); plt.ylabel("Total Perturbation Action S_perturb"); plt.title("Emergent Bulk Geometry Response"); plt.grid(True); plt.show()
+    def eval_step(params, batch, scales):
+        return loss_fn(params, batch, scales)
+
+    # --- PHASE 1: SCORE-ONLY PRE-TRAINING ---
+    if start_step < total_pretrain_steps:
+        print("\n--- Phase 1: Score-Only Pre-training with p-Curriculum ---")
+        pretrain_lr_schedule_a = optax.cosine_decay_schedule(cfg.pretrain_action_net_lr, total_pretrain_steps)
+        pretrain_lr_schedule_p = optax.cosine_decay_schedule(cfg.pretrain_path_solver_lr, total_pretrain_steps)
+        pretrain_tx = optax.multi_transform(
+            {'anet': optax.chain(optax.clip_by_global_norm(cfg.gradient_clip_norm), optax.adam(pretrain_lr_schedule_a)),
+             'psol': optax.chain(optax.clip_by_global_norm(cfg.gradient_clip_norm), optax.adam(pretrain_lr_schedule_p))},
+            path_aware_map(lambda path, _: 'anet' if 'anet' in path else 'psol', state.params)
+        )
+        # Create a new state with the correct optimizer for this phase, carrying over params.
+        state = train_state.TrainState.create(apply_fn=model.apply, params=state.params, tx=pretrain_tx)
+
+        score_only_scales = calculate_gradient_scales(cfg, loss_fn, state.params, None, is_finetune=False)
+        training_history = {'train_loss': [], 'val_loss': []}
+        pbar_pre = tqdm(total=total_pretrain_steps, desc='Pre-training (Score Only)', initial=start_step)
+        
+        global_step = start_step
+        
+        for p_step in range(cfg.pretrain_p_steps):
+            current_p = (p_step / (cfg.pretrain_p_steps - 1)) * cfg.training_p_max if cfg.pretrain_p_steps > 1 else 0.0
+            for epoch in range(cfg.pretrain_epochs_per_p):
+                current_global_step = p_step * cfg.pretrain_epochs_per_p + epoch
+                if current_global_step < start_step: continue
+
+                p_batch = jnp.full((cfg.batch_size, cfg.num_ir_params), current_p, dtype=jnp.float32)
+                batch = (generator.generate(training_keys[global_step], cfg.batch_size), 
+                         generator.generate(training_keys[global_step]+1, cfg.batch_size), p_batch)
+                
+                state, loss, loss_dict_train = train_step(state, batch, score_only_scales)
+                training_history['train_loss'].append(loss)
+                
+                if (global_step + 1) % cfg.log_frequency == 0:
+                    checkpoints.save_checkpoint(checkpoint_dir, state, step=global_step, keep=3)
+                    pbar_pre.set_postfix({'p': f'{current_p:.2f}', 'train_score': f'{float(loss_dict_train["score"]):.4f}'})
+                
+                global_step += 1
+                pbar_pre.update(1)
+        pbar_pre.close()
+
+    # --- PHASE 2: FULL FINE-TUNING ---
+    finetune_start_step = total_pretrain_steps
+    if start_step < finetune_start_step: # Ensure global_step is correct if we finished pre-training
+        global_step = finetune_start_step
+        
+    print("\n--- Phase 2: Fine-tuning with Balanced Loss and p-Curriculum ---")
+    finetune_lr_schedule_a = optax.cosine_decay_schedule(cfg.finetune_action_net_lr, total_finetune_steps)
+    finetune_lr_schedule_p = optax.cosine_decay_schedule(cfg.finetune_path_solver_lr, total_finetune_steps)
+    finetune_tx = optax.multi_transform(
+        {'anet': optax.chain(optax.clip_by_global_norm(cfg.gradient_clip_norm), optax.adam(finetune_lr_schedule_a)),
+         'psol': optax.chain(optax.clip_by_global_norm(cfg.gradient_clip_norm), optax.adam(finetune_lr_schedule_p))},
+        path_aware_map(lambda path, _: 'anet' if 'anet' in path else 'psol', state.params)
+    )
+    # Create the fine-tuning state, carrying over the learned params from phase 1.
+    state = train_state.TrainState.create(apply_fn=model.apply, params=state.params, tx=finetune_tx)
+
+    pbar_ft = tqdm(total=total_finetune_steps, desc='Fine-tuning (All Losses)', initial=(start_step - finetune_start_step) if start_step >= finetune_start_step else 0)
+    
+    for p_step in range(cfg.finetune_p_steps):
+        current_p = (p_step / (cfg.finetune_p_steps - 1)) * cfg.training_p_max if cfg.finetune_p_steps > 1 else 0.0
+        
+        step_of_p_in_finetune = p_step * cfg.finetune_epochs_per_p
+        if (start_step <= finetune_start_step + step_of_p_in_finetune) or (global_step == finetune_start_step + step_of_p_in_finetune):
+             print(f"\n--- Fine-tuning at p={current_p:.2f}: Re-balancing loss weights ---")
+             current_batch_for_scaling = (generator.generate(training_keys[global_step], cfg.batch_size),
+                                          generator.generate(training_keys[global_step]+1, cfg.batch_size),
+                                          jnp.full((cfg.batch_size, cfg.num_ir_params), current_p))
+             loss_scales = calculate_gradient_scales(cfg, loss_fn, state.params, current_batch_for_scaling, is_finetune=True)
+
+        for epoch in range(cfg.finetune_epochs_per_p):
+            current_global_step = finetune_start_step + p_step * cfg.finetune_epochs_per_p + epoch
+            if current_global_step < start_step: continue
+
+            p_batch = jnp.full((cfg.batch_size, cfg.num_ir_params), current_p, dtype=jnp.float32)
+            batch = (generator.generate(training_keys[global_step], cfg.batch_size),
+                     generator.generate(training_keys[global_step]+1, cfg.batch_size), p_batch)
+            
+            state, loss, loss_dict_train = train_step(state, batch, loss_scales)
+            training_history['train_loss'].append(loss)
+            
+            if (global_step + 1) % cfg.log_frequency == 0:
+                val_key, val_batch_key = jax.random.split(val_key_base); val_key_base = val_key
+                val_batch = (generator.generate(val_batch_key, cfg.batch_size),
+                             generator.generate(jax.random.split(val_batch_key)[0], cfg.batch_size),
+                             jax.random.uniform(val_key, shape=(cfg.batch_size, cfg.num_ir_params), minval=0.0, maxval=cfg.training_p_max))
+                val_total_loss, val_loss_dict = eval_step(state.params, val_batch, loss_scales)
+                training_history['val_loss'].append(val_total_loss)
+                checkpoints.save_checkpoint(checkpoint_dir, state, step=global_step, keep=3)
+                
+                pbar_ft.set_postfix({
+                    'p': f'{current_p:.2f}', 'val_score': f'{float(val_loss_dict["score"]):.4f}',
+                    'val_p0': f'{float(val_loss_dict["p0_reg"]):.4f}', 'val_act': f'{float(val_loss_dict["pert_action"]):.4f}',
+                    'val_sm': f'{float(val_loss_dict["dev_smoothness"]):.4f}', 'val_amp': f'{float(val_loss_dict["dev_amplitude"]):.4f}',
+                })
+            
+            global_step += 1
+            pbar_ft.update(1)
+    pbar_ft.close()
+
+    return state, training_history, plot_dir
+
+# ----------------- VISUALIZATION SUITE -----------------
+def visualize_results(cfg, state, training_history, generator, plot_dir):
+    print(f"\n--- Generating Visualizations (saving to {plot_dir}) ---")
+    
+    if not training_history['train_loss']:
+        print("No training history to visualize.")
+        return
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(training_history['train_loss'], label='Total Train Loss', alpha=0.7)
+    if training_history['val_loss']:
+        val_steps = jnp.linspace(0, len(training_history['train_loss']), len(training_history['val_loss']))
+        ax.plot(val_steps, training_history['val_loss'], label='Total Validation Loss', lw=2)
+    ax.set_yscale('log')
+    ax.set_title('Training & Validation Loss Over Time')
+    ax.set_xlabel('Training Step (Approx.)')
+    ax.set_ylabel('Log Loss')
+    ax.legend()
+    ax.grid(True, which='both', linestyle='--', alpha=0.6)
+    fig.savefig(os.path.join(plot_dir, 'loss_history.png'))
+    plt.show()
+
+    @jax.jit
+    def get_model_output(params, puv, pir, ir):
+        _, _, _, dev = state.apply_fn({'params': params}, puv, pir, ir)
+        return dev
+
+    vis_key = jax.random.PRNGKey(cfg.validation_seed + 1)
+    p_uv_sample = generator.generate(vis_key, 1)[0]
+    p_ir_sample = generator.generate(jax.random.split(vis_key)[0], 1)[0]
+    ir_sample = jnp.array([[cfg.training_p_max / 2.0]])[0]
+    
+    dev_sample = get_model_output(state.params, p_uv_sample, p_ir_sample, ir_sample)
+    dev_mid_z = dev_sample[cfg.n_z // 2]
+    
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    im1 = axes[0].imshow(p_uv_sample, cmap='viridis', origin='lower'); axes[0].set_title('Input Field (p_uv)'); fig.colorbar(im1, ax=axes[0])
+    im2 = axes[1].imshow(p_ir_sample, cmap='viridis', origin='lower'); axes[1].set_title('Target Boundary Field (p_ir)'); fig.colorbar(im2, ax=axes[1])
+    im3 = axes[2].imshow(dev_mid_z, cmap='RdBu_r', origin='lower'); axes[2].set_title(f'Learned Deviation at z={cfg.n_z//2}'); fig.colorbar(im3, ax=axes[2])
+    fig.suptitle('Example of Model Inputs and Learned Deviation'); fig.tight_layout()
+    fig.savefig(os.path.join(plot_dir, 'field_visualization.png'))
+    plt.show()
+
+    p_values = jnp.linspace(0, cfg.training_p_max, 25)
+    pert_norms = []
+    print("Calculating perturbation magnitude across different p values...")
+    fixed_p_uv = generator.generate(vis_key, 1)[0]
+    fixed_p_ir = generator.generate(jax.random.split(vis_key)[0], 1)[0]
+
+    for p_val in tqdm(p_values, desc="Scanning p"):
+        ir_val = jnp.array([[p_val]])[0]
+        dev = get_model_output(state.params, fixed_p_uv, fixed_p_ir, ir_val)
+        norm = jnp.linalg.norm(dev)
+        pert_norms.append(norm)
+        
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(p_values, pert_norms, 'o-', label='L2 Norm of Deviation')
+    ax.set_title('Total Learned Perturbation vs. Physical Perturbation (p)')
+    ax.set_xlabel('Physical Perturbation Strength (p)')
+    ax.set_ylabel('Total Learned Deviation (L2 Norm)')
+    ax.legend()
+    ax.grid(True, which='both', linestyle='--', alpha=0.6)
+    fig.savefig(os.path.join(plot_dir, 'perturbation_vs_p.png'))
+    plt.show()
+
+
+if __name__=='__main__':
+    config = HolographicConfig()
+    final_state, training_history, plot_directory = run_training(config)
+    print("Training complete.")
+    if training_history['train_loss']:
+        print(f"Final training loss: {float(training_history['train_loss'][-1]):.4f}")
+    if training_history['val_loss']:
+        print(f"Final validation loss: {float(training_history['val_loss'][-1]):.4f}")
+
+    visualize_results(config, final_state, training_history, CFTSampleGenerator(config), plot_directory)
