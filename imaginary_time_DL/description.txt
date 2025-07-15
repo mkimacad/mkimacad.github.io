@@ -1,7 +1,8 @@
 header:History (dates-wise)
 v1 code (July 10-11, 2025)
 Updating further soon
-Significant code/explanation update upcoming - for now please use this as basic information
+Significant code/explanation update upcoming - for now please use this as basic information.
+The consolidation stage is now being absorbed into the exploration stage for code simplification.
 header:Codes
 The initial v1 code can be viewed from the below repo viewer, located at codes/extrapolation.py. (July 10-11, 2025)
 header:On the [-1,1] "constraint" of neural networks - is extrapolation on neural networks really possible?
