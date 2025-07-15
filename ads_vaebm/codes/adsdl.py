@@ -65,7 +65,7 @@ class HolographicConfig:
     plot_base_dir: str = 'plots'
     validation_seed: int = 0
 
-# ---------------- INITIALIZERS / GENERATOR / THEORIES (No changes) ----------------
+# ---------------- INITIALIZERS / GENERATOR / THEORIES ----------------
 def small_kick_init(key, shape, dtype=jnp.float32): return jax.random.normal(key, shape, dtype) * 1e-2
 class CFTSampleGenerator:
     def __init__(self, config: HolographicConfig):
@@ -86,7 +86,7 @@ def get_target_theories(cfg: HolographicConfig):
     def ir_act(phi, ir): return cft_act(phi) + ir[0] * 0.5 * jnp.sum(phi**2) * dx * dt
     ir_score = jax.jit(jax.grad(ir_act, argnums=0)); return cft_act, cft_score, ir_act, ir_score
 
-# ---------------- MODEL DEFINITION (No changes) ----------------
+# ---------------- MODEL DEFINITION ----------------
 class ActionPerturbationCNN(nn.Module):
     cfg: HolographicConfig
     @nn.compact
@@ -141,7 +141,7 @@ class HolographicModel(nn.Module):
         tot_acts, pert_acts = jax.vmap(step)(path[:-1], path[1:])
         return jnp.sum(tot_acts), path, jnp.sum(pert_acts), dev
 
-# ---------------- LOSS & SCALING (No changes) ----------------
+# ---------------- LOSS & SCALING ----------------
 def create_loss_fn(cfg: HolographicConfig, model: nn.Module, fns: tuple):
     _, cft_s, _, ir_s = fns; norm = float(cfg.n_x * cfg.n_t)
     def loss_fn(params, batch, loss_scales: Dict[str, float]) -> Tuple[jnp.ndarray, Dict[str, jnp.ndarray]]:
@@ -183,7 +183,7 @@ def calculate_gradient_scales(cfg, loss_fn, params, batch, is_finetune=False):
         print(f"  - Grad norm for '{loss_name}': {total_norm:.4f}, final scale: {loss_scales[loss_name]:.4f}")
     return loss_scales
 
-# ---------------- ENVIRONMENT SETUP (No changes) ----------------
+# ---------------- ENVIRONMENT SETUP ----------------
 def setup_environment(cfg):
     in_colab = 'google.colab' in sys.modules
     if in_colab:
