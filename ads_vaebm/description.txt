@@ -29,6 +29,11 @@ It is this score criterion that we use in AdS/PINN to train neural network bulks
 header:Away from generative learning and toward supervised physics-informed neural network learning
 Key dictum: stop trying to obtain and sample from boundary data probability. Instead, try to learn the action of the quantum bulk theory, not the classical bulk theory.
 So samplers used in AdS/PINN do not care about sampling according to boundary partition function. Indeed, covering small-probability cases are actually crucial for learning the action properly. From that point of view, the currently implemented samplers in the code are actually inefficient.
+header:The score mechanism can be replaced with other score mechanisms
+After all, you can instead choose for the score criterion:
+$$\nabla_{\phi_{b1}}S_{bulk}|_{\phi_{b2}(\phi_{b1})} = \nabla_{\phi_{b1}}S_{b1}$$
+where $\phi_{b2}$ is a function of $\phi_{b1}$. Then an additional neural network that guess this $\phi_{b2}$ has to be considered, and the guess for neural networks is corrected as other examples arrive, suggesting the initial guess to be wrong and so forth.
+The score mechanism is simply physics-informed neural network thing, where we match action derivatives. Nothing more, nothing less. It is general.
 header:From Hashimoto (2019), where we stand
 To be updated.
 Some history connecting to the bootstrap program.
