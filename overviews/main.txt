@@ -36,17 +36,12 @@ See https://mkimacad.github.io/blackholes as the starting point. See https://mki
 (Published in Fortschritte der Physik - Progress of Physics)
 header:Additional research projects being worked on.
 https://mkimacad.github.io/ads_vaebm, https://mkimacad.github.io/bh_jaynes_cummings, https://mkimacad.github.io/imaginary_time_DL
-header:AdS/VAEBM - studying perturbations to AdS/CFT via deep learning? (Currently under Nuclear Physics B revision stage)
+header:AdS/PINN (Currently under Nuclear Physics B revision stage)
 $$\textbf{Forget about AdS/CFT (no), holography just as bulk path integral!}$$
 $$\textbf{Renormalization along empirically irrelevant dimensions.}$$
 $$\textbf{Bulk gravity coarse-grains and provides classical observables}$$
-In https://mkimacad.github.io/ads_vaebm (Revision stage, Nuclear Physics B submission), I push the idea of holography with deep learning.
-The paper builds on the AdS/DL proposal of Hashimoto (2019), but makes the functional form of admissible (theory) actions flexible by swapping DBM with the variational encoder-EBM structure. Essentially, Hashimoto (2019) is the holographic path integral implementation in terms of deep learning, and the DBM restriction is not a theoretical necessity. 
-With deep learning, we can explore how far holography can work with perturbations of different 'boundaries'. In the paper, I explore how we may use deep learning to study perturbations to IR limits, while largely keeping the UV CFT. Bulk gravity reflects such perturbations in terms of encoded Euclidean action in a gravity theory. This is useful because the problem with holography currently is that we get wrong IR limits, along with wrong bulk spacetime (which includes AdS, but this is a subtle one).
-In AdS/DL (AdS/DBM, AdS/VAEBM), while IR encodes and compresses information on UV, probabilistic independence can be noted such that some UV state can correspond to multiple IR states and vice versa, which provides a key in understanding observable and meausrment behaviors that become important in interpreting issues in quantum gravity.
-At the level of classical observables, there is this important question of how a classical system must be represented in quantum mechanics.
-AdS/VAEBM suggests that bulk gravity with empirically irrelevant holography dimensions provides a map of UV quantum observables to classical observables.
-Thus classicality is all about resolutions in AdS/VAEBM, not about fundamental differences, collections or measurement collapses. 
+In https://mkimacad.github.io/ads_vaebm (Revision stage, Nuclear Physics B submission).
+To be updated.
 header:The modified Jaynes-Cummings (JCM) model of black holes
 $$\textbf{What happened to empty black hole branches in a superposition?}$$
 $$\textbf{My semiclassical spacetime should still be safe!}$$
