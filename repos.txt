@@ -4,7 +4,7 @@ Black hole research papers overview and links
 blackholes
 Quantum Thermal Search
 quantum_thermal_search
-AdS/VAEBM: extending holographic gravity via deep learning
+AdS/PINN: extending holographic gravity via deep learning
 ads_vaebm
 Imaginary-time deep learning
 imaginary_time_DL
