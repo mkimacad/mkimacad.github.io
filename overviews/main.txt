@@ -37,9 +37,6 @@ See https://mkimacad.github.io/blackholes as the starting point. See https://mki
 header:Additional research projects being worked on.
 https://mkimacad.github.io/ads_vaebm, https://mkimacad.github.io/bh_jaynes_cummings, https://mkimacad.github.io/imaginary_time_DL
 header:AdS/PINN (Currently under Nuclear Physics B revision stage)
-$$\textbf{Forget about AdS/CFT (no), holography just as bulk path integral!}$$
-$$\textbf{Renormalization along empirically irrelevant dimensions.}$$
-$$\textbf{Bulk gravity coarse-grains and provides classical observables}$$
 In https://mkimacad.github.io/ads_vaebm (Revision stage, Nuclear Physics B submission).
 To be updated.
 header:The modified Jaynes-Cummings (JCM) model of black holes
