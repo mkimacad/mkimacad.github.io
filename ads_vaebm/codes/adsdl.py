@@ -9,9 +9,8 @@ import jax.numpy as jnp
 from jax import tree_util as jax_tree
 import flax.linen as nn
 import optax
-# MODIFICATION: We only need train_state and the core serialization library
 from flax.training import train_state
-from flax import serialization # <-- Import the serialization engine
+from flax import serialization
 
 from dataclasses import dataclass, field
 from functools import partial
@@ -19,7 +18,7 @@ from tqdm.notebook import tqdm
 from typing import Tuple, Any, Dict
 import matplotlib.pyplot as plt
 
-# ---------------- CONFIGURATION (No changes) ----------------
+# ---------------- CONFIGURATION ----------------
 @dataclass(frozen=True)
 class HolographicConfig:
     num_training_rounds: int = 2
@@ -39,9 +38,9 @@ class HolographicConfig:
     finetune_action_net_lr: float = 1e-6
     score_weight: float = 1.0
     action_weight: float = 0.0
-    dev_smoothness_weight: float = 0.01
-    dev_amplitude_weight: float = 0.00
-    p0_regularization_weight: float = 0.05
+    dev_smoothness_weight: float = 0.1
+    dev_amplitude_weight: float = 0.0
+    p0_regularization_weight: float = 0.0
     path_solver_features: int = 768
     path_solver_depth: int = 6
     path_cnn_features: Tuple[int, ...] = field(default_factory=lambda: (24, 48, 96, 192))
@@ -56,7 +55,7 @@ class HolographicConfig:
     plot_base_dir: str = 'plots'
     validation_seed: int = 0
 
-# ---------------- PING-PONG CHECKPOINT MANAGER (Definitive Fix) ----------------
+# ---------------- PING-PONG CHECKPOINT MANAGER ----------------
 class PingPongManager:
     """A safe checkpoint manager for Google Drive that uses true file overwrites
     and guarantees no extra directories are created."""
@@ -118,8 +117,7 @@ class PingPongManager:
             return None
 
 
-# ---------------- INITIALIZERS / GENERATOR / THEORIES (No changes) ----------------
-# ... (All the code from HolographicConfig down to setup_environment is unchanged)
+# ---------------- INITIALIZERS / GENERATOR / THEORIES ----------------
 def small_kick_init(key, shape, dtype=jnp.float32): return jax.random.normal(key, shape, dtype) * 1e-2
 class CFTSampleGenerator:
     def __init__(self, config: HolographicConfig):
@@ -248,7 +246,7 @@ def setup_environment(cfg):
     os.makedirs(plot_dir, exist_ok=True)
     return checkpoint_dir, plot_dir
 
-# ----------------- TRAINING ROUND LOGIC (Using the final PingPongManager) -----------------
+# ----------------- TRAINING ROUND LOGIC -----------------
 def run_training_round(cfg: HolographicConfig, round_num: int, checkpoint_dir: str):
     ckpt_manager = PingPongManager(checkpoint_dir, round_num)
     master_key = jax.random.PRNGKey(42 + round_num)
@@ -356,7 +354,7 @@ def run_training_round(cfg: HolographicConfig, round_num: int, checkpoint_dir: s
     ckpt_manager.save(state)
     return state, training_history
 
-# ----------------- VISUALIZATION & MAIN (No changes) -----------------
+# ----------------- VISUALIZATION & MAIN -----------------
 def visualize_results(cfg, state, training_history, generator, plot_dir, round_num):
     print(f"\n--- Generating Visualizations for Round {round_num} (saving to {plot_dir}) ---")
     if training_history['train_loss']:
