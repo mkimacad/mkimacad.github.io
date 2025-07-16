@@ -1,7 +1,8 @@
 header:History (date-wise)
 V1 draft (Nuclear Physics B submission): March 6, 2025
 Significant updates of this page while working toward the revision - June 25-July 6, 2025
-V2 (NPB revision submission): Expected July 6, 2025.
+V2 (NPB revision submission): July 15, 2025 (AdS/VAEBM -> AdS/PINN)
+Updates upcoming on this page, sos please largely discard information on this page for now..
 header:Insight 1:Holography is essentially autoencoder renormalization
 As stated in Hashimoto (2019).
 header:Insight 2: Deep learning can naturally study perturbations to AdS/CFT
