@@ -1,6 +1,9 @@
 header:Some food-for-thought-link (July 16, 2025)
 https://x.com/martinmbauer/status/1942366031550218497
 Wish I could write a note summarizing this.
+Also:
+https://x.com/DimaKrotov/status/1943316061631262723
+technically, generating function(al)s are not restricted to physics and are broadly used - statistics and so on. wish I encountered this before I submitted the npb revision.
 header:EW GU (May 25, 2025)
 So I came across this youtube: https://youtu.be/5m7LnLgvMnM and thought it interesting.
 Younger me would have considered string theory as empirically irrelevant and useless especially by the influence of the people like those people, and I came long away from such a view. Though this is not about that issue, which requires a long, long post.
