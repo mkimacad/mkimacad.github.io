@@ -27,6 +27,8 @@ In case of the UV boundary, its physics must hold regardless of IR boundary fiel
 In case of the IR boundary, because it is distant from the UV boundary, the bulk should have no mean of producing non-local bulk outcomes.
 (Two distant boundary operators approximately "commute".) Therefore, the score criterion holds.
 It is this score criterion that we use in AdS/PINN to train neural network bulks, based on sampled boundary field data.
+One thing to note is the holographic renormalization calculation (actually the reproduced one) in the paper, where probabilistic independence is stated.
+That should provide one more justification of this form of the score criterion, but see below as well.
 header:Away from generative learning and toward supervised physics-informed neural network learning
 Key dictum: stop trying to obtain and sample from boundary data probability. Instead, try to learn the action of the quantum bulk theory, not the classical bulk theory.
 So samplers used in AdS/PINN do not care about sampling according to boundary partition function. Indeed, covering small-probability cases are actually crucial for learning the action properly. From that point of view, the currently implemented samplers in the code are actually inefficient.
