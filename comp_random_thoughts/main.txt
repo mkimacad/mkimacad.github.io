@@ -1,3 +1,8 @@
+header:Don't try approximating activation functions with RELU
+I tried it. It doesn't work.
+Why did I try it? Well, so that I can do forward high-order derivative passes.
+It doesn't work. Making neural networks learn high-order derivative heuristics and somehow expect functions to extrapolate well? Doesn't work.
+And a better way exists.
 header:MoE and prompt engineering (July 10, 2025 - ?)
 (To be updated)
 header:So-called top 50 interview questions about LLM (July 10, 2025 - ?)
