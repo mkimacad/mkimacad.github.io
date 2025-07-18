@@ -45,7 +45,7 @@ So we need a more flexible way out.
 The cost of moving away from DBM is tha we lose the analytical Lagrangian form. But this is the cost we should be willing to pay.
 If we have right action data, then we can anytime analyze data and try to construct some patterns. Or even separate neural networks may handle those works.
 header:Other higher-order gradient score mechanisms
-In fact, there is no reason to be constrained to $\nabla$. We can go $\nabla^k$ for any natural $k \geq 1$ as well. We can put these constrains together and form tighter constraints on the bulk theory.
+In fact, there is no reason to be constrained to $\nabla$. We can go $\nabla^k$ for any natural $k \geq 1$ as well. We can put these $k$'s together and form tighter constraints on the bulk theory.
 In JAX, we have Taylor-mode AD, so after some significantly long JIT compilations, we don't suffer that much from overall computation speed. So we can do this as well.  
 header:On action regularization (principle of least action)
 To be updated
