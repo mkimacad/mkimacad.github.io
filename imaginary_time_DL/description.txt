@@ -5,6 +5,15 @@ Significant code/explanation update upcoming - for now please use this as basic 
 The consolidation stage is now being absorbed into the exploration stage for code simplification.
 header:Codes
 The initial v1 code can be viewed from the below repo viewer, located at codes/extrapolation.py. (July 10-11, 2025)
+The new v2 code upcoming.
+header:On precision issues
+Are first-order derivative data enough to tell neural networks higher-order derivative?
+Apparently no. After all, if this were the case, we would likely only need zero-order derivative data to tell neural networks about higher-order derivatives.
+That neural networks spectacularly fail at extrapolation suggest that more are needed.
+Can we push neural networks simply by adding all high-order and low-order derivative data so that neural networks are forced to learn? Maybe.
+But the problem is that we often get precision issues. We can build and use custom precision - but that's heavily inefficient.
+For this issue, the answer is complexification. Of course, if we do complexification too much, then we have $e^x$ development for real-input sinusoidal signals.
+So carefully-controlled complexification.
 header:On the [-1,1] "constraint" of neural networks - is extrapolation on neural networks really possible?
 Assume, for simplification, one-dimensional input domain.
 If you think about it, if we can extract information well on [-1,1], then as long as the interpolating function is smooth, we know everything.
