@@ -66,6 +66,9 @@ def get_analytical_nth_derivative(order, A1, w1, A2, w2):
 
 # --- 2. Loss Function ---
 def create_loss_function_taylor(deriv_order, initial_conditions, activation_fn, loss_fn_name):
+    """
+    Creates a loss function with corrected derivative computation.
+    """
     def loss_fn(params, x_data, y_data_unscaled):
         f_nn_scalar = lambda x: mlp_forward(params, jnp.array([x]), activation_fn)
 
@@ -87,13 +90,17 @@ def create_loss_function_taylor(deriv_order, initial_conditions, activation_fn, 
                 if loss_fn_name == 'mse': ic_loss += error_ic_k**2
                 elif loss_fn_name == 'logcosh': ic_loss += safe_logcosh_with_stable_grad(error_ic_k)
 
+        
         def single_point_data_loss(x, y_unscaled):
             primals_data = (x,)
             series_data_len = max(1, deriv_order + 1)
             series_data = (jnp.ones_like(x),) + (jnp.zeros_like(x),) * (series_data_len - 1)
             _, taylor_coeffs_data = jet(f_nn_scalar, primals_data, (series_data,))
 
-            y_pred_unscaled = taylor_coeffs_data[-1] * math.factorial(deriv_order)
+            
+            # taylor_coeffs_data[0] = 1st derivative coefficient
+            # taylor_coeffs_data[1] = 2nd derivative coefficient, etc.
+            y_pred_unscaled = taylor_coeffs_data[deriv_order-1] * math.factorial(deriv_order)
 
             error = y_pred_unscaled - y_unscaled
             if loss_fn_name == 'mse': return error**2
@@ -115,20 +122,42 @@ def plot_results(nn_params, A1, w1, A2, w2, deriv_order, x_train, y_train_unscal
     x_plot = np.linspace(-2, 2, 500)
     y_pred_plot, y_deriv_pred_plot_unscaled = np.zeros_like(x_plot), np.zeros_like(x_plot)
     f_nn_scalar_final = lambda x: mlp_forward(nn_params, jnp.array([x]), activation_fn)
+
     for i, x_val in enumerate(x_plot):
         primals, series_len = (x_val,), max(1, deriv_order + 1)
         series = (1.0,) + (0.0,) * (series_len - 1)
         f_val, taylor_coeffs = jet(f_nn_scalar_final, primals, (series,))
-        y_pred_plot[i], y_deriv_pred_plot_unscaled[i] = f_val, taylor_coeffs[-1] * math.factorial(deriv_order)
+        y_pred_plot[i] = f_val
+
+        # FIX: Correct indexing for n-th derivative in plotting
+        y_deriv_pred_plot_unscaled[i] = taylor_coeffs[deriv_order-1] * math.factorial(deriv_order)
+
     y_true_plot = vmap(partial(target_func, A1=A1, w1=w1, A2=A2, w2=w2))(x_plot)
     true_deriv_func = get_analytical_nth_derivative(deriv_order, A1, w1, A2, w2)
     y_deriv_true_plot = vmap(true_deriv_func)(x_plot)
+
     plt.figure(figsize=(14, 6))
     plt.subplot(1, 2, 1)
-    plt.plot(x_plot, y_true_plot, 'b-', label='True f(x)'); plt.plot(x_plot, y_pred_plot, 'r--', label='NN Approx f(x)'); plt.title('Function Comparison'); plt.legend(); plt.grid(True)
+    plt.plot(x_plot, y_true_plot, 'b-', label='True f(x)', linewidth=2)
+    plt.plot(x_plot, y_pred_plot, 'r--', label='NN Approx f(x)', linewidth=2)
+    plt.title('Function Comparison')
+    plt.xlabel('x')
+    plt.ylabel('f(x)')
+    plt.legend()
+    plt.grid(True)
+
     plt.subplot(1, 2, 2)
-    plt.plot(x_plot, y_deriv_true_plot, 'b-', label=f'True f^({deriv_order})(x)'); plt.plot(x_plot, y_deriv_pred_plot_unscaled, 'r--', label=f'NN f^({deriv_order})(x)'); plt.scatter(x_train, y_train_unscaled, color='green', s=10, zorder=5, label='Training Data'); plt.title(f'Derivative Comparison (Order {deriv_order})'); plt.legend(); plt.grid(True)
-    plt.tight_layout(); plt.show()
+    plt.plot(x_plot, y_deriv_true_plot, 'b-', label=f'True f^({deriv_order})(x)', linewidth=2)
+    plt.plot(x_plot, y_deriv_pred_plot_unscaled, 'r--', label=f'NN f^({deriv_order})(x)', linewidth=2)
+    plt.scatter(x_train, y_train_unscaled, color='green', s=20, zorder=5, label='Training Data', alpha=0.6)
+    plt.title(f'Derivative Comparison (Order {deriv_order})')
+    plt.xlabel('x')
+    plt.ylabel(f'f^({deriv_order})(x)')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()
 
 # --- 4. Main Training Function ---
 def train_model(
@@ -144,37 +173,61 @@ def train_model(
 ):
     if use_x64: jax.config.update("jax_enable_x64", True)
     else: jax.config.update("jax_enable_x64", False)
-    activation_fns = {'tanh': jnp.tanh, 'gelu': jax.nn.gelu, 'relu': jax.nn.relu}; activation_fn = activation_fns.get(activation_fn_name)
+
+    activation_fns = {'tanh': jnp.tanh, 'gelu': jax.nn.gelu, 'relu': jax.nn.relu}
+    activation_fn = activation_fns.get(activation_fn_name)
     if activation_fn is None: raise ValueError(f"Activation function '{activation_fn_name}' not recognized.")
-    loss_fns = ['mse', 'logcosh'];
+
+    loss_fns = ['mse', 'logcosh']
     if loss_fn_name not in loss_fns: raise ValueError(f"Loss function '{loss_fn_name}' not recognized.")
-    print(f"--- Starting Training ---"); print(f"Precision: {'x64' if use_x64 else 'x32'}, Activation: {activation_fn_name}, Loss: {loss_fn_name}, Scheduler: {use_scheduler}")
-    key = jax.random.PRNGKey(seed); key, subkey = jax.random.split(key)
+
+    print(f"--- Starting Training ---")
+    print(f"Target function: {A1}*cos({w1}*x) + {A2}*cos({w2}*x)")
+    print(f"Derivative order: {deriv_order}")
+    print(f"Precision: {'x64' if use_x64 else 'x32'}, Activation: {activation_fn_name}, Loss: {loss_fn_name}, Scheduler: {use_scheduler}")
+
+    key = jax.random.PRNGKey(seed)
+    key, subkey = jax.random.split(key)
     x_train = jax.random.uniform(subkey, (num_samples,), minval=-1.0, maxval=1.0)
-    true_deriv_func = get_analytical_nth_derivative(deriv_order, A1, w1, A2, w2); y_train_unscaled = vmap(true_deriv_func)(x_train)
+
+    true_deriv_func = get_analytical_nth_derivative(deriv_order, A1, w1, A2, w2)
+    y_train_unscaled = vmap(true_deriv_func)(x_train)
 
     initial_conditions = []
     if deriv_order > 0:
-        for k in range(deriv_order): initial_conditions.append(get_analytical_nth_derivative(k, A1, w1, A2, w2)(0.0))
-    layer_widths = [1] + [width] * (depth - 1) + [1]; key, subkey = jax.random.split(key); nn_params = init_mlp_params(layer_widths, subkey)
-    if use_scheduler: schedule = optax.warmup_cosine_decay_schedule(init_value=0.0, peak_value=learning_rate, warmup_steps=int(num_epochs*0.1), decay_steps=int(num_epochs*0.9), end_value=1e-7); optimizer = optax.chain(optax.clip(gradient_clip_value), optax.adam(learning_rate=schedule))
-    else: optimizer = optax.chain(optax.clip(gradient_clip_value), optax.adam(learning_rate=learning_rate))
-    opt_state = optimizer.init(nn_params)
+        for k in range(deriv_order):
+            initial_conditions.append(get_analytical_nth_derivative(k, A1, w1, A2, w2)(0.0))
 
+    layer_widths = [1] + [width] * (depth - 1) + [1]
+    key, subkey = jax.random.split(key)
+    nn_params = init_mlp_params(layer_widths, subkey)
+
+    if use_scheduler:
+        schedule = optax.warmup_cosine_decay_schedule(
+            init_value=0.0, peak_value=learning_rate,
+            warmup_steps=int(num_epochs*0.1),
+            decay_steps=int(num_epochs*0.9),
+            end_value=1e-7
+        )
+        optimizer = optax.chain(optax.clip(gradient_clip_value), optax.adam(learning_rate=schedule))
+    else:
+        optimizer = optax.chain(optax.clip(gradient_clip_value), optax.adam(learning_rate=learning_rate))
+
+    opt_state = optimizer.init(nn_params)
     loss_function = create_loss_function_taylor(deriv_order, initial_conditions, activation_fn, loss_fn_name)
 
     for epoch in range(num_epochs):
         key, subkey = jax.random.split(key)
         perm = jax.random.permutation(subkey, num_samples)
         x_train_shuffled = x_train[perm]
-        y_train_unscaled_shuffled = y_train_unscaled[perm] # Use unscaled y
+        y_train_unscaled_shuffled = y_train_unscaled[perm]
 
         num_batches = num_samples // batch_size
         for i in range(num_batches):
             start_idx = i * batch_size
             end_idx = start_idx + batch_size
             batch_x = x_train_shuffled[start_idx:end_idx]
-            batch_y = y_train_unscaled_shuffled[start_idx:end_idx] # Use unscaled y
+            batch_y = y_train_unscaled_shuffled[start_idx:end_idx]
 
             nn_params, opt_state, loss = train_step(
                 nn_params, opt_state, batch_x, batch_y, loss_function, optimizer
@@ -184,24 +237,22 @@ def train_model(
             print(f"Epoch {epoch+1}/{num_epochs}, Last Batch Loss: {loss:.2e}")
 
     print("--- Training Finished ---")
-    # Pass the unscaled training data to the plotting function
     plot_results(nn_params, A1, w1, A2, w2, deriv_order, x_train, y_train_unscaled, activation_fn)
 
-
 # --- 5. Main Execution Block ---
-if __name__ == '__main__':
+if __name__ == '__main__':    
     train_model(
         depth=5,
         width=256,
-        deriv_order=1,
+        deriv_order=10,
         learning_rate=1e-4,
-        num_epochs=400000,
+        num_epochs=100000,
         batch_size=32,
         gradient_clip_value=1.0,
         use_scheduler=True,
         activation_fn_name='gelu',
         use_x64=True,
         loss_fn_name='logcosh',
-        w1=0.08,
-        w2=0.2
+        w1=0.1,
+        w2=0.3
     )
