@@ -14,6 +14,14 @@ Can we push neural networks simply by adding all high-order and low-order deriva
 But the problem is that we often get precision issues. We can build and use custom precision - but that's heavily inefficient.
 For this issue, the answer is complexification. Of course, if we do complexification too much, then we have $e^x$ development for real-input sinusoidal signals.
 So carefully-controlled complexification.
+header:How to think about high-order derivatives
+Here is one way to think about why simply supplying high-order derivatives does not sometimes work.
+Outside of the interpolation domain, neural networks are too powerful non-linear machineries.
+Therefore, if left without explicit constraints, neural networks randomly choose some non-sensical high-order derivatives in the extrapolation domain, screwing up extrapolation.
+header:How should we impose smoothness condition?
+In conventional neural nets, we cannot - we can only reguarlize by H1, H2 regularization that punishes high curvature etc.
+But curvature is curvature, and infinitely differentiable smoothness is another thing.
+If we complexify neural nets, then we have Cauchy-Riemann equations, which can be used to imposed smoothness.
 header:On the [-1,1] "constraint" of neural networks - is extrapolation on neural networks really possible?
 Assume, for simplification, one-dimensional input domain.
 If you think about it, if we can extract information well on [-1,1], then as long as the interpolating function is smooth, we know everything.
