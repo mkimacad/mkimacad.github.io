@@ -9,6 +9,7 @@ header:Training visualization (v2 code)
 img:imgs/stage1.png
 img:imgs/stage2.png
 img:imgs/stage3.png
+img:imgs/stage4.png
 At any stage of training, data only come from the [-1.0,1.0] interpolation domain (along with the imginary part domain [-1.0, 1.0], which makes the data domain a 2D box). Cauchy-Riemann constraints outside the interpolation domain are imposed slowly by expanding the boundary of the 2D box where Cauchy-Riemann constraints are evaluated.
 These training visualizations demonstrate that neural nets learn holomorphicity as Cauchy-Riemann constraints are increasingly imposed, thereby allowing for better extrapolations.
 header:On precision issues
