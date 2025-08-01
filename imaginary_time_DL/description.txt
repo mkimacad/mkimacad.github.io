@@ -16,6 +16,8 @@ img:imgs/stage4.png
 (The final epoch of each stage - stage1: epoch 42300, stage2: 65200, stage3: 94700, stage4: 174500)
 At any stage of training, data only come from the [-1.0,1.0] interpolation domain (along with the imginary part domain [-1.0, 1.0], which makes the data domain a 2D box). Cauchy-Riemann constraints outside the interpolation domain are imposed slowly by expanding the boundary of the 2D box where Cauchy-Riemann constraints are evaluated.
 These training visualizations demonstrate that neural nets learn holomorphicity as Cauchy-Riemann constraints are increasingly imposed, thereby allowing for better extrapolations.
+img:imgs/stage5.png
+Stage 5 reveals the limitation of using fixed target loss - if we want to extend the extrapolation domain, then we have to lower target data loss and Cauchy-Riemann (CR) constraint loss. From Stage 6, the target loss is therefore lowered.
 header:On precision issues
 Are first-order derivative data enough to tell neural networks higher-order derivative?
 Apparently no. After all, if this were the case, we would likely only need zero-order derivative data to tell neural networks about higher-order derivatives.
