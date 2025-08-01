@@ -24,6 +24,8 @@ header:How to think about high-order derivatives
 Here is one way to think about why simply supplying high-order derivatives does not sometimes work.
 Outside of the interpolation domain, neural networks are too powerful non-linear machineries.
 Therefore, if left without explicit constraints, neural networks randomly choose some non-sensical high-order derivatives in the extrapolation domain, screwing up extrapolation.
+header:From here, the information is completely outdated, relating purely to the deprecated v1 code.
+Updates coming up to reflect v2.
 header:How should we impose smoothness condition?
 In conventional neural nets, we cannot - we can only reguarlize by H1, H2 regularization that punishes high curvature etc.
 But curvature is curvature, and infinitely differentiable smoothness is another thing.
