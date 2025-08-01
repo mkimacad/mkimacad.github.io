@@ -5,6 +5,12 @@ Updating further soon
 Significant explanation update upcoming (v1 to v2 change) - for now please use this as basic information.
 header:Codes
 The v2 code can be viewed from the below repo viewer, located at codes/extrapolation.py. (August 1, 2025)
+header:Training visualization
+img:imgs/stage1.png
+img:imgs/stage2.png
+img:imgs/stage3.png
+At any stage of training, data only come from the [-1.0,1.0] interpolation domain (along with the imginary part domain [-1.0, 1.0], which makes the data domain a 2D box). Cauchy-Riemann constraints outside the interpolation domain are imposed slowly by expanding the boundary of the 2D box where Cauchy-Riemann constraints are evaluated.
+These training visualizations demonstrate that neural nets learn holomorphicity as Cauchy-Riemann constraints are increasingly imposed, thereby allowing for better extrapolations.
 header:On precision issues
 Are first-order derivative data enough to tell neural networks higher-order derivative?
 Apparently no. After all, if this were the case, we would likely only need zero-order derivative data to tell neural networks about higher-order derivatives.
