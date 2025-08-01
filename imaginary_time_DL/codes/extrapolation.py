@@ -1,6 +1,7 @@
 # First, install necessary libraries
-# pip install "jax[cuda12_pip]" -U # Or cuda11_pip, or cpu
-# pip install flax optax matplotlib msgpack
+# In a notebook environment like Google Colab, run this command in a cell:
+# !pip install "jax[cuda12_pip]" -U # Or cuda11_pip, or cpu
+# !pip install flax optax matplotlib msgpack
 
 import jax
 import jax.numpy as jnp
@@ -9,777 +10,504 @@ from jax import jit, vmap, random, grad, tree_util
 from jax import custom_vjp, lax
 from functools import partial
 import flax.linen as nn
-from flax.serialization import to_bytes, from_bytes
+from dataclasses import dataclass, field
+from flax.serialization import to_bytes, from_bytes, msgpack_restore, from_state_dict
+from flax.serialization import to_state_dict
 import optax
 import matplotlib.pyplot as plt
 import time
 import os
-import itertools
 import json
 import math
-from typing import Callable, Tuple, Dict, Any, List
-
-# --- Enable 32-bit for compatibility and speed ---
-jax.config.update("jax_enable_x64", False)
+from typing import Callable, Tuple, Dict, Any, List, NamedTuple
 
 # ================== GLOBAL CONFIGURATION ==================
-TRAIN_SINGLE_CONFIG = True
-SINGLE_CONFIG_TO_RUN = {'name': "UV Direct + CR Penalty", 'config': {'model_type': 'UV', 'use_penalty': True}}
-GROUPS_TO_RUN = ['UV2']
-RUN_DYNAMIC_WEIGHTING_CONFIGS = True
+jax.config.update("jax_enable_x64", False)
+
+RUN_NAME = "run_cr_periodic-gradnorm_gelu_1e-6_5e-7"
+ENABLE_PLOTTING = True
 SAVE_MODELS = True
 
-# --- Activation Function Configuration ---
-ACTIVATION_CHOICE = 'snake'
-SNAKE_ALPHA_INITIAL = 1.0
-SNAKE_ALPHA_TRAINABLE = True
-SNAKE_HYBRID_LAYERS = 99
+# --- Loss Term Configuration ---
+USE_DERIVATIVE_DATA_LOSS = True
+USE_CR_PENALTY = True
+DERIVATIVE_DATA_WEIGHT = 1.0
+DATA_PRIORITY_FACTOR = 1.0
 
-# --- Curriculum Control Parameters ---
-TOTAL_CURRICULUM_REPETITIONS = 100
-EPOCHS_PER_PHASE = 2000
-CONSOLIDATION_EPOCHS_OVERRIDE = 2000
-FINAL_POLISH_EPOCHS = 2000
-LOG_EVERY_N_EPOCHS = max(EPOCHS_PER_PHASE // 3, 2000)
+# --- GradNorm Configuration ---
+GRADNORM_MODE = 'periodic'
+GRADNORM_RESET_ON_STAGE_UP = True
+GRADNORM_SAFETY_OFFSET = 1e-10
+GRADNORM_ALPHA = 1.5
+GRADNORM_LR = 1e-4
 
-# --- Data-Fitting Curriculum Configuration ---
-USE_SEQUENTIAL_TRAINING = True
-SEQUENTIAL_INTERVAL_SIZE = 0.5
+# --- Architecture Configuration ---
+ACTIVATION_FUNCTION = 'gelu'
+USE_RESIDUAL_CONNECTIONS = True
 
-# --- Physics Finetuning & Constraint Configuration ---
-USE_PHYSICS_FINETUNING_CURRICULUM = True
-PHYSICS_SHELL_STEP_SIZE = 2.0
-N_CONSTRAINT_POINTS_OVERRIDE = 200
-USE_KINK_PENALTY = True
-KINK_PENALTY_WEIGHT = 20.0
-
-# --- Training Data Generation Strategy ---
-USE_BOUNDARY_SAMPLING = False
-BOUNDARY_SAMPLING_FOCUS_RATIO = 0.5
-BOUNDARY_SAMPLING_SHELL_WIDTH = 0.1
-
-# --- Physics Point Generation Strategy ---
-USE_PHYSICS_BOUNDARY_SAMPLING = False
-PHYSICS_BOUNDARY_FOCUS_RATIO = 0.5
-PHYSICS_BOUNDARY_SHELL_WIDTH = 0.1
-N_PHYSICS_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE
-
-# --- Kink Penalty Point Generation Strategy ---
-FOCUS_KINK_PENALTY_ON_BOUNDARY = False
-N_KINK_PENALTY_BOUNDARY_POINTS = N_CONSTRAINT_POINTS_OVERRIDE
+# --- Dynamic Learning Rate Configuration ---
+USE_LR_FINDER = True
+USE_REDUCE_LR_ON_PLATEAU = True
+PEAK_LR = 1e-4
+PLATEAU_PATIENCE_CHECKS = 100
+PLATEAU_REDUCTION_FACTOR = 0.25
+PLATEAU_MIN_LR = 1e-10
 
 # --- Model and Domain Configuration ---
+TOTAL_TRAINING_STEPS = 8000000
+LOG_EVERY_N_STEPS = 5000
 INTERPOLATION_HALF_WIDTH = 1.0
-EXTRAPOLATION_HALF_WIDTH = 10.0
+EXTRAPOLATION_HALF_WIDTH = 8.0
 MODEL_WIDTH_OVERRIDE = 512
 MODEL_DEPTH_OVERRIDE = 6
-N_TRAINING_SAMPLES_OVERRIDE = 200
-
-# --- Hyperparameters ---
-UV_DATA_WEIGHT = 1.0
-POTENTIAL_DATA_WEIGHT = 1.0
-LAPLACE_WEIGHT = 50.0
-CR_PENALTY_WEIGHT = 50.0
-U_DERIV_DATA_WEIGHT = 0.5
-DYNAMIC_WEIGHT_EMA_ALPHA = 0.90
-DYNAMIC_WEIGHT_MAX_CLAMP_VALUE = 1000.0
-PEAK_LR = 1e-4
+N_TRAINING_SAMPLES_OVERRIDE = 100
+N_EXTRA_CONSTRAINT_POINTS = 250
 GRADIENT_CLIP_VALUE = 1.0
+USE_HE_INITIALIZATION = True
 
-print(f"JAX is using: {jax.default_backend()} with 32-bit precision.")
-print(f"### MODIFIED: Continuous consolidation with GLOBAL physics constraints. ###")
-print(f"### Data domain is fixed to [-1, 1]^2. Extrapolation domain is [{-EXTRAPOLATION_HALF_WIDTH}, {EXTRAPOLATION_HALF_WIDTH}]^2. ###")
-if USE_KINK_PENALTY:
-    strategy = "the data domain boundary" if FOCUS_KINK_PENALTY_ON_BOUNDARY else "the general physics domain"
-    print(f"### KINK PENALTY ENABLED (w={KINK_PENALTY_WEIGHT}), focused on {strategy}. ###")
-else:
-    print(f"### KINK PENALTY DISABLED. ###")
+# --- Staged Extrapolation (Curriculum Learning) Configuration ---
+STAGED_EXTRAPOLATION_BOUNDARIES = [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0]
+MIN_STEPS_OF_STABILITY_REQUIRED = 2000
+DATA_STABILITY_TARGET = 5e-7
+CR_STABILITY_TARGET = 1e-6
+STABILITY_CHECK_EVERY_N_STEPS = 100
 
+
+print(f"JAX is using: {jax.default_backend()} with {'64-bit' if jax.config.jax_enable_x64 else '32-bit'} precision.")
+print(f"### RUNNING SIMPLIFIED UV-ONLY MODEL ###")
+print(f"Optimizer: AdamW with {'ReduceLROnPlateau' if USE_REDUCE_LR_ON_PLATEAU else 'Fixed LR'}")
+if not USE_LR_FINDER and not USE_REDUCE_LR_ON_PLATEAU:
+    print("\n" + "="*50 + "\n>>> WARNING: Both LR Finder and ReduceLROnPlateau are DISABLED.\n" + f">>> Training will use a FIXED learning rate of {PEAK_LR:.2e}.\n" + ">>> This can be unstable. Monitor losses closely.\n" + "="*50 + "\n")
+if USE_LR_FINDER: print("LR Finder: ENABLED (Stage-Aware and on LR-Reset)")
+if USE_REDUCE_LR_ON_PLATEAU: print(f"Plateau Scheduler: ENABLED (Patience={PLATEAU_PATIENCE_CHECKS} checks, Factor={PLATEAU_REDUCTION_FACTOR})")
+print(f"Architecture: {'Residual' if USE_RESIDUAL_CONNECTIONS else 'Plain MLP'} with {ACTIVATION_FUNCTION.upper()} activation")
+if STAGED_EXTRAPOLATION_BOUNDARIES: print(f"Staged Extrapolation: ENABLED (Data Target={DATA_STABILITY_TARGET:.0e}, CR Target={CR_STABILITY_TARGET:.0e})")
+print(f"Gradient Normalization Mode: {GRADNORM_MODE.upper()}")
+if GRADNORM_MODE == 'learnable': print(f"  -> GradNorm Params: Alpha={GRADNORM_ALPHA}, LR={GRADNORM_LR:.0e}, Reset on Stage-Up: {GRADNORM_RESET_ON_STAGE_UP}")
 
 # ================== NEURAL NETWORK ARCHITECTURES AND CORE HELPERS ==================
 
+class GradNormState(NamedTuple):
+    weights: Dict[str, float]
+    opt_state: Any
+    initial_losses: Dict[str, float]
+
 @custom_vjp
-def _snake_func(x, alpha):
-    return x + (1.0 / (alpha + 1e-8)) * jnp.sin(alpha * x)**2
+def safe_logcosh(x):
+    threshold = 15.0
+    return jnp.where(jnp.abs(x) > threshold, jnp.abs(x) - jnp.log(2.0), jnp.log(jnp.cosh(x)))
+def _safe_logcosh_fwd(x): return safe_logcosh(x), x
+def _safe_logcosh_bwd(x, g): return (g * jnp.tanh(x),)
+safe_logcosh.defvjp(_safe_logcosh_fwd, _safe_logcosh_bwd)
 
-def _snake_fwd(x, alpha):
-    ax = alpha * x
-    return _snake_func(x, alpha), (x, alpha, ax)
-
-def _snake_bwd(res, g):
-    x, alpha, ax = res
-    grad_x = g * (1 + jnp.sin(2 * ax))
-    grad_alpha = g * ((2 * x * jnp.cos(ax) * jnp.sin(ax)) / (alpha + 1e-8) - (jnp.sin(ax)**2) / ((alpha + 1e-8)**2))
-    return (grad_x, jnp.sum(grad_alpha, keepdims=True))
-
-_snake_func.defvjp(_snake_fwd, _snake_bwd)
-
-class Snake(nn.Module):
-    initial_alpha: float = 1.0
-    trainable: bool = True
-
+class BaseMLP(nn.Module):
+    width: int; depth: int; activation: Callable; use_he_init: bool
     @nn.compact
     def __call__(self, x):
-        alpha = self.param('alpha', nn.initializers.constant(self.initial_alpha), (1,)) if self.trainable else self.initial_alpha
-        return _snake_func(x, alpha)
-
-class BaseHybridMLP(nn.Module):
-    width: int
-    depth: int
-    base_activation: Callable
-    snake_activation_def: Dict
-    snake_layers: int
-
-    @nn.compact
-    def __call__(self, x):
-        snake_fn = None
-        if self.snake_layers > 0 and self.snake_activation_def:
-            snake_fn = Snake(
-                initial_alpha=self.snake_activation_def['initial_alpha'],
-                trainable=self.snake_activation_def['trainable'],
-                name="snake_activation"
-            )
-
-        for i in range(self.depth - 1):
-            x = nn.Dense(self.width, name=f"dense_{i}")(x)
-            is_snake_layer = (self.depth - 1 - i) < self.snake_layers
-            if is_snake_layer and snake_fn is not None:
-                x = snake_fn(x)
-            else:
-                x = self.base_activation(x)
+        kernel_init = nn.initializers.he_normal() if self.use_he_init else nn.initializers.lecun_normal()
+        for i in range(self.depth):
+            x = nn.Dense(self.width, name=f"dense_{i}", kernel_init=kernel_init)(x)
+            x = self.activation(x)
         return x
 
-class ScalarPotentialMLP(BaseHybridMLP):
+class ResidualMLP(nn.Module):
+    width: int; depth: int; activation: Callable; use_he_init: bool
     @nn.compact
+    def __call__(self, x):
+        kernel_init = nn.initializers.he_normal() if self.use_he_init else nn.initializers.lecun_normal()
+        y = nn.Dense(self.width, name="input_dense", kernel_init=kernel_init)(x)
+        y = self.activation(y)
+        for i in range((self.depth - 1) // 2):
+            residual = y
+            y = nn.Dense(self.width, name=f"res_block_{i}_dense_1", kernel_init=kernel_init)(y)
+            y = self.activation(y)
+            y = nn.Dense(self.width, name=f"res_block_{i}_dense_2", kernel_init=kernel_init)(y)
+            if residual.shape != y.shape: residual = nn.Dense(self.width, name=f"res_block_{i}_projection", kernel_init=kernel_init)(residual)
+            y += residual
+            y = self.activation(y)
+        return y
+
+class DirectUVMLP(nn.Module):
+    width: int; depth: int; activation: Callable; use_he_init: bool
+    core_mlp: nn.Module = field(init=False)
+    output_layer: nn.Module = field(init=False)
+    def setup(self):
+        kernel_init = nn.initializers.he_normal() if self.use_he_init else nn.initializers.lecun_normal()
+        mlp_class = ResidualMLP if USE_RESIDUAL_CONNECTIONS else BaseMLP
+        self.core_mlp = mlp_class(width=self.width, depth=self.depth - 1, activation=self.activation, use_he_init=self.use_he_init)
+        self.output_layer = nn.Dense(2, name="dense_out", kernel_init=kernel_init)
     def __call__(self, z):
-        x = super().__call__(z)
-        return nn.Dense(1, name="dense_out")(x).squeeze()
+        return self.output_layer(self.core_mlp(z))
 
-class DirectUVMLP(BaseHybridMLP):
-    @nn.compact
-    def __call__(self, z):
-        x = super().__call__(z)
-        return nn.Dense(2, name="dense_out")(x)
-
-class UOnlyMLP(BaseHybridMLP):
-    @nn.compact
-    def __call__(self, z):
-        x = super().__call__(z)
-        return nn.Dense(1, name="dense_out")(x).squeeze()
-
-
-def get_uv_from_potential(model, params, z):
-    grad_psi = grad(lambda z_in: model.apply(params, z_in))(z)
-    return jnp.stack([grad_psi[0], -grad_psi[1]])
-
-def get_u_and_du_dx(model, params, z):
-    u = model.apply(params, z)
-    du_dx = grad(lambda z_in: model.apply(params, z_in))(z)[0]
-    return u, du_dx
-
-def get_uv_and_cr_grads(model, params, z):
-    u_fn = lambda z_in: model.apply(params, z_in)[0]
-    v_fn = lambda z_in: model.apply(params, z_in)[1]
-    du_dx, du_dy = grad(u_fn)(z)
-    dv_dx, dv_dy = grad(v_fn)(z)
-    return (du_dx - dv_dy)**2 + (du_dy + dv_dx)**2
-
-def get_laplacian_and_grad_laplacian_sq_norm(model, params, z):
-    potential_fn = lambda z_in: model.apply(params, z_in)
-    def laplacian_fn(z_in):
-        return jnp.trace(jax.hessian(potential_fn)(z_in))
-    return laplacian_fn(z), jnp.sum(jax.grad(laplacian_fn)(z)**2)
-
-def get_cr_and_grad_cr_sq_norm(model, params, z):
-    u_fn = lambda z_in: model.apply(params, z_in)[0]
-    v_fn = lambda z_in: model.apply(params, z_in)[1]
-    def cr_residual_sq_fn(z_in):
-        du_dx_i, du_dy_i = grad(u_fn)(z_in)
-        dv_dx_i, dv_dy_i = grad(v_fn)(z_in)
-        return (du_dx_i - dv_dy_i)**2 + (du_dy_i + dv_dx_i)**2
-    return cr_residual_sq_fn(z), jnp.sum(jax.grad(cr_residual_sq_fn)(z)**2)
-
-def generate_initial_target(key, k_fq_scale=0.1, amp_dom_factor=10.0, n_freq=6) -> Tuple[Callable, Callable, Callable]:
-    ks = jnp.linspace(0.5, k_fq_scale, n_freq)
-    raw_amps = random.uniform(random.split(key)[1], (n_freq,), minval=0.5, maxval=1.5)
+def generate_initial_target(key, k_fq_scale=0.1, amp_dom_factor=10.0, n_freq=6) -> Tuple[Callable, Callable]:
+    ks, raw_amps = jnp.linspace(0.5, k_fq_scale, n_freq), random.uniform(random.split(key)[1], (n_freq,), minval=0.5, maxval=1.5)
     amps = (raw_amps / jnp.sum(raw_amps)) * amp_dom_factor
     def _uv_fn(z):
-        x, y = z[..., 0:1], z[..., 1:2]
-        u = jnp.sum(amps * jnp.cos(ks * x) * jnp.cosh(ks * y), axis=-1)
-        v = jnp.sum(-amps * jnp.sin(ks * x) * jnp.sinh(ks * y), axis=-1)
-        return jnp.stack([u, v], axis=-1)
-    def _psi_fn(z):
-        x, y = z[..., 0:1], z[..., 1:2]
-        return jnp.sum((amps / (ks + 1e-8)) * jnp.sin(ks * x) * jnp.cosh(ks * y), axis=-1)
-    def _du_dx_fn(z):
-        x, y = z[..., 0:1], z[..., 1:2]
-        return jnp.sum(-amps * ks * jnp.sin(ks * x) * jnp.cosh(ks * y), axis=-1)
-    return _uv_fn, _psi_fn, _du_dx_fn
+        x, y = z[..., 0:1], z[..., 1:2]; u = jnp.sum(amps*jnp.cos(ks*x)*jnp.cosh(ks*y),-1); v = jnp.sum(-amps*jnp.sin(ks*x)*jnp.sinh(ks*y),-1); return jnp.stack([u,v],-1)
+    def _derivs_fn(z):
+        x,y=z[...,0:1],z[...,1:2]; du_dx=jnp.sum(-amps*ks*jnp.sin(ks*x)*jnp.cosh(ks*y),-1); du_dy=jnp.sum(amps*ks*jnp.cos(ks*x)*jnp.sinh(ks*y),-1); dv_dx=jnp.sum(-amps*ks*jnp.cos(ks*x)*jnp.sinh(ks*y),-1); dv_dy=jnp.sum(-amps*ks*jnp.sin(ks*x)*jnp.cosh(ks*y),-1); return jnp.stack([du_dx,du_dy,dv_dx,dv_dy],-1)
+    return jax.jit(_uv_fn), jax.jit(_derivs_fn)
 
-@jit
-def get_grad_norm_statistic(grads):
-    leaves = tree_util.tree_leaves(grads)
-    norms = [jnp.max(jnp.abs(leaf)) for leaf in leaves if jnp.issubdtype(leaf.dtype, jnp.number)]
-    return jnp.max(jnp.stack(norms)) if norms else 0.0
+# ================== LOSS AND SAMPLING FUNCTIONS ==================
 
-@partial(jit, static_argnames=['optimizer', 'loss_names', 'loss_functions'])
-def static_training_step(params, opt_state, optimizer, loss_names: Tuple, loss_functions: Tuple, weights: Dict):
-    def total_loss_fn(p):
-        losses = {name: fn(p) for name, fn in zip(loss_names, loss_functions)}
-        total = jnp.sum(jnp.array([weights.get(name, 0.0) * losses[name] for name in loss_names]))
-        return total, losses
-    (total_loss, losses), grads = jax.value_and_grad(total_loss_fn, has_aux=True)(params)
-    updates, new_opt_state = optimizer.update(grads, opt_state, params)
-    params = optax.apply_updates(params, updates)
-    return params, new_opt_state, total_loss, losses
+@partial(jit, static_argnames=['apply_fn'])
+def value_and_jacfwd(params: Any, z: jnp.ndarray, apply_fn: Callable) -> Tuple[jnp.ndarray, jnp.ndarray]:
+    f_z = lambda z_in: apply_fn(params, z_in)
+    return f_z(z), jax.jacfwd(f_z)(z).flatten()
 
-@partial(jit, static_argnames=['optimizer', 'loss_names', 'loss_functions', 'data_loss_names', 'physics_loss_names'])
-def dynamic_training_step(params, opt_state, dw_state, optimizer, loss_names: Tuple, loss_functions: Tuple, data_loss_names: Tuple, physics_loss_names: Tuple):
-    grads = {}
-    losses = {}
-    for name, fn in zip(loss_names, loss_functions):
-        loss_value, grad_value = jax.value_and_grad(fn)(params)
-        losses[name] = loss_value
-        grads[name] = grad_value
+@partial(jit, static_argnames=['apply_fn'])
+def calculate_mean_cr_loss(params: Any, z_points: jnp.ndarray, apply_fn: Callable) -> jnp.ndarray:
+    if z_points.shape[0] == 0: return jnp.array(0.0, dtype=jnp.float32)
+    _, pred_derivs = vmap(value_and_jacfwd, (None, 0, None))(params, z_points, apply_fn)
+    du_dx, du_dy, dv_dx, dv_dy = pred_derivs.T
+    cr_losses = safe_logcosh(du_dx - dv_dy) + safe_logcosh(du_dy + dv_dx)
+    return jnp.mean(cr_losses)
 
-    ref_grad_stat = jnp.mean(jnp.array([get_grad_norm_statistic(grads[name]) for name in data_loss_names if name in grads]))
-    ref_grad_stat = jax.lax.stop_gradient(ref_grad_stat)
+@partial(jit, static_argnames=['apply_fn', 'target_fns'])
+def calculate_data_loss(params: Any, z_data: jnp.ndarray, apply_fn: Callable, target_fns: Tuple[Callable, Callable]) -> jnp.ndarray:
+    if z_data.shape[0] == 0: return jnp.array(0.0, dtype=jnp.float32)
+    pred_uv, pred_derivs = vmap(value_and_jacfwd, (None, 0, None))(params, z_data, apply_fn)
+    loss = jnp.mean((pred_uv - target_fns[0](z_data))**2)
+    if USE_DERIVATIVE_DATA_LOSS:
+        loss += DERIVATIVE_DATA_WEIGHT * jnp.mean(safe_logcosh(pred_derivs - target_fns[1](z_data)))
+    return loss
 
-    total_grads = tree_util.tree_map(jnp.zeros_like, params)
-    for name in data_loss_names:
-        if name in grads:
-            total_grads = tree_util.tree_map(lambda x, y: x + y, total_grads, grads[name])
+def calculate_run_parameters(): return {'width':MODEL_WIDTH_OVERRIDE,'depth':MODEL_DEPTH_OVERRIDE,'n_train':N_TRAINING_SAMPLES_OVERRIDE,'n_extra_constraint':N_EXTRA_CONSTRAINT_POINTS}
 
-    total_loss = jnp.sum(jnp.array([losses[name] for name in data_loss_names if name in losses]))
-    new_dw_state = {}
-    for name in physics_loss_names:
-        if name in grads:
-            stat = get_grad_norm_statistic(grads[name])
-            w_raw = ref_grad_stat / (stat + 1e-8)
+@partial(jit, static_argnames=['n_pts', 'in_hw', 'ex_hw'])
+def sample_extrapolation_shell(key, n_pts, in_hw, ex_hw):
+    if n_pts==0 or in_hw >= ex_hw: return jnp.empty((0,2))
+    n_gen=max(n_pts+1,math.ceil(n_pts/(1-(in_hw/ex_hw)**2+1e-7)*2));cand=random.uniform(key,(n_gen,2),minval=-ex_hw,maxval=ex_hw)
+    return cand[jnp.argsort(jnp.where(jnp.any(jnp.abs(cand)>in_hw,1),0,1))][:n_pts]
 
-            w_clamped = jnp.clip(w_raw, 0.0, DYNAMIC_WEIGHT_MAX_CLAMP_VALUE)
+def sample_points(key, n_train, n_constr, in_hw, curr_ex_hw):
+    key, tr_key, ex_key = random.split(key, 3)
+    return random.uniform(tr_key,(n_train,2),minval=-in_hw,maxval=in_hw), sample_extrapolation_shell(ex_key,n_constr,in_hw,curr_ex_hw)
 
-            w = DYNAMIC_WEIGHT_EMA_ALPHA * dw_state.get(name, 1.0) + (1 - DYNAMIC_WEIGHT_EMA_ALPHA) * w_clamped
+# ================== CHECKPOINTING ==================
 
-            new_dw_state[name] = w
-            total_grads = tree_util.tree_map(lambda g, h: g + w * h, total_grads, grads[name])
-            total_loss += w * losses[name]
+def save_checkpoint(path, params, opt_s, step, key, stage_idx, stab_c, lr_state, gn_state):
+    state_dict = {'p':to_state_dict(params), 'o':to_state_dict(opt_s), 's':step, 'k':key, 'si':stage_idx, 'sc':stab_c, 'lr_s': to_state_dict(lr_state), 'gn_s': to_state_dict(gn_state)}
+    open(path, "wb").write(to_bytes(state_dict))
 
-    updates, new_opt_state = optimizer.update(total_grads, opt_state, params)
-    params = optax.apply_updates(params, updates)
-    return params, new_opt_state, new_dw_state, total_loss, losses
-
-def calculate_run_parameters():
-    model_width = MODEL_WIDTH_OVERRIDE
-    model_depth = MODEL_DEPTH_OVERRIDE
-    n_training_samples = N_TRAINING_SAMPLES_OVERRIDE
-    n_constraint_points = N_CONSTRAINT_POINTS_OVERRIDE
-    print(f"  -> Using Width={model_width}, Depth={model_depth}, Train Samples={n_training_samples}, Constraint Points={n_constraint_points}")
-    return {'width': model_width, 'depth': model_depth, 'n_train': n_training_samples, 'n_constraint': n_constraint_points}
-
-def save_checkpoint(path: str, params, opt_state, dw_state, phase_index: int, key):
-    state_dict = {'params': params, 'opt_state': opt_state, 'dw_state': dw_state, 'phase_index': phase_index, 'key': key.__array__()}
-    with open(path, "wb") as f:
-        f.write(to_bytes(state_dict))
-
-def load_checkpoint(path: str, init_params, init_opt_state, init_dw_state, init_key):
-    if not os.path.exists(path):
-        return init_params, init_opt_state, init_dw_state, 0, init_key
-    with open(path, "rb") as f:
-        loaded_bytes = f.read()
-    template_state_new = {'params': init_params, 'opt_state': init_opt_state, 'dw_state': init_dw_state, 'phase_index': 0, 'key': init_key.__array__()}
+def load_checkpoint_data(path):
+    if not os.path.exists(path): return None
     try:
-        state_dict = from_bytes(template_state_new, loaded_bytes)
-        key = jnp.asarray(state_dict['key'], dtype=jnp.uint32)
-        print(f"  -> Checkpoint found (new format). Resuming from phase {state_dict['phase_index']}.")
-        return state_dict['params'], state_dict['opt_state'], state_dict['dw_state'], state_dict['phase_index'], key
-    except Exception as e_new:
-        print(f"  -> Could not load as new format ({e_new}). Trying old format...")
-        try:
-            template_state_old = {'params': b'', 'opt_state': b'', 'dw_state': init_dw_state, 'phase_index': 0, 'key': init_key.__array__()}
-            outer_dict = from_bytes(template_state_old, loaded_bytes)
-            params = from_bytes(init_params, outer_dict['params'])
-            opt_state = from_bytes(init_opt_state, outer_dict['opt_state'])
-            dw_state, phase_index = outer_dict['dw_state'], outer_dict['phase_index']
-            key = jnp.asarray(outer_dict['key'], dtype=jnp.uint32)
-            print(f"  -> Checkpoint found (old format). Resuming from phase {phase_index}.")
-            print("  -> Resaving checkpoint in the new, corrected format...")
-            save_checkpoint(path, params, opt_state, dw_state, phase_index, key)
-            return params, opt_state, dw_state, phase_index, key
-        except Exception as e_old:
-            print(f"  -> WARNING: Could not load checkpoint from '{path}' using either new or old format. Error: {e_old}. Starting from scratch.")
-            return init_params, init_opt_state, init_dw_state, 0, init_key
+        data = msgpack_restore(open(path, "rb").read())
+        print(f"-> Checkpoint found at step {data.get('s', 0)}.")
+        return data
+    except Exception as e: print(f"-> Chkpt read failed: {e}"); return None
 
-def _generate_circling_curriculum(half_width: float, interval_size: float) -> List[List[Tuple[Tuple[float, float], Tuple[float, float]]]]:
-    s = interval_size / 2.
-    L_max = int(jnp.floor((half_width / s - 1) / 2.))
-    def get_interval(k, s_val):
-        if k > 0: return ((2 * k - 1) * s_val, (2 * k + 1) * s_val)
-        if k < 0: return ((2 * k + 1) * s_val, (2 * k - 1) * s_val)
-        return (-s_val, s_val)
-    all_shells = []
-    for L in range(L_max + 1):
-        indices = [(i, j) for i in range(-L, L + 1) for j in range(-L, L + 1) if max(abs(i), abs(j)) == L]
-        all_shells.append([(get_interval(i, s), get_interval(j, s)) for i, j in indices])
-    return all_shells
+# ================== LR FINDER AND SCHEDULER ==================
 
-def _generate_circling_finetune_curriculum(inner_hw: float, outer_hw: float, step_size: float) -> List[List[Tuple[Tuple[float, float], Tuple[float, float]]]]:
-    s = step_size / 2.
-    L_max = int(jnp.floor((outer_hw / s - 1) / 2.))
-    def get_interval(k, s_val):
-        if k > 0: return ((2 * k - 1) * s_val, (2 * k + 1) * s_val)
-        if k < 0: return ((2 * k + 1) * s_val, (2 * k - 1) * s_val)
-        return (-s_val, s_val)
-    finetune_shells = []
-    for L in range(L_max + 1):
-        indices = [(i, j) for i in range(-L, L + 1) for j in range(-L, L + 1) if max(abs(i), abs(j)) == L]
-        shell_boxes = []
-        for i, j in indices:
-            x_int, y_int = get_interval(i, s), get_interval(j, s)
-            if max(abs(x_int[0]), abs(x_int[1]), abs(y_int[0]), abs(y_int[1])) > inner_hw:
-                shell_boxes.append((x_int, y_int))
-        if shell_boxes:
-            finetune_shells.append(shell_boxes)
-    return finetune_shells
+class LRFinder:
+    def __init__(self, optimizer):
+        self.optimizer = optimizer
+        self.results = {"lrs": [], "losses": []}
+    @staticmethod
+    @partial(jit, static_argnames=('optimizer', 'apply_fn', 'target_fns'))
+    def _scan_body(carry, lr, optimizer, apply_fn, target_fns):
+        params, opt_state, z_train, z_physics = carry
+        def loss_fn(p):
+            data_loss = calculate_data_loss(p, z_train, apply_fn, target_fns)
+            cr_loss = calculate_mean_cr_loss(p, z_physics, apply_fn)
+            return data_loss + cr_loss
+        loss, grads = jax.value_and_grad(loss_fn)(params)
+        updates, new_opt_state = optimizer.update(grads, opt_state, params, learning_rate=lr)
+        new_params = optax.apply_updates(params, updates)
+        return (new_params, new_opt_state, z_train, z_physics), loss
+    def find(self, params, apply_fn, target_fns, key, in_hw, ex_hw, start_lr=1e-8, end_lr=1.0, num_iter=100):
+        print(f"--- Running JIT-compiled LR Finder for domain [{in_hw}, {ex_hw}]... ---")
+        lrs = jnp.geomspace(start_lr, end_lr, num_iter)
+        run_params = calculate_run_parameters()
+        z_train, z_constr = sample_points(key, run_params['n_train'], run_params['n_extra_constraint'], in_hw, ex_hw)
+        z_physics = jnp.concatenate([z_train, z_constr])
+        initial_carry = (params, self.optimizer.init(params), z_train, z_physics)
+        _, losses = lax.scan(partial(self._scan_body, optimizer=self.optimizer, apply_fn=apply_fn, target_fns=target_fns), initial_carry, lrs)
+        valid_indices = ~jnp.isnan(losses)
+        self.results = {"lrs": lrs[valid_indices].tolist(), "losses": losses[valid_indices].tolist()}
+        print(f"-> LR Finder finished. Found {len(self.results['lrs'])} valid points.")
+    def plot(self, save_dir, stage_idx):
+        if not self.results["lrs"] or len(self.results["lrs"]) <= 20: return
+        lrs, losses = self.results["lrs"][10:-5], jnp.array(self.results["losses"][10:-5])
+        if len(losses) == 0: return
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(lrs, losses); ax.set_xscale('log'); ax.set_yscale('log'); ax.set_title(f"Learning Rate Finder (Stage {stage_idx})"); ax.set_xlabel("Learning Rate"); ax.set_ylabel("Loss"); ax.grid(True, which="both", ls="--")
+        positive_losses = losses[losses > 0]
+        if len(positive_losses) > 0:
+            min_pos_loss, max_loss = jnp.min(positive_losses), jnp.max(losses)
+            ax.set_ylim(bottom=min_pos_loss * 0.9, top=max_loss * 1.1 if max_loss > 0 else 1)
+        path = os.path.join(save_dir, f"lr_finder_plot_stage_{stage_idx}.png")
+        plt.savefig(path); print(f"-> LR Finder plot saved to {path}"); plt.show()
+    def suggestion(self):
+        if len(self.results["lrs"]) < 20: return None
+        losses, lrs = jnp.array(self.results["losses"]), jnp.array(self.results["lrs"])
+        min_loss_idx = jnp.argmin(losses[10:-5]) + 10
+        return lrs[min_loss_idx] / 10.0 if min_loss_idx < len(lrs) else None
 
-def _build_curriculum_plan():
-    print("Building curriculum plan (continuous consolidation)...")
-    plan = []
-    for rep in range(TOTAL_CURRICULUM_REPETITIONS):
-        # Data-fitting curriculum
-        data_shells = _generate_circling_curriculum(INTERPOLATION_HALF_WIDTH, SEQUENTIAL_INTERVAL_SIZE)
-        for l_idx, shell in enumerate(data_shells):
-            for b_idx, box in enumerate(shell):
-                plan.append({
-                    'type': 'data_explore',
-                    'rep': rep,
-                    'shell': l_idx,
-                    'box_def': [box],
-                    'epochs': EPOCHS_PER_PHASE
-                })
+class ReduceLROnPlateauState(NamedTuple):
+    lr: float; best_loss: float; patience_counter: int
 
-        # Physics-finetuning curriculum
-        if USE_PHYSICS_FINETUNING_CURRICULUM:
-            phys_shells = _generate_circling_finetune_curriculum(INTERPOLATION_HALF_WIDTH, EXTRAPOLATION_HALF_WIDTH, PHYSICS_SHELL_STEP_SIZE)
-            for l_idx, shell in enumerate(phys_shells):
-                for b_idx, box in enumerate(shell):
-                     plan.append({
-                        'type': 'phys_explore',
-                        'rep': rep,
-                        'shell': l_idx,
-                        'box_def': [box],
-                        'epochs': EPOCHS_PER_PHASE
-                    })
-    print(f"Curriculum plan built with {len(plan)} exploration phases.")
-    return plan
+def update_lr_on_plateau(state: ReduceLROnPlateauState, loss: float) -> Tuple[ReduceLROnPlateauState, bool]:
+    if loss < state.best_loss: return state._replace(best_loss=loss, patience_counter=0), False
+    new_counter = state.patience_counter + 1
+    if new_counter < PLATEAU_PATIENCE_CHECKS: return state._replace(patience_counter=new_counter), False
+    if state.lr <= PLATEAU_MIN_LR:
+        print(f"\n>>> Minimum LR ({state.lr:.2e}) held for {PLATEAU_PATIENCE_CHECKS} checks without improvement. Flagging for LR-Finder reset. <<<\n")
+        return state._replace(patience_counter=0, best_loss=loss), True
+    else:
+        new_lr = max(state.lr * PLATEAU_REDUCTION_FACTOR, PLATEAU_MIN_LR)
+        print(f"\n>>> LRPlateau: Patience limit reached. Reducing LR from {state.lr:.2e} to {new_lr:.2e} <<<\n")
+        return state._replace(lr=new_lr, patience_counter=0, best_loss=loss), False
 
-def sample_from_shell(key, num_points: int, outer_hw: float, inner_hw: float) -> jnp.ndarray:
-    if outer_hw <= inner_hw:
-        return jnp.empty((0, 2))
-    points_found, accepted_points = 0, []
-    area_ratio = (outer_hw**2 - inner_hw**2) / outer_hw**2
-    buffer_factor = 2.0 / max(area_ratio, 0.01)
-    while points_found < num_points:
-        key, subkey = random.split(key)
-        needed = num_points - points_found
-        sample_size = int(needed * buffer_factor)
-        candidates = random.uniform(subkey, (sample_size, 2), minval=-outer_hw, maxval=outer_hw)
-        accepted = candidates[jnp.max(jnp.abs(candidates), axis=1) > inner_hw]
-        accepted_points.append(accepted)
-        points_found += accepted.shape[0]
-    return jnp.concatenate(accepted_points, axis=0)[:num_points]
+# ================== MAIN TRAINING SCRIPT ==================
 
-def sample_with_boundary_focus(key, num_points: int, inner_box_hw: float, outer_box_hw: float, focus_ratio: float):
-    key1, key2 = random.split(key)
-    num_boundary_pts = int(num_points * focus_ratio)
-    num_interior_pts = num_points - num_boundary_pts
-    boundary_pts = sample_from_shell(key1, num_boundary_pts, outer_box_hw, inner_box_hw)
-    interior_pts = random.uniform(key2, (num_interior_pts, 2), minval=-inner_box_hw, maxval=inner_box_hw)
-    return jnp.concatenate([boundary_pts, interior_pts], axis=0)
+@partial(jit, static_argnames=['apply_fn', 'target_fns', 'use_cr_penalty'])
+def calculate_periodic_gn_weights(params, z_train, z_physics, apply_fn, target_fns, use_cr_penalty):
+    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns) * DATA_PRIORITY_FACTOR
+    cr_loss_fn = lambda p: calculate_mean_cr_loss(p, z_physics, apply_fn)
+    data_grad = jax.grad(data_loss_fn)(params)
+    cr_grad = lax.cond(use_cr_penalty, lambda p: jax.grad(cr_loss_fn)(p), lambda p: tree_util.tree_map(jnp.zeros_like, p), params)
+    data_norm, cr_norm = optax.global_norm(data_grad), optax.global_norm(cr_grad)
+    avg_norm = (data_norm + cr_norm) / 2.0
+    w_data = jnp.where(data_norm > 0, avg_norm / (data_norm + GRADNORM_SAFETY_OFFSET), 1.0)
+    w_cr = jnp.where(cr_norm > 0, avg_norm / (cr_norm + GRADNORM_SAFETY_OFFSET), 1.0)
+    return {'data': w_data, 'cr': w_cr}
 
-def sample_from_box_boundary(key, num_points: int, half_width: float) -> jnp.ndarray:
-    if num_points == 0:
-        return jnp.empty((0, 2))
-    points_per_side = num_points // 4
-    remainder = num_points % 4
-    side_counts = jnp.array([points_per_side] * 4) + jnp.array([1] * remainder + [0] * (4 - remainder))
-    keys = random.split(key, 5)
-    key, side_keys = keys[0], keys[1:]
-    x_bot = random.uniform(side_keys[0], (side_counts[0], 1), minval=-half_width, maxval=half_width)
-    x_top = random.uniform(side_keys[1], (side_counts[1], 1), minval=-half_width, maxval=half_width)
-    y_left = random.uniform(side_keys[2], (side_counts[2], 1), minval=-half_width, maxval=half_width)
-    y_right = random.uniform(side_keys[3], (side_counts[3], 1), minval=-half_width, maxval=half_width)
-    all_points = [
-        jnp.concatenate([x_bot, jnp.full_like(x_bot, -half_width)], axis=1),
-        jnp.concatenate([x_top, jnp.full_like(x_top, half_width)], axis=1),
-        jnp.concatenate([jnp.full_like(y_left, -half_width), y_left], axis=1),
-        jnp.concatenate([jnp.full_like(y_right, half_width), y_right], axis=1)
-    ]
-    return random.permutation(key, jnp.concatenate(all_points, axis=0))
+@partial(jit, static_argnames=['apply_fn', 'target_fns', 'use_cr_penalty', 'gradnorm_optimizer', 'alpha'])
+def update_learnable_gn_weights(params, gn_state, z_train, z_physics, apply_fn, target_fns, use_cr_penalty, gradnorm_optimizer, alpha):
+    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns) * DATA_PRIORITY_FACTOR
+    cr_loss_fn = lambda p: calculate_mean_cr_loss(p, z_physics, apply_fn)
+    (L_data_t, data_grad), (L_cr_t, cr_grad) = jax.value_and_grad(data_loss_fn)(params), (lax.cond(use_cr_penalty, lambda p: jax.value_and_grad(cr_loss_fn)(p), lambda p: (0.0, tree_util.tree_map(jnp.zeros_like, p)), params))
 
+    def gradnorm_loss_fn(log_weights):
+        w_data_exp, w_cr_exp = jnp.exp(log_weights['data']), jnp.exp(log_weights['cr'])
+        G_w_data, G_w_cr = w_data_exp * optax.global_norm(data_grad), w_cr_exp * optax.global_norm(cr_grad)
+        G_avg = (G_w_data + G_w_cr) / 2.0
+        r_data, r_cr = (L_data_t / (gn_state.initial_losses['data'] + 1e-8))**alpha, (L_cr_t / (gn_state.initial_losses['cr'] + 1e-8))**alpha
+        L_grad_data, L_grad_cr = jnp.abs(G_w_data - G_avg * r_data), jnp.abs(G_w_cr - G_avg * r_cr)
+        return L_grad_data + L_grad_cr
 
-### MAIN TRAINING FUNCTION ###
-def run_sequential_training_for_config(key, config, target_fns, use_dynamic_weighting, save_dir, group_id, run_name_for_save):
-    uv_target_fn, psi_target_fn, dudx_target_fn = target_fns
+    gn_grads = jax.grad(gradnorm_loss_fn)(gn_state.weights)
+    gn_updates, new_gn_os = gradnorm_optimizer.update(gn_grads, gn_state.opt_state)
+    new_gn_weights = optax.apply_updates(gn_state.weights, gn_updates)
+    return gn_state._replace(weights=new_gn_weights, opt_state=new_gn_os)
+
+@partial(jit, static_argnames=['apply_fn', 'target_fns', 'use_cr_penalty', 'main_optimizer'])
+def adam_step(params, main_opt_state, z_train, z_physics, learning_rate, gn_weights, apply_fn, target_fns, use_cr_penalty, main_optimizer):
+    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns) * DATA_PRIORITY_FACTOR
+    cr_loss_fn = lambda p: calculate_mean_cr_loss(p, z_physics, apply_fn)
+    
+    def loss_fn(p):
+        L_data, L_cr = data_loss_fn(p), (cr_loss_fn(p) if use_cr_penalty else 0.0)
+        w_data, w_cr = gn_weights['data'], gn_weights['cr']
+        return (w_data * L_data + w_cr * L_cr), {'data': L_data, 'cr': L_cr}
+        
+    (total_loss, losses_dict), grads = jax.value_and_grad(loss_fn, has_aux=True)(params)
+    updates, new_main_os = main_optimizer.update(grads, main_opt_state, params, learning_rate=learning_rate)
+    new_params = optax.apply_updates(params, updates)
+    return new_params, new_main_os, losses_dict
+
+def run_training(key, target_fns, save_dir):
     run_params = calculate_run_parameters()
-    model_width, model_depth, n_train, n_constraint = (run_params['width'], run_params['depth'], run_params['n_train'], run_params['n_constraint'])
-
-    snake_activation_definition = None
-    if ACTIVATION_CHOICE.lower() == 'snake':
-        snake_layers = min(SNAKE_HYBRID_LAYERS, model_depth - 1)
-        print(f"  -> Using JAX-native Hybrid Model: GELU base, Snake on final {snake_layers} layer(s).")
-        print(f"     (a_init={SNAKE_ALPHA_INITIAL}, trainable={SNAKE_ALPHA_TRAINABLE}, custom_vjp=True)")
-        snake_activation_definition = {'initial_alpha': SNAKE_ALPHA_INITIAL, 'trainable': SNAKE_ALPHA_TRAINABLE}
+    n_train_batch, n_extra_constraint_batch = run_params['n_train'], run_params['n_extra_constraint']
+    
+    if ACTIVATION_FUNCTION.lower() == 'tanh':
+        activation_fn = nn.tanh
+    elif ACTIVATION_FUNCTION.lower() == 'gelu':
+        activation_fn = nn.gelu
     else:
-        print("  -> Using GELU activation for all layers.")
-        snake_layers = 0
+        raise ValueError(f"Unsupported activation function: {ACTIVATION_FUNCTION}")
 
-    model_args = {
-        'width': model_width, 'depth': model_depth,
-        'base_activation': jnn.gelu,
-        'snake_activation_def': snake_activation_definition,
-        'snake_layers': snake_layers
-    }
-
-    model_type = config.get('model_type', 'Potential')
-    if model_type == 'UV':
-        model = DirectUVMLP(**model_args)
-    elif model_type == 'U_ONLY':
-        model = UOnlyMLP(**model_args)
-    else:
-        model = ScalarPotentialMLP(**model_args)
-
+    model = DirectUVMLP(width=run_params['width'], depth=run_params['depth'], activation=activation_fn, use_he_init=USE_HE_INITIALIZATION)
     key, subkey = random.split(key)
-    init_params = model.init(subkey, jnp.ones((1, 2)))
-    optimizer = optax.chain(optax.clip_by_global_norm(GRADIENT_CLIP_VALUE), optax.adam(learning_rate=PEAK_LR))
-    init_opt_state = optimizer.init(init_params)
+    init_params = model.init(subkey, jnp.ones((1, 2)))['params']
+    apply_fn = jit(lambda p, z: model.apply({'params': p}, z))
 
-    checkpoint_path = os.path.join(save_dir, f"checkpoint_group_{group_id}_{run_name_for_save}.msgpack")
-    params, opt_state, dw_state, loaded_phase_idx, key = load_checkpoint(checkpoint_path, init_params, init_opt_state, {}, key)
+    main_optimizer = optax.chain(optax.clip_by_global_norm(GRADIENT_CLIP_VALUE), optax.adamw(learning_rate=PEAK_LR))
+    init_opt_state = main_optimizer.init(init_params)
+    
+    gradnorm_optimizer = optax.adam(learning_rate=GRADNORM_LR)
+    init_gn_weights = {'data': jnp.log(1.0), 'cr': jnp.log(1.0)}
+    init_gn_opt_state = gradnorm_optimizer.init(init_gn_weights)
+    init_gn_state = GradNormState(weights=init_gn_weights, opt_state=init_gn_opt_state, initial_losses={'data': 0.0, 'cr': 0.0})
 
-    curriculum_plan = _build_curriculum_plan()
+    checkpoint_path = os.path.join(save_dir, "uv_model_checkpoint.msgpack")
+    pre_loaded_data = load_checkpoint_data(checkpoint_path)
 
-    def _sample_from_boxes(k, num_points, boxes):
-        if not boxes: return jnp.empty((0, 2))
-        points_per_box = num_points // len(boxes)
-        remaining = num_points % len(boxes)
-        samples = []
-        for i, (b, subkey) in enumerate(zip(boxes, random.split(k, len(boxes)))):
-            n_samples = points_per_box + (1 if i < remaining else 0)
-            if n_samples > 0:
-                min_v = jnp.array([b[0][0], b[1][0]])
-                max_v = jnp.array([b[0][1], b[1][1]])
-                samples.append(random.uniform(subkey, (n_samples, 2), minval=min_v, maxval=max_v))
-        return jnp.concatenate(samples, axis=0) if samples else jnp.empty((0, 2))
+    effective_peak_lr = PEAK_LR
+    finder = LRFinder(main_optimizer)
+    if USE_LR_FINDER:
+        key, finder_key = random.split(key)
+        finder.find(init_params, apply_fn, target_fns, finder_key, INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH)
+        if pre_loaded_data is None: finder.plot(save_dir, stage_idx=1)
+        suggested_lr = finder.suggestion()
+        if suggested_lr:
+            print(f"*** Initial LR Finder suggests a starting LR of: {suggested_lr:.2e} ***")
+            effective_peak_lr = suggested_lr
 
-    def _create_full_loss_fns(z_train, z_physics, z_kink):
-        loss_fns, static_weights, data_loss_names, physics_loss_names = {}, {}, [], []
-        kink_points = z_kink if FOCUS_KINK_PENALTY_ON_BOUNDARY and z_kink.shape[0] > 0 else z_physics
-
-        # Define vmapped loss functions
-        vmapped_uv_from_potential = vmap(get_uv_from_potential, (None, None, 0))
-        vmapped_model_apply = vmap(model.apply, (None, 0))
-        vmapped_laplace = vmap(get_laplacian_and_grad_laplacian_sq_norm, (None, None, 0))
-        vmapped_cr = vmap(get_uv_and_cr_grads, (None, None, 0))
-        vmapped_kink_cr = vmap(get_cr_and_grad_cr_sq_norm, (None, None, 0))
-        vmapped_u_deriv = vmap(lambda m, p, z: get_u_and_du_dx(m, p, z)[1], (None, None, 0))
-
-        if model_type == 'Potential':
-            if config.get('USE_UV_DATA_LOSS', False) and z_train.shape[0] > 0:
-                loss_fns['uv_data'] = lambda p: jnp.mean((vmapped_uv_from_potential(model, p, z_train) - uv_target_fn(z_train))**2)
-                static_weights['uv_data'] = UV_DATA_WEIGHT
-                data_loss_names.append('uv_data')
-            if config.get('USE_POTENTIAL_LOSS', False) and z_train.shape[0] > 0:
-                loss_fns['psi_data'] = lambda p: jnp.mean((vmapped_model_apply(p, z_train) - psi_target_fn(z_train))**2)
-                static_weights['psi_data'] = POTENTIAL_DATA_WEIGHT
-                data_loss_names.append('psi_data')
-            if config.get('USE_LAPLACE_LOSS', False) and z_physics.shape[0] > 0:
-                loss_fns['laplace'] = lambda p: jnp.mean(vmapped_laplace(model, p, z_physics)[0]**2)
-                static_weights['laplace'] = LAPLACE_WEIGHT
-                physics_loss_names.append('laplace')
-            if USE_KINK_PENALTY and kink_points.shape[0] > 0:
-                loss_fns['kink_penalty'] = lambda p: jnp.mean(vmapped_laplace(model, p, kink_points)[1])
-                static_weights['kink_penalty'] = KINK_PENALTY_WEIGHT
-                physics_loss_names.append('kink_penalty')
-        elif model_type == 'UV':
-            if z_train.shape[0] > 0:
-                loss_fns['uv_data'] = lambda p: jnp.mean((vmapped_model_apply(p, z_train) - uv_target_fn(z_train))**2)
-                static_weights['uv_data'] = UV_DATA_WEIGHT
-                data_loss_names.append('uv_data')
-            if config.get('use_penalty', False) and z_physics.shape[0] > 0:
-                loss_fns['cr_penalty'] = lambda p: jnp.mean(vmapped_cr(model, p, z_physics))
-                static_weights['cr_penalty'] = CR_PENALTY_WEIGHT
-                physics_loss_names.append('cr_penalty')
-            if USE_KINK_PENALTY and kink_points.shape[0] > 0:
-                loss_fns['kink_penalty'] = lambda p: jnp.mean(vmapped_kink_cr(model, p, kink_points)[1])
-                static_weights['kink_penalty'] = KINK_PENALTY_WEIGHT
-                physics_loss_names.append('kink_penalty')
-        elif model_type == 'U_ONLY':
-            if z_train.shape[0] > 0:
-                loss_fns['u_data'] = lambda p: jnp.mean((vmapped_model_apply(p, z_train) - uv_target_fn(z_train)[..., 0])**2)
-                static_weights['u_data'] = UV_DATA_WEIGHT
-                data_loss_names.append('u_data')
-            if config.get('use_penalty', False) and z_train.shape[0] > 0:
-                loss_fns['dudx_data'] = lambda p: jnp.mean((vmapped_u_deriv(model, p, z_train) - dudx_target_fn(z_train))**2)
-                static_weights['dudx_data'] = U_DERIV_DATA_WEIGHT
-                data_loss_names.append('dudx_data')
-        return tuple(loss_fns.keys()), tuple(loss_fns.values()), static_weights, tuple(data_loss_names), tuple(physics_loss_names)
-
-    def _run_training_loop(num_epochs, p, opt_s, dw_s, loss_defs, log_prefix):
-        loss_names_t, loss_fns_t, static_weights, data_loss_names_t, physics_loss_names_t = loss_defs
-        if not loss_fns_t:
-            print(f"  {log_prefix} | No active loss functions. Skipping.")
-            return p, opt_s, dw_s, 0
-        for epoch in range(1, num_epochs + 1):
-            if use_dynamic_weighting and physics_loss_names_t:
-                p, opt_s, dw_s, _, losses_jax = dynamic_training_step(p, opt_s, dw_s, optimizer, loss_names_t, loss_fns_t, data_loss_names_t, physics_loss_names_t)
-            else:
-                p, opt_s, _, losses_jax = static_training_step(p, opt_s, optimizer, loss_names_t, loss_fns_t, static_weights)
-            if epoch % LOG_EVERY_N_EPOCHS == 0:
-                loss_map = {'uv_data': 'UV', 'psi_data': 'Psi', 'u_data': 'U', 'dudx_data': 'dU/dX', 'laplace': 'Lap', 'cr_penalty': 'CR', 'kink_penalty': 'Kink'}
-                log_loss_str = ", ".join([f"{loss_map[n]}={losses_jax[n]:.2e}" for n in loss_map if n in losses_jax])
-                print(f"  {log_prefix} | Ep {epoch}/{num_epochs} | Losses: {log_loss_str or 'N/A'}")
-        return p, opt_s, dw_s, num_epochs
-
-    for phase_idx, phase_info in enumerate(curriculum_plan):
-        if phase_idx < loaded_phase_idx:
-            continue
-
-        log_msg = f"Phase {phase_idx+1}/{len(curriculum_plan)} (Rep {phase_info['rep']+1}) | {phase_info['type']}"
-        print(log_msg)
-
-        # MODIFIED: New sampling logic with global physics constraints
-        key, data_key, phys_key, kink_key = random.split(key, 4)
-        data_mem_key, data_exp_key = random.split(data_key)
-        phys_mem_key, phys_exp_key = random.split(phys_key)
-
-        n_explore = n_train // 2
-        n_memory = n_train - n_explore
-        n_phys_explore = n_constraint // 2
-        n_phys_memory = n_constraint - n_phys_explore
-
-        # Physics memory points are always from the full extrapolation domain
-        z_phys_memory = random.uniform(phys_mem_key, (n_phys_memory, 2), minval=-EXTRAPOLATION_HALF_WIDTH, maxval=EXTRAPOLATION_HALF_WIDTH)
-
-        if phase_info['type'] == 'data_explore':
-            # Data memory points from interpolation, explore points from current box
-            z_train_memory = random.uniform(data_mem_key, (n_memory, 2), minval=-INTERPOLATION_HALF_WIDTH, maxval=INTERPOLATION_HALF_WIDTH)
-            z_train_explore = _sample_from_boxes(data_exp_key, n_explore, phase_info['box_def'])
-            z_train = jnp.concatenate([z_train_explore, z_train_memory])
-
-            # Physics explore points from current box
-            z_phys_explore = _sample_from_boxes(phys_exp_key, n_phys_explore, phase_info['box_def'])
-            z_physics = jnp.concatenate([z_phys_explore, z_phys_memory])
-
-            print(f"    -> Data Explore: {n_explore} train pts from box, {n_memory} from [-1,1]^2.")
-            print(f"    -> Constraint Pts: {n_phys_explore} from box, {n_phys_memory} from [{-EXTRAPOLATION_HALF_WIDTH},{EXTRAPOLATION_HALF_WIDTH}]^2.")
-
-        elif phase_info['type'] == 'phys_explore':
-            # Data points are all from interpolation domain to provide a strong anchor
-            z_train = random.uniform(data_key, (n_train, 2), minval=-INTERPOLATION_HALF_WIDTH, maxval=INTERPOLATION_HALF_WIDTH)
-
-            # Physics explore points from current extrapolation box
-            z_phys_explore = _sample_from_boxes(phys_exp_key, n_phys_explore, phase_info['box_def'])
-            z_physics = jnp.concatenate([z_phys_explore, z_phys_memory])
-
-            print(f"    -> Physics Explore: Train pts from [-1,1]^2.")
-            print(f"    -> Constraint Pts: {n_phys_explore} from box, {n_phys_memory} from [{-EXTRAPOLATION_HALF_WIDTH},{EXTRAPOLATION_HALF_WIDTH}]^2.")
-
-        # Kink penalty points are sampled from the general physics domain
-        z_kink_penalty = z_physics if USE_KINK_PENALTY else jnp.empty((0, 2))
-
-        params, opt_state, dw_state, _ = _run_training_loop(
-            phase_info['epochs'], params, opt_state, dw_state,
-            _create_full_loss_fns(z_train, z_physics, z_kink_penalty),
-            log_msg
-        )
-
-        if SAVE_MODELS:
-            save_checkpoint(checkpoint_path, params, opt_state, dw_state, phase_idx + 1, key)
-
-    return model, params, [], run_params
-
-
-# ================== PLOTTING AND MAIN FRAMEWORK =======================
-def generate_info_text(config, weighting_mode, run_params):
-    act_fn_name = "GELU"
-    if ACTIVATION_CHOICE.lower() == 'snake':
-        snake_layers = min(SNAKE_HYBRID_LAYERS, run_params['depth'] - 1)
-        if snake_layers >= run_params['depth'] - 1:
-            act_fn_name = f"Snake(a_init={SNAKE_ALPHA_INITIAL}, trainable={SNAKE_ALPHA_TRAINABLE})"
-        elif snake_layers > 0:
-            trainable_str = "Trainable" if SNAKE_ALPHA_TRAINABLE else "Fixed"
-            act_fn_name = f"Hybrid GELU/Snake({snake_layers}L, a={trainable_str})"
-
-    lines = [f"NN: {run_params['width']}x{run_params['depth']} ({act_fn_name})"]
-    lines.append(f"Train Pts: {run_params['n_train']:,} | Constraint Pts: {run_params['n_constraint']:,}")
-    lines.append(f"Extrapolation HW: {EXTRAPOLATION_HALF_WIDTH}")
-    lines.append("-" * 20)
-    loss_parts = []
-    model_type = config.get('model_type', 'Potential')
-    if model_type == 'UV':
-        loss_parts.extend(["UV Direct"] + (["CR Penalty"] if config.get('use_penalty') else []))
-    elif model_type == 'U_ONLY':
-        loss_parts.extend(["U-Only Direct"] + (["dU/dX Data"] if config.get('use_penalty') else []))
+    init_lr_plateau_state = ReduceLROnPlateauState(lr=effective_peak_lr, best_loss=jnp.inf, patience_counter=0)
+    if pre_loaded_data:
+        try:
+            params, opt_state, lr_plateau_state, gradnorm_state, start_step, key, current_stage_index, stability_counter = (from_state_dict(init_params, pre_loaded_data['p']), from_state_dict(init_opt_state, pre_loaded_data['o']), from_state_dict(init_lr_plateau_state, pre_loaded_data['lr_s']), from_state_dict(init_gn_state, pre_loaded_data['gn_s']), pre_loaded_data['s'], pre_loaded_data['k'], pre_loaded_data['si'], pre_loaded_data['sc'])
+            if not USE_REDUCE_LR_ON_PLATEAU:
+                print(f"-> Resuming in FIXED LR mode. Overriding saved LR ({lr_plateau_state.lr:.2e}) with PEAK_LR: {effective_peak_lr:.2e}")
+                lr_plateau_state = init_lr_plateau_state
+            w_d, w_c = (jnp.exp(gradnorm_state.weights['data']), jnp.exp(gradnorm_state.weights['cr'])) if GRADNORM_MODE == 'learnable' else (gradnorm_state.weights.get('data', 1.0), gradnorm_state.weights.get('cr', 1.0))
+            print(f"-> Resuming training from step {start_step + 1} with LR={lr_plateau_state.lr:.2e} and GN weights (D:{w_d:.2e}, C:{w_c:.2e})")
+        except Exception as e:
+            print(f"-> Checkpoint loading failed, starting from scratch. Error: {e}")
+            params, opt_state, start_step, current_stage_index, stability_counter, lr_plateau_state, gradnorm_state = init_params, init_opt_state, 0, 0, 0, init_lr_plateau_state, init_gn_state
     else:
-        if config.get('USE_UV_DATA_LOSS'): loss_parts.append("UV Data")
-        if config.get('USE_POTENTIAL_LOSS'): loss_parts.append("Psi Data")
-        if config.get('USE_LAPLACE_LOSS'): loss_parts.append("Laplace")
-    if USE_KINK_PENALTY and model_type != 'U_ONLY':
-        loss_parts.append(f"KinkP(w={KINK_PENALTY_WEIGHT}, {'Bnd' if FOCUS_KINK_PENALTY_ON_BOUNDARY else 'Gen'})")
-    lines.append(f"Losses: {' + '.join(loss_parts)}")
-    lines.append(f"Weights: {weighting_mode}")
-    if weighting_mode == "Dynamic":
-        lines.append(f"  (Alpha: {DYNAMIC_WEIGHT_EMA_ALPHA}, Clamp: {DYNAMIC_WEIGHT_MAX_CLAMP_VALUE})")
+        print("-> No checkpoint found, starting from scratch.")
+        params, opt_state, start_step, current_stage_index, stability_counter, lr_plateau_state, gradnorm_state = init_params, init_opt_state, 0, 0, 0, init_lr_plateau_state, init_gn_state
+
+    if start_step == 0 and GRADNORM_MODE == 'learnable':
+        print("--- Calculating initial losses for Learnable GradNorm ---")
+        z_init_train, z_init_constr = sample_points(key, n_train_batch, n_extra_constraint_batch, INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH)
+        initial_data_loss = calculate_data_loss(params, z_init_train, apply_fn, target_fns)
+        initial_cr_loss = calculate_mean_cr_loss(params, jnp.concatenate([z_init_train, z_init_constr]), apply_fn) if USE_CR_PENALTY else 0.0
+        gradnorm_state = gradnorm_state._replace(initial_losses={'data': initial_data_loss, 'cr': initial_cr_loss})
+        print(f"  -> Initial Losses: Data={initial_data_loss:.2e}, CR={initial_cr_loss:.2e}")
+
+    print(f"--- Starting/Resuming Main Training ({TOTAL_TRAINING_STEPS} steps) ---")
+    print(" -> Log Key: 'CR'/'Data' are per-step training losses.")
+    print("              'CRLoss'/'DataLoss' are validation losses on separate batches, with CRLoss")
+    print("              coming from the non-interpolation domain, checked for stability/LR scheduling.")
+    last_data_loss, last_cr_loss = jnp.inf, jnp.inf
+    
+    for step in range(start_step + 1, TOTAL_TRAINING_STEPS + 1):
+        key, data_key, stab_key1, stab_key2 = random.split(key, 4)
+        current_extrapolation_hw = STAGED_EXTRAPOLATION_BOUNDARIES[current_stage_index]
+        z_train, z_constr = sample_points(data_key, n_train_batch, n_extra_constraint_batch, INTERPOLATION_HALF_WIDTH, current_extrapolation_hw)
+        z_physics = jnp.concatenate([z_train, z_constr])
+
+        current_weights = {'data': 1.0, 'cr': 1.0}
+        if GRADNORM_MODE == 'learnable':
+            gradnorm_state = update_learnable_gn_weights(params, gradnorm_state, z_train, z_physics, apply_fn, target_fns, USE_CR_PENALTY, gradnorm_optimizer, GRADNORM_ALPHA)
+            current_weights = {k: jnp.exp(v) for k, v in gradnorm_state.weights.items()}
+        elif GRADNORM_MODE == 'periodic' and (step % STABILITY_CHECK_EVERY_N_STEPS == 0):
+            gradnorm_state = gradnorm_state._replace(weights=calculate_periodic_gn_weights(params, z_train, z_physics, apply_fn, target_fns, USE_CR_PENALTY))
+        if GRADNORM_MODE == 'periodic':
+             current_weights = gradnorm_state.weights
+
+        params, opt_state, losses_jax = adam_step(params, opt_state, z_train, z_physics, lr_plateau_state.lr, current_weights, apply_fn, target_fns, USE_CR_PENALTY, main_optimizer)
+
+        if step > 0 and step % STABILITY_CHECK_EVERY_N_STEPS == 0:
+            z_cr_check = sample_extrapolation_shell(stab_key2, n_extra_constraint_batch, INTERPOLATION_HALF_WIDTH, current_extrapolation_hw)
+            last_cr_loss = calculate_mean_cr_loss(params, z_cr_check, apply_fn)
+            if USE_REDUCE_LR_ON_PLATEAU:
+                lr_plateau_state, should_rerun_lr_finder = update_lr_on_plateau(lr_plateau_state, last_cr_loss)
+                if should_rerun_lr_finder:
+                    if USE_LR_FINDER:
+                        key, finder_key = random.split(key); finder.find(params, apply_fn, target_fns, finder_key, INTERPOLATION_HALF_WIDTH, current_extrapolation_hw)
+                        finder.plot(save_dir, stage_idx=f"{current_stage_index + 1}-reset")
+                        suggested_lr = finder.suggestion()
+                        lr_plateau_state = ReduceLROnPlateauState(lr=suggested_lr or effective_peak_lr, best_loss=jnp.inf, patience_counter=0)
+                    else:
+                        print(f"    -> LR Finder disabled. Resetting to PEAK_LR: {effective_peak_lr:.2e}")
+                        lr_plateau_state = ReduceLROnPlateauState(lr=effective_peak_lr, best_loss=jnp.inf, patience_counter=0)
+            z_data_check, _ = sample_points(stab_key1, n_train_batch, 0, INTERPOLATION_HALF_WIDTH, 0)
+            last_data_loss = calculate_data_loss(params, z_data_check, apply_fn, target_fns)
+            if last_data_loss < DATA_STABILITY_TARGET and last_cr_loss < CR_STABILITY_TARGET: stability_counter += STABILITY_CHECK_EVERY_N_STEPS
+            else: stability_counter = 0
+
+        if stability_counter >= MIN_STEPS_OF_STABILITY_REQUIRED and current_stage_index < len(STAGED_EXTRAPOLATION_BOUNDARIES) - 1:
+            print(f"\n>>> Step {step}: STABLE! Staging up from Stage {current_stage_index + 1}. <<<")
+            if ENABLE_PLOTTING: plot_stage_result(model, params, target_fns, save_dir, run_params, current_stage_index + 1)
+            current_stage_index += 1
+            new_boundary = STAGED_EXTRAPOLATION_BOUNDARIES[current_stage_index]
+            print(f"    -> Now training Stage {current_stage_index + 1} with boundary {new_boundary:.2f}.")
+
+            if GRADNORM_MODE == 'learnable' and GRADNORM_RESET_ON_STAGE_UP:
+                print("    -> Resetting GradNorm state for new stage.")
+                gn_weights, gn_opt_state = {'data': jnp.log(1.0), 'cr': jnp.log(1.0)}, gradnorm_optimizer.init(init_gn_weights)
+                key, gn_reset_key = random.split(key)
+                z_init_train, z_init_constr = sample_points(gn_reset_key, n_train_batch, n_extra_constraint_batch, INTERPOLATION_HALF_WIDTH, new_boundary)
+                initial_data_loss = calculate_data_loss(params, z_init_train, apply_fn, target_fns)
+                initial_cr_loss = calculate_mean_cr_loss(params, jnp.concatenate([z_init_train, z_init_constr]), apply_fn) if USE_CR_PENALTY else 0.0
+                gradnorm_state = GradNormState(weights=gn_weights, opt_state=gn_opt_state, initial_losses={'data': initial_data_loss, 'cr': initial_cr_loss})
+                print(f"      -> New Initial Losses: Data={initial_data_loss:.2e}, CR={initial_cr_loss:.2e}")
+
+            if USE_LR_FINDER:
+                key, finder_key = random.split(key); finder.find(params, apply_fn, target_fns, finder_key, INTERPOLATION_HALF_WIDTH, new_boundary)
+                finder.plot(save_dir, stage_idx=current_stage_index + 1)
+                suggested_lr = finder.suggestion()
+                lr_plateau_state = ReduceLROnPlateauState(lr=suggested_lr or lr_plateau_state.lr, best_loss=jnp.inf, patience_counter=0)
+            else: lr_plateau_state = lr_plateau_state._replace(best_loss=jnp.inf, patience_counter=0)
+            stability_counter = 0
+
+        if jnp.any(~jnp.isfinite(jnp.array(list(losses_jax.values())))):
+            print(f"!!! Step {step}: NaN loss detected. Halting training. Check hyperparameters. !!!"); return model, None, run_params
+
+        if step % LOG_EVERY_N_STEPS == 0 or step == TOTAL_TRAINING_STEPS:
+            log_loss_cr = f"CR={losses_jax.get('cr', 0):.2e}"
+            log_loss_data = f"Data={losses_jax.get('data', 0):.2e}"
+            lr_info = f"LR: {lr_plateau_state.lr:.1e}"
+            w_c, w_d = current_weights.get('cr', 1.0), current_weights.get('data', 1.0)
+            gn_info = f"GN-W(C/D): {w_c:.2e}/{w_d:.2e}"
+            stage_info = f"Stg {current_stage_index+1}/{len(STAGED_EXTRAPOLATION_BOUNDARIES)} (B={current_extrapolation_hw:.1f})"
+            stab_info = f"Stab: {stability_counter}/{MIN_STEPS_OF_STABILITY_REQUIRED}"
+            cr_loss_info = f"CRLoss: {last_cr_loss:.2e}"
+            data_loss_info = f"DataLoss: {last_data_loss:.2e}"
+            print(f"  Step {step}/{TOTAL_TRAINING_STEPS} | {log_loss_cr} | {log_loss_data} | {lr_info} | {gn_info} | {stage_info} | {stab_info} | {cr_loss_info} | {data_loss_info}")
+            if SAVE_MODELS: save_checkpoint(checkpoint_path,params,opt_state,step,key,current_stage_index,stability_counter,lr_plateau_state,gradnorm_state)
+
+    return model, params, run_params
+
+def generate_info_text(run_params):
+    act, prec, init, arch = ACTIVATION_FUNCTION.upper(), f"{'64' if jax.config.jax_enable_x64 else '32'}-bit", "He", "Plain MLP" if not USE_RESIDUAL_CONNECTIONS else "Residual"
+    loss_parts = ["UV", f"Deriv(w={DERIVATIVE_DATA_WEIGHT})", "CR"]; lr_sched = "ReduceLROnPlateau" if USE_REDUCE_LR_ON_PLATEAU else f"Fixed {PEAK_LR:.1e}"
+    gn_mode_map = {'none': 'None', 'periodic': 'Periodic', 'learnable': 'Learnable'}
+    gn_info = f"GradNorm({gn_mode_map.get(GRADNORM_MODE, 'Unknown')})"
+    if GRADNORM_MODE == 'learnable': gn_info += f" (Reset: {GRADNORM_RESET_ON_STAGE_UP})"
+    loss_parts.append(gn_info)
+    lines = [f"NN: {run_params['width']}x{run_params['depth']} ({arch},{act},{prec})", f"Opt: AdamW, Clip={GRADIENT_CLIP_VALUE}", f"LR: {lr_sched}", f"Loss: {'+'.join(loss_parts)}"]
+    lines.append(f"StagedExtrap: ON (DataT={DATA_STABILITY_TARGET:.0e}, CRT={CR_STABILITY_TARGET:.0e})")
     return "\n".join(lines)
 
-def save_final_model(params, save_dir, group_id, full_name):
-    safe_name = full_name.replace(' ', '_').replace('+', 'and').replace('(', '').replace(')', '').replace('/', '_per_')
-    filename = os.path.join(save_dir, f"model_{group_id}_{safe_name}.msgpack")
-    with open(filename, "wb") as f:
-        f.write(to_bytes(params))
-    print(f"  -> Final model saved to {filename}")
-
-def plot_and_display_single_result(model, params, run_info, weighting_mode, target_fns, save_dir, group_id, run_params):
-    full_name = f"{run_info['name']} ({weighting_mode})"
-    print(f"  -> Generating immediate plot for: {full_name}")
-    plot_domain_hw = EXTRAPOLATION_HALF_WIDTH
-    x_plot = jnp.linspace(-plot_domain_hw, plot_domain_hw, 1000)
-    z_plot_grid = jnp.stack([x_plot, jnp.zeros_like(x_plot)], axis=-1)
-    uv_truth_grid = target_fns[0](z_plot_grid)
-
-    if isinstance(model, UOnlyMLP):
-        u_pred = vmap(model.apply, (None, 0))(params, z_plot_grid)
-        uv_pred = jnp.stack([u_pred, jnp.zeros_like(u_pred)], axis=-1)
-    elif isinstance(model, ScalarPotentialMLP):
-        uv_pred = vmap(get_uv_from_potential, (None, None, 0))(model, params, z_plot_grid)
-    else:
-        uv_pred = vmap(model.apply, (None, 0))(params, z_plot_grid)
-
+def plot_stage_result(model, params, target_fns, save_dir, run_params, completed_stage_idx):
+    print(f"  -> Stage {completed_stage_idx} complete. Generating plot...")
+    x_plot = jnp.linspace(-EXTRAPOLATION_HALF_WIDTH, EXTRAPOLATION_HALF_WIDTH, 1000)
+    z_plot = jnp.stack([x_plot, jnp.zeros_like(x_plot)], -1)
+    uv_truth = target_fns[0](z_plot)
+    uv_pred = model.apply({'params': params}, z_plot)
     fig, ax = plt.subplots(1, 1, figsize=(16, 6))
-    fig.suptitle(f"Immediate Result: {full_name}", fontsize=16)
-    info_text = generate_info_text(run_info['config'], weighting_mode, run_params)
-    props = dict(boxstyle='round,pad=0.5', facecolor='aliceblue', alpha=0.9)
-    ax.text(0.02, 0.98, info_text, transform=ax.transAxes, fontsize=9, verticalalignment='top', bbox=props)
-    ax.plot(x_plot, uv_truth_grid[:, 0], label='Ground Truth U', color='black', lw=2, ls='--')
-    ax.plot(x_plot, uv_pred[:, 0], label='Predicted U', color='red', lw=2, alpha=0.8)
-    ax.axvspan(-INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH, color='gray', alpha=0.15, label='Interpolation Domain')
-    ax.set_title("Real Part: u(x,0)")
-    ax.grid(True, linestyle=':')
-    ax.legend(loc='lower left')
-    plt.xlim(-plot_domain_hw, plot_domain_hw)
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    safe_name = full_name.replace(' ', '_').replace('+', 'and').replace('(', '').replace(')', '').replace('/', '_per_')
-    plt.savefig(os.path.join(save_dir, f"plot_group_{group_id}_{safe_name}.png"))
-    plt.show()
-    plt.close(fig)
+    ax.plot(x_plot, uv_truth[:, 0], 'k--', lw=2, label='Ground Truth U'); ax.plot(x_plot, uv_pred[:, 0], 'r', lw=2, alpha=0.8, label='Predicted U')
+    colors = plt.cm.viridis(jnp.linspace(0.3, 0.9, len(STAGED_EXTRAPOLATION_BOUNDARIES)))
+    for i, b in enumerate(STAGED_EXTRAPOLATION_BOUNDARIES): ax.axvspan(-b, -INTERPOLATION_HALF_WIDTH, color=colors[i], alpha=0.05); ax.axvspan(INTERPOLATION_HALF_WIDTH, b, color=colors[i], alpha=0.05)
+    ax.axvspan(-INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH, color='gray', alpha=0.2, label='Interpolation Domain')
+    ax.set_title(f"Model after completing Stage {completed_stage_idx} (Boundary {STAGED_EXTRAPOLATION_BOUNDARIES[completed_stage_idx-1]:.1f})")
+    ax.grid(True, linestyle=':'); ax.legend()
+    ax.text(0.02, 0.98, generate_info_text(run_params), transform=ax.transAxes, fontsize=9, va='top', bbox=dict(boxstyle='round', facecolor='aliceblue', alpha=0.9))
+    plt.tight_layout(rect=[0, 0, 1, 0.96]); plt.savefig(os.path.join(save_dir, f"stage_{completed_stage_idx}_plot.png")); plt.show()
 
-def save_group_results(group_id, group_run_data, target_fns, save_dir):
-    print(f"  -> Plotting and saving final group comparison for Group {group_id}...")
-    plot_domain_hw = EXTRAPOLATION_HALF_WIDTH
-    x_plot = jnp.linspace(-plot_domain_hw, plot_domain_hw, 1000)
-    z_plot_grid = jnp.stack([x_plot, jnp.zeros_like(x_plot)], axis=-1)
-    uv_truth_grid = target_fns[0](z_plot_grid)
-    fit_data_to_save = {'z_grid': z_plot_grid.tolist(), 'uv_truth_grid': uv_truth_grid.tolist()}
-    loss_history_to_save = {}
-
-    fig, axs = plt.subplots(2, 1, figsize=(16, 10), sharex=True)
-    fig.suptitle(f"Group {group_id} Comparison - Extrapolation on Real Axis", fontsize=18)
-
-    if group_run_data:
-        info_text = generate_info_text(group_run_data[0]['config'], group_run_data[0]['name'].split('(')[-1][:-1], group_run_data[0]['run_params'])
-        props = dict(boxstyle='round,pad=0.5', facecolor='wheat', alpha=0.8)
-        fig.text(0.75, 0.9, info_text, fontsize=9, verticalalignment='top', bbox=props)
-
-    axs[0].plot(x_plot, uv_truth_grid[:, 0], label='Ground Truth', color='black', lw=3, ls='--')
-    axs[1].plot(x_plot, uv_truth_grid[:, 1], label='Ground Truth', color='black', lw=3, ls='--')
-    colors = plt.cm.viridis(jnp.linspace(0, 1, len(group_run_data)))
-
-    for i, result in enumerate(group_run_data):
-        model, params, name = result['model'], result['params'], result['name']
-        if isinstance(model, UOnlyMLP):
-            u_pred = vmap(model.apply, (None, 0))(params, z_plot_grid)
-            uv_pred = jnp.stack([u_pred, jnp.zeros_like(u_pred)], axis=-1)
-        elif isinstance(model, ScalarPotentialMLP):
-            uv_pred = vmap(get_uv_from_potential, (None, None, 0))(model, params, z_plot_grid)
-        else:
-            uv_pred = vmap(model.apply, (None, 0))(params, z_plot_grid)
-
-        axs[0].plot(x_plot, uv_pred[:, 0], label=name, color=colors[i], ls='-', lw=2)
-        axs[1].plot(x_plot, uv_pred[:, 1], color=colors[i], ls='-', lw=2)
-        safe_name = name.replace(' ', '_').replace('+', 'and').replace('(', '').replace(')', '').replace('/', '_per_')
-        fit_data_to_save[f"pred_{safe_name}"] = uv_pred.tolist()
-        loss_history_to_save[name] = result['loss_history']
-
-    for ax in axs:
-        ax.axvspan(-INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH, color='gray', alpha=0.15, label='Interpolation Domain' if ax == axs[0] else "")
-        ax.grid(True, linestyle=':')
-        ax.legend(fontsize='small', loc='lower left')
-
-    axs[0].set_title("u(x,0)")
-    axs[1].set_title("v(x,0)")
-    plt.xlim(-plot_domain_hw, plot_domain_hw)
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig(os.path.join(save_dir, f"group_{group_id}_comparison_plot.png"))
-    plt.close(fig)
-    with open(os.path.join(save_dir, f"group_{group_id}_results.json"), 'w') as f:
-        json.dump({'fit_data': fit_data_to_save, 'loss_history': loss_history_to_save}, f, indent=2)
-
-def setup_save_directory():
-    try:
-        from google.colab import drive
-        drive.mount('/content/drive')
-        base_dir = '/content/drive/MyDrive/jax_cauchy_extrapolation'
-    except ImportError:
-        base_dir = 'jax_cauchy_extrapolation'
-    os.makedirs(base_dir, exist_ok=True)
-    print(f"Save directory is: {base_dir}")
-    return base_dir
+def plot_final_result(model, params, target_fns, save_dir, run_params):
+    if not ENABLE_PLOTTING or params is None: return
+    print("  -> Generating final plot...")
+    plot_stage_result(model, params, target_fns, save_dir, run_params, len(STAGED_EXTRAPOLATION_BOUNDARIES))
 
 def main():
     start_time = time.time()
-    base_save_dir = setup_save_directory()
-    FLAG_MAP_POTENTIAL = {'USE_UV_DATA_LOSS': 'UV', 'USE_POTENTIAL_LOSS': 'Psi', 'USE_LAPLACE_LOSS': 'Lap'}
-    potential_configs = [{'name': " + ".join([n for f, n in FLAG_MAP_POTENTIAL.items() if c[f]]), 'config': c} for c in (dict(zip(FLAG_MAP_POTENTIAL.keys(), combo)) for combo in itertools.product([False, True], repeat=len(FLAG_MAP_POTENTIAL))) if c['USE_UV_DATA_LOSS'] or c['USE_POTENTIAL_LOSS']]
-    uv_configs = [{'name': "UV Direct" + (" + CR Penalty" if p else ""), 'config': {'model_type': 'UV', 'use_penalty': p}} for p in [False, True]]
-    u_only_configs = [{'name': "U-Only" + (" + dU/dX Data" if p else ""), 'config': {'model_type': 'U_ONLY', 'use_penalty': p}} for p in [False, True]]
-
-    tasks = []
-    if TRAIN_SINGLE_CONFIG:
-        safe_name = SINGLE_CONFIG_TO_RUN['name'].replace('/', '_per_').replace(' ', '_').replace('+', '')
-        tasks.append({'group_id': f"single_{safe_name}", 'configs': [SINGLE_CONFIG_TO_RUN]})
-        print(f"### RUNNING SINGLE CONFIGURATION: {SINGLE_CONFIG_TO_RUN['name']} ###")
-    else:
-        all_configs = {'UV1': [uv_configs[0]], 'UV2': [uv_configs[1]], 'U_ONLY': u_only_configs}
-        tasks = [{'group_id': g, 'configs': all_configs.get(str(g).upper(), [potential_configs[g - 1]] if isinstance(g, int) and 1 <= g <= len(potential_configs) else [])} for g in GROUPS_TO_RUN]
-        tasks = [t for t in tasks if t['configs']]
-        print(f"### RUNNING IN GROUP MODE FOR: {[t['group_id'] for t in tasks]} ###")
+    try:
+        from google.colab import drive
+        drive.mount('/content/drive', force_remount=True); base_dir = '/content/drive/MyDrive/uv_simple_curriculum'
+    except (ImportError, ModuleNotFoundError): base_dir = 'uv_simple_curriculum_results'
+    os.makedirs(base_dir, exist_ok=True); print(f"Base save directory: {base_dir}")
+    SAVE_DIR = os.path.join(base_dir, RUN_NAME); os.makedirs(SAVE_DIR, exist_ok=True)
+    print(f"Results for this run will be saved in: {SAVE_DIR}")
 
     key = random.PRNGKey(42)
-    key, subkey = random.split(key)
-    target_fns = generate_initial_target(subkey)
-    weighting_strategies = ([True] if RUN_DYNAMIC_WEIGHTING_CONFIGS else []) + [False]
-    for use_dynamic_weighting in weighting_strategies:
-        weighting_mode = "Dynamic" if use_dynamic_weighting else "Static"
-        SAVE_DIR = os.path.join(base_save_dir, f"results_{weighting_mode.lower()}")
-        os.makedirs(SAVE_DIR, exist_ok=True)
-        print("\n" + "=" * 80 + f"\n### STARTING TASKS WITH {weighting_mode.upper()} WEIGHTS ###\n" + "=" * 80)
-        for task in tasks:
-            group_id, configs_in_group = task['group_id'], task['configs']
-            print(f"\n--- Running Task/Group: {str(group_id).upper()} ---")
-            group_run_data = []
-            for run_info in configs_in_group:
-                full_name = f"{run_info['name']} ({weighting_mode})"
-                safe_name = full_name.replace(' ', '_').replace('+', 'and').replace('(', '').replace(')', '').replace('/', '_per_')
-                print(f"\nTraining: {full_name}")
-                key, subkey = random.split(key)
-                model, params, history, run_params = run_sequential_training_for_config(subkey, run_info['config'], target_fns, use_dynamic_weighting, SAVE_DIR, group_id, safe_name)
-                if SAVE_MODELS:
-                    save_final_model(params, SAVE_DIR, group_id, full_name)
-                plot_and_display_single_result(model, params, run_info, weighting_mode, target_fns, SAVE_DIR, group_id, run_params)
-                group_run_data.append({'name': full_name, 'params': params, 'loss_history': history, 'model': model, 'config': run_info['config'], 'run_params': run_params})
-            if len(group_run_data) > 1:
-                save_group_results(str(group_id), group_run_data, target_fns, SAVE_DIR)
+    key, subkey = random.split(key); target_fns = generate_initial_target(subkey)
+    print(f"\n--- Starting Simplified Curriculum Training ---")
+    key, subkey = random.split(key); model, params, run_params = run_training(subkey, target_fns, SAVE_DIR)
+
+    if model and params is not None:
+        if SAVE_MODELS:
+            final_model_path = os.path.join(SAVE_DIR, "final_model.msgpack")
+            with open(final_model_path, "wb") as f: f.write(to_bytes(params))
+            print(f"-> Final model saved to {final_model_path}")
+        if ENABLE_PLOTTING: plot_final_result(model, params, target_fns, SAVE_DIR, run_params)
     print(f"\nTotal execution time: {time.time() - start_time:.2f} seconds.")
 
 if __name__ == '__main__':
