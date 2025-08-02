@@ -9,7 +9,7 @@ The key point I want to make is:
 $\textbf{Neural nets can extrapolate, with the help of Cauchy-Riemann constraints!}$
 This overcomes the conventional wisdom that neural nets cannot extrapolate unless data are very linear or simple.
 header:Training visualization for the conventional neural net wisdom
-The code used for this training is available at codes/non_cr_1d_extrapolation.py, accessible from the below repo viewer.
+The code used for this training is available at codes/1d_extrapolation.py, accessible from the below repo viewer.
 img:imgs/1d_final.png
 So even when augmented with derivative data with resampling at every epoch, neural nets fail to extrapolate.
 Training loss neared 1e-9, at the practical practical limit of 32-bit precision, and yet neural nets fail to extrapolate. 
