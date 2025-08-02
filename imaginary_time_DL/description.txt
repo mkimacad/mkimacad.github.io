@@ -7,8 +7,16 @@ header:Codes
 The v2 code can be viewed from the below repo viewer, located at codes/extrapolation.py. (August 1, 2025)
 The key point I want to make is:
 $\textbf{Neural nets can extrapolate, with the help of Cauchy-Riemann constraints!}$
-This overcomes the conventional wisdom that neural nets cannot extrapolate unless data are very linear or simple. 
+This overcomes the conventional wisdom that neural nets cannot extrapolate unless data are very linear or simple.
+header:Training visualization for the conventional neural net wisdom
+The code used for this training is available at codes/non_cr_1d_extrapolation.py, accessible from the below repo viewer.
+img:imgs/1d_final.png
+So even when augmented with derivative data with resampling at every epoch, neural nets fail to extrapolate.
+Training loss neared 1e-9, at the practical practical limit of 32-bit precision, and yet neural nets fail to extrapolate. 
 header:Training visualization (v2 code)
+The code is at codes/extrapolation.py. The same target function as with the 1D training case above, just analytically continued to complex domain.
+This analytic continuation allows imposition of Cauchy-Riemann constraints to neural nets, assuming the function is holomorphic.
+(The images will be replaced with the new code runs. For now the below images are deprecated.)
 img:imgs/stage1.png
 img:imgs/stage2.png
 img:imgs/stage3.png
