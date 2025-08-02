@@ -21,10 +21,10 @@ import json
 import math
 from typing import Callable, Tuple, Dict, Any, List, NamedTuple
 
-# ================== GLOBAL CONFIGURATION ==================
+# ================== GLOBAL CONFIGURATION (USER PROVIDED) ==================
 jax.config.update("jax_enable_x64", False)
 
-RUN_NAME = "finalrun_1"
+RUN_NAME = "finalrun_cr_normalized"
 ENABLE_PLOTTING = True
 SAVE_MODELS = True
 SEED = 42 # Use an integer for reproducibility, or None for a random seed
@@ -41,6 +41,7 @@ USE_DERIVATIVE_DATA_LOSS = True
 USE_CR_PENALTY = True
 DERIVATIVE_DATA_WEIGHT = 1.0
 DATA_PRIORITY_FACTOR = 1.0
+USE_NORMALIZATION = True
 
 # --- GradNorm Configuration ---
 GRADNORM_MODE = 'periodic'
@@ -54,15 +55,17 @@ ACTIVATION_FUNCTION = 'gelu'
 USE_RESIDUAL_CONNECTIONS = True
 
 # --- Dynamic Learning Rate Configuration ---
-USE_LR_FINDER = True
-USE_REDUCE_LR_ON_PLATEAU = True
-PEAK_LR = 1e-4
+SCHEDULER_TYPE = 'reduce_on_plateau'
+PEAK_LR = 3e-4
+# Warmup Cosine Decay specific settings
+WARMUP_FRACTION = 0.1
+# ReduceLROnPlateau specific settings
 PLATEAU_PATIENCE_CHECKS = 100
 PLATEAU_REDUCTION_FACTOR = 0.25
 PLATEAU_MIN_LR = 1e-10
 
 # --- Model and Domain Configuration ---
-TOTAL_TRAINING_STEPS = 8000000
+TOTAL_TRAINING_STEPS = 1000000
 LOG_EVERY_N_STEPS = 5000
 INTERPOLATION_HALF_WIDTH = 1.0
 EXTRAPOLATION_HALF_WIDTH = 8.0
@@ -83,11 +86,10 @@ STABILITY_CHECK_EVERY_N_STEPS = 100
 
 print(f"JAX is using: {jax.default_backend()} with {'64-bit' if jax.config.jax_enable_x64 else '32-bit'} precision.")
 print(f"### RUNNING SIMPLIFIED UV-ONLY MODEL ###")
-print(f"Optimizer: AdamW with {'ReduceLROnPlateau' if USE_REDUCE_LR_ON_PLATEAU else 'Fixed LR'}")
-if not USE_LR_FINDER and not USE_REDUCE_LR_ON_PLATEAU:
-    print("\n" + "="*50 + "\n>>> WARNING: Both LR Finder and ReduceLROnPlateau are DISABLED.\n" + f">>> Training will use a FIXED learning rate of {PEAK_LR:.2e}.\n" + ">>> This can be unstable. Monitor losses closely.\n" + "="*50 + "\n")
-if USE_LR_FINDER: print("LR Finder: ENABLED (Stage-Aware and on LR-Reset)")
-if USE_REDUCE_LR_ON_PLATEAU: print(f"Plateau Scheduler: ENABLED (Patience={PLATEAU_PATIENCE_CHECKS} checks, Factor={PLATEAU_REDUCTION_FACTOR})")
+print(f"Scheduler: {SCHEDULER_TYPE.replace('_', ' ').title()}")
+print(f"Normalization: {'ENABLED' if USE_NORMALIZATION else 'DISABLED'}")
+if SCHEDULER_TYPE == 'reduce_on_plateau':
+    print(f"Plateau Scheduler: ENABLED (Patience={PLATEAU_PATIENCE_CHECKS} checks, Factor={PLATEAU_REDUCTION_FACTOR})")
 print(f"Architecture: {'Residual' if USE_RESIDUAL_CONNECTIONS else 'Plain MLP'} with {ACTIVATION_FUNCTION.upper()} activation")
 if STAGED_EXTRAPOLATION_BOUNDARIES: print(f"Staged Extrapolation: ENABLED (Data Target={DATA_STABILITY_TARGET:.0e}, CR Target={CR_STABILITY_TARGET:.0e})")
 print(f"Gradient Normalization Mode: {GRADNORM_MODE.upper()}")
@@ -99,6 +101,12 @@ class GradNormState(NamedTuple):
     weights: Dict[str, float]
     opt_state: Any
     initial_losses: Dict[str, float]
+
+class NormalizationStats(NamedTuple):
+    uv_center: jnp.ndarray
+    uv_scale: jnp.ndarray
+    derivs_center: jnp.ndarray
+    derivs_scale: jnp.ndarray
 
 @custom_vjp
 def safe_logcosh(x):
@@ -151,14 +159,29 @@ def generate_initial_target(key, n_freq, min_freq, max_freq, amp_min, amp_max) -
     freq_key, amp_key = random.split(key)
     ks = random.uniform(freq_key, (n_freq,), minval=min_freq, maxval=max_freq)
     amps = random.uniform(amp_key, (n_freq,), minval=amp_min, maxval=amp_max)
-    
+
     def _uv_fn(z):
         x, y = z[..., 0:1], z[..., 1:2]; u = jnp.sum(amps*jnp.cos(ks*x)*jnp.cosh(ks*y),-1); v = jnp.sum(-amps*jnp.sin(ks*x)*jnp.sinh(ks*y),-1); return jnp.stack([u,v],-1)
     def _derivs_fn(z):
         x,y=z[...,0:1],z[...,1:2]; du_dx=jnp.sum(-amps*ks*jnp.sin(ks*x)*jnp.cosh(ks*y),-1); du_dy=jnp.sum(amps*ks*jnp.cos(ks*x)*jnp.sinh(ks*y),-1); dv_dx=jnp.sum(-amps*ks*jnp.cos(ks*x)*jnp.sinh(ks*y),-1); dv_dy=jnp.sum(-amps*ks*jnp.sin(ks*x)*jnp.cosh(ks*y),-1); return jnp.stack([du_dx,du_dy,dv_dx,dv_dy],-1)
     return jax.jit(_uv_fn), jax.jit(_derivs_fn)
 
-# ================== LOSS AND SAMPLING FUNCTIONS ==================
+# ================== NORMALIZATION & LOSS FUNCTIONS ==================
+
+@partial(jit)
+def compute_normalization_stats(target_data, target_derivs):
+    uv_center = jnp.median(target_data, axis=0)
+    uv_mad = jnp.median(jnp.abs(target_data - uv_center), axis=0)
+    uv_scale = uv_mad * 1.4826 + 1e-8
+    derivs_center = jnp.median(target_derivs, axis=0)
+    derivs_mad = jnp.median(jnp.abs(target_derivs - derivs_center), axis=0)
+    derivs_scale = derivs_mad * 1.4826 + 1e-8
+    return NormalizationStats(uv_center, uv_scale, derivs_center, derivs_scale)
+
+@partial(jit)
+def normalize_uv(data, stats: NormalizationStats): return (data - stats.uv_center) / stats.uv_scale
+@partial(jit)
+def normalize_derivs(data, stats: NormalizationStats): return (data - stats.derivs_center) / stats.derivs_scale
 
 @partial(jit, static_argnames=['apply_fn'])
 def value_and_jacfwd(params: Any, z: jnp.ndarray, apply_fn: Callable) -> Tuple[jnp.ndarray, jnp.ndarray]:
@@ -173,13 +196,30 @@ def calculate_mean_cr_loss(params: Any, z_points: jnp.ndarray, apply_fn: Callabl
     cr_losses = safe_logcosh(du_dx - dv_dy) + safe_logcosh(du_dy + dv_dx)
     return jnp.mean(cr_losses)
 
+# FIXED: Removed 'norm_stats' from static_argnames
 @partial(jit, static_argnames=['apply_fn', 'target_fns'])
-def calculate_data_loss(params: Any, z_data: jnp.ndarray, apply_fn: Callable, target_fns: Tuple[Callable, Callable]) -> jnp.ndarray:
+def calculate_data_loss(params: Any, z_data: jnp.ndarray, apply_fn: Callable, target_fns: Tuple[Callable, Callable], norm_stats: NormalizationStats) -> jnp.ndarray:
     if z_data.shape[0] == 0: return jnp.array(0.0, dtype=jnp.float32)
     pred_uv, pred_derivs = vmap(value_and_jacfwd, (None, 0, None))(params, z_data, apply_fn)
-    loss = jnp.mean((pred_uv - target_fns[0](z_data))**2)
+    target_uv = target_fns[0](z_data)
+
+    if USE_NORMALIZATION:
+        pred_uv_norm = normalize_uv(pred_uv, norm_stats)
+        target_uv_norm = normalize_uv(target_uv, norm_stats)
+        loss = jnp.mean(safe_logcosh(pred_uv_norm - target_uv_norm))
+    else:
+        loss = jnp.mean((pred_uv - target_uv)**2)
+
     if USE_DERIVATIVE_DATA_LOSS:
-        loss += DERIVATIVE_DATA_WEIGHT * jnp.mean(safe_logcosh(pred_derivs - target_fns[1](z_data)))
+        target_derivs = target_fns[1](z_data)
+        if USE_NORMALIZATION:
+            pred_derivs_norm = normalize_derivs(pred_derivs, norm_stats)
+            target_derivs_norm = normalize_derivs(target_derivs, norm_stats)
+            deriv_loss = jnp.mean(safe_logcosh(pred_derivs_norm - target_derivs_norm))
+        else:
+            deriv_loss = jnp.mean(safe_logcosh(pred_derivs - target_derivs))
+        loss += DERIVATIVE_DATA_WEIGHT * deriv_loss
+
     return loss
 
 def calculate_run_parameters(): return {'width':MODEL_WIDTH_OVERRIDE,'depth':MODEL_DEPTH_OVERRIDE,'n_train':N_TRAINING_SAMPLES_OVERRIDE,'n_extra_constraint':N_EXTRA_CONSTRAINT_POINTS}
@@ -214,29 +254,35 @@ class LRFinder:
     def __init__(self, optimizer):
         self.optimizer = optimizer
         self.results = {"lrs": [], "losses": []}
+    
+    # FIXED: Removed 'norm_stats' from static_argnames
     @staticmethod
     @partial(jit, static_argnames=('optimizer', 'apply_fn', 'target_fns'))
-    def _scan_body(carry, lr, optimizer, apply_fn, target_fns):
+    def _scan_body(carry, lr, optimizer, apply_fn, target_fns, norm_stats):
         params, opt_state, z_train, z_physics = carry
         def loss_fn(p):
-            data_loss = calculate_data_loss(p, z_train, apply_fn, target_fns)
+            data_loss = calculate_data_loss(p, z_train, apply_fn, target_fns, norm_stats)
             cr_loss = calculate_mean_cr_loss(p, z_physics, apply_fn)
             return data_loss + cr_loss
         loss, grads = jax.value_and_grad(loss_fn)(params)
         updates, new_opt_state = optimizer.update(grads, opt_state, params, learning_rate=lr)
         new_params = optax.apply_updates(params, updates)
         return (new_params, new_opt_state, z_train, z_physics), loss
-    def find(self, params, apply_fn, target_fns, key, in_hw, ex_hw, start_lr=1e-8, end_lr=1.0, num_iter=100):
+    
+    def find(self, params, apply_fn, target_fns, norm_stats, key, in_hw, ex_hw, start_lr=1e-8, end_lr=1.0, num_iter=100):
         print(f"--- Running JIT-compiled LR Finder for domain [{in_hw}, {ex_hw}]... ---")
         lrs = jnp.geomspace(start_lr, end_lr, num_iter)
         run_params = calculate_run_parameters()
         z_train, z_constr = sample_points(key, run_params['n_train'], run_params['n_extra_constraint'], in_hw, ex_hw)
         z_physics = jnp.concatenate([z_train, z_constr])
         initial_carry = (params, self.optimizer.init(params), z_train, z_physics)
-        _, losses = lax.scan(partial(self._scan_body, optimizer=self.optimizer, apply_fn=apply_fn, target_fns=target_fns), initial_carry, lrs)
+        # FIXED: Pass norm_stats into the partial function that lax.scan will use
+        scan_fn = partial(self._scan_body, optimizer=self.optimizer, apply_fn=apply_fn, target_fns=target_fns, norm_stats=norm_stats)
+        _, losses = lax.scan(scan_fn, initial_carry, lrs)
         valid_indices = ~jnp.isnan(losses)
         self.results = {"lrs": lrs[valid_indices].tolist(), "losses": losses[valid_indices].tolist()}
         print(f"-> LR Finder finished. Found {len(self.results['lrs'])} valid points.")
+    
     def plot(self, save_dir, stage_idx):
         if not self.results["lrs"] or len(self.results["lrs"]) <= 20: return
         lrs, losses = self.results["lrs"][10:-5], jnp.array(self.results["losses"][10:-5])
@@ -249,6 +295,7 @@ class LRFinder:
             ax.set_ylim(bottom=min_pos_loss * 0.9, top=max_loss * 1.1 if max_loss > 0 else 1)
         path = os.path.join(save_dir, f"lr_finder_plot_stage_{stage_idx}.png")
         plt.savefig(path); print(f"-> LR Finder plot saved to {path}"); plt.show()
+    
     def suggestion(self):
         if len(self.results["lrs"]) < 20: return None
         losses, lrs = jnp.array(self.results["losses"]), jnp.array(self.results["lrs"])
@@ -272,9 +319,10 @@ def update_lr_on_plateau(state: ReduceLROnPlateauState, loss: float) -> Tuple[Re
 
 # ================== MAIN TRAINING SCRIPT ==================
 
+# FIXED: Removed 'norm_stats' from static_argnames
 @partial(jit, static_argnames=['apply_fn', 'target_fns', 'use_cr_penalty'])
-def calculate_periodic_gn_weights(params, z_train, z_physics, apply_fn, target_fns, use_cr_penalty):
-    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns) * DATA_PRIORITY_FACTOR
+def calculate_periodic_gn_weights(params, z_train, z_physics, apply_fn, target_fns, use_cr_penalty, norm_stats):
+    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns, norm_stats) * DATA_PRIORITY_FACTOR
     cr_loss_fn = lambda p: calculate_mean_cr_loss(p, z_physics, apply_fn)
     data_grad = jax.grad(data_loss_fn)(params)
     cr_grad = lax.cond(use_cr_penalty, lambda p: jax.grad(cr_loss_fn)(p), lambda p: tree_util.tree_map(jnp.zeros_like, p), params)
@@ -284,9 +332,10 @@ def calculate_periodic_gn_weights(params, z_train, z_physics, apply_fn, target_f
     w_cr = jnp.where(cr_norm > 0, avg_norm / (cr_norm + GRADNORM_SAFETY_OFFSET), 1.0)
     return {'data': w_data, 'cr': w_cr}
 
+# FIXED: Removed 'norm_stats' from static_argnames
 @partial(jit, static_argnames=['apply_fn', 'target_fns', 'use_cr_penalty', 'gradnorm_optimizer', 'alpha'])
-def update_learnable_gn_weights(params, gn_state, z_train, z_physics, apply_fn, target_fns, use_cr_penalty, gradnorm_optimizer, alpha):
-    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns) * DATA_PRIORITY_FACTOR
+def update_learnable_gn_weights(params, gn_state, z_train, z_physics, apply_fn, target_fns, use_cr_penalty, gradnorm_optimizer, alpha, norm_stats):
+    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns, norm_stats) * DATA_PRIORITY_FACTOR
     cr_loss_fn = lambda p: calculate_mean_cr_loss(p, z_physics, apply_fn)
     (L_data_t, data_grad), (L_cr_t, cr_grad) = jax.value_and_grad(data_loss_fn)(params), (lax.cond(use_cr_penalty, lambda p: jax.value_and_grad(cr_loss_fn)(p), lambda p: (0.0, tree_util.tree_map(jnp.zeros_like, p)), params))
 
@@ -303,16 +352,17 @@ def update_learnable_gn_weights(params, gn_state, z_train, z_physics, apply_fn, 
     new_gn_weights = optax.apply_updates(gn_state.weights, gn_updates)
     return gn_state._replace(weights=new_gn_weights, opt_state=new_gn_os)
 
+# FIXED: Removed 'norm_stats' from static_argnames
 @partial(jit, static_argnames=['apply_fn', 'target_fns', 'use_cr_penalty', 'main_optimizer'])
-def adam_step(params, main_opt_state, z_train, z_physics, learning_rate, gn_weights, apply_fn, target_fns, use_cr_penalty, main_optimizer):
-    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns) * DATA_PRIORITY_FACTOR
+def adam_step(params, main_opt_state, z_train, z_physics, learning_rate, gn_weights, apply_fn, target_fns, use_cr_penalty, main_optimizer, norm_stats):
+    data_loss_fn = lambda p: calculate_data_loss(p, z_train, apply_fn, target_fns, norm_stats) * DATA_PRIORITY_FACTOR
     cr_loss_fn = lambda p: calculate_mean_cr_loss(p, z_physics, apply_fn)
-    
+
     def loss_fn(p):
         L_data, L_cr = data_loss_fn(p), (cr_loss_fn(p) if use_cr_penalty else 0.0)
         w_data, w_cr = gn_weights['data'], gn_weights['cr']
         return (w_data * L_data + w_cr * L_cr), {'data': L_data, 'cr': L_cr}
-        
+
     (total_loss, losses_dict), grads = jax.value_and_grad(loss_fn, has_aux=True)(params)
     updates, new_main_os = main_optimizer.update(grads, main_opt_state, params, learning_rate=learning_rate)
     new_params = optax.apply_updates(params, updates)
@@ -321,22 +371,43 @@ def adam_step(params, main_opt_state, z_train, z_physics, learning_rate, gn_weig
 def run_training(key, target_fns, save_dir):
     run_params = calculate_run_parameters()
     n_train_batch, n_extra_constraint_batch = run_params['n_train'], run_params['n_extra_constraint']
-    
-    if ACTIVATION_FUNCTION.lower() == 'tanh':
-        activation_fn = nn.tanh
-    elif ACTIVATION_FUNCTION.lower() == 'gelu':
-        activation_fn = nn.gelu
-    else:
-        raise ValueError(f"Unsupported activation function: {ACTIVATION_FUNCTION}")
+
+    if ACTIVATION_FUNCTION.lower() == 'tanh': activation_fn = nn.tanh
+    elif ACTIVATION_FUNCTION.lower() == 'gelu': activation_fn = nn.gelu
+    else: raise ValueError(f"Unsupported activation function: {ACTIVATION_FUNCTION}")
 
     model = DirectUVMLP(width=run_params['width'], depth=run_params['depth'], activation=activation_fn, use_he_init=USE_HE_INITIALIZATION)
     key, subkey = random.split(key)
     init_params = model.init(subkey, jnp.ones((1, 2)))['params']
     apply_fn = jit(lambda p, z: model.apply({'params': p}, z))
 
-    main_optimizer = optax.chain(optax.clip_by_global_norm(GRADIENT_CLIP_VALUE), optax.adamw(learning_rate=PEAK_LR))
+    key, norm_key = random.split(key)
+    if USE_NORMALIZATION:
+        print("--- Computing normalization statistics... ---")
+        z_stats_sample = random.uniform(norm_key, (20000, 2), minval=-INTERPOLATION_HALF_WIDTH, maxval=INTERPOLATION_HALF_WIDTH)
+        target_uv_stats = target_fns[0](z_stats_sample)
+        target_derivs_stats = target_fns[1](z_stats_sample) if USE_DERIVATIVE_DATA_LOSS else jnp.zeros((20000, 4))
+        norm_stats = compute_normalization_stats(target_uv_stats, target_derivs_stats)
+        print(f"  -> UV Stats: Center={norm_stats.uv_center}, Scale={norm_stats.uv_scale}")
+        if USE_DERIVATIVE_DATA_LOSS: print(f"  -> Derivs Stats: Center={norm_stats.derivs_center}, Scale={norm_stats.derivs_scale}")
+    else:
+        norm_stats = NormalizationStats(jnp.zeros(2), jnp.ones(2), jnp.zeros(4), jnp.ones(4))
+
+    if SCHEDULER_TYPE == 'warmup_cosine_decay':
+        schedule = optax.warmup_cosine_decay_schedule(
+            init_value=0.0,
+            peak_value=PEAK_LR,
+            warmup_steps=int(TOTAL_TRAINING_STEPS * WARMUP_FRACTION),
+            decay_steps=int(TOTAL_TRAINING_STEPS * (1.0 - WARMUP_FRACTION))
+        )
+        main_optimizer = optax.chain(optax.clip_by_global_norm(GRADIENT_CLIP_VALUE), optax.adamw(learning_rate=schedule))
+    elif SCHEDULER_TYPE == 'reduce_on_plateau':
+        main_optimizer = optax.chain(optax.clip_by_global_norm(GRADIENT_CLIP_VALUE), optax.adamw(learning_rate=PEAK_LR))
+    else:
+        raise ValueError(f"Unsupported scheduler type: {SCHEDULER_TYPE}")
+
     init_opt_state = main_optimizer.init(init_params)
-    
+
     gradnorm_optimizer = optax.adam(learning_rate=GRADNORM_LR)
     init_gn_weights = {'data': jnp.log(1.0), 'cr': jnp.log(1.0)}
     init_gn_opt_state = gradnorm_optimizer.init(init_gn_weights)
@@ -346,10 +417,10 @@ def run_training(key, target_fns, save_dir):
     pre_loaded_data = load_checkpoint_data(checkpoint_path)
 
     effective_peak_lr = PEAK_LR
-    finder = LRFinder(main_optimizer)
-    if USE_LR_FINDER:
+    if SCHEDULER_TYPE == 'reduce_on_plateau':
+        finder = LRFinder(main_optimizer)
         key, finder_key = random.split(key)
-        finder.find(init_params, apply_fn, target_fns, finder_key, INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH)
+        finder.find(init_params, apply_fn, target_fns, norm_stats, finder_key, INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH)
         if pre_loaded_data is None: finder.plot(save_dir, stage_idx=1)
         suggested_lr = finder.suggestion()
         if suggested_lr:
@@ -359,12 +430,14 @@ def run_training(key, target_fns, save_dir):
     init_lr_plateau_state = ReduceLROnPlateauState(lr=effective_peak_lr, best_loss=jnp.inf, patience_counter=0)
     if pre_loaded_data:
         try:
-            params, opt_state, lr_plateau_state, gradnorm_state, start_step, key, current_stage_index, stability_counter = (from_state_dict(init_params, pre_loaded_data['p']), from_state_dict(init_opt_state, pre_loaded_data['o']), from_state_dict(init_lr_plateau_state, pre_loaded_data['lr_s']), from_state_dict(init_gn_state, pre_loaded_data['gn_s']), pre_loaded_data['s'], pre_loaded_data['k'], pre_loaded_data['si'], pre_loaded_data['sc'])
-            if not USE_REDUCE_LR_ON_PLATEAU:
-                print(f"-> Resuming in FIXED LR mode. Overriding saved LR ({lr_plateau_state.lr:.2e}) with PEAK_LR: {effective_peak_lr:.2e}")
-                lr_plateau_state = init_lr_plateau_state
-            w_d, w_c = (jnp.exp(gradnorm_state.weights['data']), jnp.exp(gradnorm_state.weights['cr'])) if GRADNORM_MODE == 'learnable' else (gradnorm_state.weights.get('data', 1.0), gradnorm_state.weights.get('cr', 1.0))
-            print(f"-> Resuming training from step {start_step + 1} with LR={lr_plateau_state.lr:.2e} and GN weights (D:{w_d:.2e}, C:{w_c:.2e})")
+            params, opt_state, gradnorm_state, start_step, key, current_stage_index, stability_counter = (from_state_dict(init_params, pre_loaded_data['p']), from_state_dict(init_opt_state, pre_loaded_data['o']), from_state_dict(init_gn_state, pre_loaded_data['gn_s']), pre_loaded_data['s'], pre_loaded_data['k'], pre_loaded_data['si'], pre_loaded_data['sc'])
+            lr_plateau_state = from_state_dict(init_lr_plateau_state, pre_loaded_data.get('lr_s')) if 'lr_s' in pre_loaded_data else init_lr_plateau_state
+
+            if SCHEDULER_TYPE == 'reduce_on_plateau':
+                 print(f"-> Resuming training from step {start_step + 1} with LR={lr_plateau_state.lr:.2e}")
+            else:
+                 print(f"-> Resuming training from step {start_step + 1} with WarmupCosineDecay scheduler.")
+
         except Exception as e:
             print(f"-> Checkpoint loading failed, starting from scratch. Error: {e}")
             params, opt_state, start_step, current_stage_index, stability_counter, lr_plateau_state, gradnorm_state = init_params, init_opt_state, 0, 0, 0, init_lr_plateau_state, init_gn_state
@@ -375,17 +448,14 @@ def run_training(key, target_fns, save_dir):
     if start_step == 0 and GRADNORM_MODE == 'learnable':
         print("--- Calculating initial losses for Learnable GradNorm ---")
         z_init_train, z_init_constr = sample_points(key, n_train_batch, n_extra_constraint_batch, INTERPOLATION_HALF_WIDTH, INTERPOLATION_HALF_WIDTH)
-        initial_data_loss = calculate_data_loss(params, z_init_train, apply_fn, target_fns)
+        initial_data_loss = calculate_data_loss(params, z_init_train, apply_fn, target_fns, norm_stats)
         initial_cr_loss = calculate_mean_cr_loss(params, jnp.concatenate([z_init_train, z_init_constr]), apply_fn) if USE_CR_PENALTY else 0.0
         gradnorm_state = gradnorm_state._replace(initial_losses={'data': initial_data_loss, 'cr': initial_cr_loss})
         print(f"  -> Initial Losses: Data={initial_data_loss:.2e}, CR={initial_cr_loss:.2e}")
 
     print(f"--- Starting/Resuming Main Training ({TOTAL_TRAINING_STEPS} steps) ---")
-    print(" -> Log Key: 'CR'/'Data' are per-step training losses.")
-    print("              'CRLoss' (from extrapolation domain) & 'DataLoss' (from interpolation domain)")
-    print("              are validation losses on separate batches, checked for stability/LR scheduling.")
     last_data_loss, last_cr_loss = jnp.inf, jnp.inf
-    
+
     for step in range(start_step + 1, TOTAL_TRAINING_STEPS + 1):
         key, data_key, stab_key1, stab_key2 = random.split(key, 4)
         current_extrapolation_hw = STAGED_EXTRAPOLATION_BOUNDARIES[current_stage_index]
@@ -394,31 +464,34 @@ def run_training(key, target_fns, save_dir):
 
         current_weights = {'data': 1.0, 'cr': 1.0}
         if GRADNORM_MODE == 'learnable':
-            gradnorm_state = update_learnable_gn_weights(params, gradnorm_state, z_train, z_physics, apply_fn, target_fns, USE_CR_PENALTY, gradnorm_optimizer, GRADNORM_ALPHA)
+            gradnorm_state = update_learnable_gn_weights(params, gradnorm_state, z_train, z_physics, apply_fn, target_fns, USE_CR_PENALTY, gradnorm_optimizer, GRADNORM_ALPHA, norm_stats)
             current_weights = {k: jnp.exp(v) for k, v in gradnorm_state.weights.items()}
         elif GRADNORM_MODE == 'periodic' and (step % STABILITY_CHECK_EVERY_N_STEPS == 0):
-            gradnorm_state = gradnorm_state._replace(weights=calculate_periodic_gn_weights(params, z_train, z_physics, apply_fn, target_fns, USE_CR_PENALTY))
+            gradnorm_state = gradnorm_state._replace(weights=calculate_periodic_gn_weights(params, z_train, z_physics, apply_fn, target_fns, USE_CR_PENALTY, norm_stats))
         if GRADNORM_MODE == 'periodic':
              current_weights = gradnorm_state.weights
 
-        params, opt_state, losses_jax = adam_step(params, opt_state, z_train, z_physics, lr_plateau_state.lr, current_weights, apply_fn, target_fns, USE_CR_PENALTY, main_optimizer)
+        if SCHEDULER_TYPE == 'warmup_cosine_decay':
+            current_lr = schedule(step)
+        else:
+            current_lr = lr_plateau_state.lr
+        
+        params, opt_state, losses_jax = adam_step(params, opt_state, z_train, z_physics, current_lr, current_weights, apply_fn, target_fns, USE_CR_PENALTY, main_optimizer, norm_stats)
 
         if step > 0 and step % STABILITY_CHECK_EVERY_N_STEPS == 0:
+            z_data_check, _ = sample_points(stab_key1, n_train_batch, 0, INTERPOLATION_HALF_WIDTH, 0)
+            last_data_loss = calculate_data_loss(params, z_data_check, apply_fn, target_fns, norm_stats)
             z_cr_check = sample_extrapolation_shell(stab_key2, n_extra_constraint_batch, INTERPOLATION_HALF_WIDTH, current_extrapolation_hw)
             last_cr_loss = calculate_mean_cr_loss(params, z_cr_check, apply_fn)
-            if USE_REDUCE_LR_ON_PLATEAU:
+
+            if SCHEDULER_TYPE == 'reduce_on_plateau':
                 lr_plateau_state, should_rerun_lr_finder = update_lr_on_plateau(lr_plateau_state, last_cr_loss)
                 if should_rerun_lr_finder:
-                    if USE_LR_FINDER:
-                        key, finder_key = random.split(key); finder.find(params, apply_fn, target_fns, finder_key, INTERPOLATION_HALF_WIDTH, current_extrapolation_hw)
-                        finder.plot(save_dir, stage_idx=f"{current_stage_index + 1}-reset")
-                        suggested_lr = finder.suggestion()
-                        lr_plateau_state = ReduceLROnPlateauState(lr=suggested_lr or effective_peak_lr, best_loss=jnp.inf, patience_counter=0)
-                    else:
-                        print(f"    -> LR Finder disabled. Resetting to PEAK_LR: {effective_peak_lr:.2e}")
-                        lr_plateau_state = ReduceLROnPlateauState(lr=effective_peak_lr, best_loss=jnp.inf, patience_counter=0)
-            z_data_check, _ = sample_points(stab_key1, n_train_batch, 0, INTERPOLATION_HALF_WIDTH, 0)
-            last_data_loss = calculate_data_loss(params, z_data_check, apply_fn, target_fns)
+                    key, finder_key = random.split(key); finder.find(params, apply_fn, target_fns, norm_stats, finder_key, INTERPOLATION_HALF_WIDTH, current_extrapolation_hw)
+                    finder.plot(save_dir, stage_idx=f"{current_stage_index + 1}-reset")
+                    suggested_lr = finder.suggestion()
+                    lr_plateau_state = ReduceLROnPlateauState(lr=suggested_lr or effective_peak_lr, best_loss=jnp.inf, patience_counter=0)
+
             if last_data_loss < DATA_STABILITY_TARGET and last_cr_loss < CR_STABILITY_TARGET: stability_counter += STABILITY_CHECK_EVERY_N_STEPS
             else: stability_counter = 0
 
@@ -434,17 +507,17 @@ def run_training(key, target_fns, save_dir):
                 gn_weights, gn_opt_state = {'data': jnp.log(1.0), 'cr': jnp.log(1.0)}, gradnorm_optimizer.init(init_gn_weights)
                 key, gn_reset_key = random.split(key)
                 z_init_train, z_init_constr = sample_points(gn_reset_key, n_train_batch, n_extra_constraint_batch, INTERPOLATION_HALF_WIDTH, new_boundary)
-                initial_data_loss = calculate_data_loss(params, z_init_train, apply_fn, target_fns)
+                initial_data_loss = calculate_data_loss(params, z_init_train, apply_fn, target_fns, norm_stats)
                 initial_cr_loss = calculate_mean_cr_loss(params, jnp.concatenate([z_init_train, z_init_constr]), apply_fn) if USE_CR_PENALTY else 0.0
                 gradnorm_state = GradNormState(weights=gn_weights, opt_state=gn_opt_state, initial_losses={'data': initial_data_loss, 'cr': initial_cr_loss})
                 print(f"      -> New Initial Losses: Data={initial_data_loss:.2e}, CR={initial_cr_loss:.2e}")
 
-            if USE_LR_FINDER:
-                key, finder_key = random.split(key); finder.find(params, apply_fn, target_fns, finder_key, INTERPOLATION_HALF_WIDTH, new_boundary)
+            if SCHEDULER_TYPE == 'reduce_on_plateau':
+                key, finder_key = random.split(key); finder.find(params, apply_fn, target_fns, norm_stats, finder_key, INTERPOLATION_HALF_WIDTH, new_boundary)
                 finder.plot(save_dir, stage_idx=current_stage_index + 1)
                 suggested_lr = finder.suggestion()
                 lr_plateau_state = ReduceLROnPlateauState(lr=suggested_lr or lr_plateau_state.lr, best_loss=jnp.inf, patience_counter=0)
-            else: lr_plateau_state = lr_plateau_state._replace(best_loss=jnp.inf, patience_counter=0)
+            
             stability_counter = 0
 
         if jnp.any(~jnp.isfinite(jnp.array(list(losses_jax.values())))):
@@ -453,7 +526,7 @@ def run_training(key, target_fns, save_dir):
         if step % LOG_EVERY_N_STEPS == 0 or step == TOTAL_TRAINING_STEPS:
             log_loss_cr = f"CR={losses_jax.get('cr', 0):.2e}"
             log_loss_data = f"Data={losses_jax.get('data', 0):.2e}"
-            lr_info = f"LR: {lr_plateau_state.lr:.1e}"
+            lr_info = f"LR: {current_lr:.1e}"
             w_c, w_d = current_weights.get('cr', 1.0), current_weights.get('data', 1.0)
             gn_info = f"GN-W(C/D): {w_c:.2e}/{w_d:.2e}"
             stage_info = f"Stg {current_stage_index+1}/{len(STAGED_EXTRAPOLATION_BOUNDARIES)} (B={current_extrapolation_hw:.1f})"
@@ -467,12 +540,19 @@ def run_training(key, target_fns, save_dir):
 
 def generate_info_text(run_params):
     act, prec, init, arch = ACTIVATION_FUNCTION.upper(), f"{'64' if jax.config.jax_enable_x64 else '32'}-bit", "He", "Plain MLP" if not USE_RESIDUAL_CONNECTIONS else "Residual"
-    loss_parts = ["UV", f"Deriv(w={DERIVATIVE_DATA_WEIGHT})", "CR"]; lr_sched = "ReduceLROnPlateau" if USE_REDUCE_LR_ON_PLATEAU else f"Fixed {PEAK_LR:.1e}"
+    loss_parts = ["UV(LogCosh)", "CR"]
+    if USE_DERIVATIVE_DATA_LOSS: loss_parts.insert(1, f"Deriv(w={DERIVATIVE_DATA_WEIGHT})")
+    if USE_NORMALIZATION: loss_parts.append("Normalized")
+    
+    lr_sched_info = f"{SCHEDULER_TYPE.replace('_', ' ').title()}"
+    if SCHEDULER_TYPE == 'warmup_cosine_decay': lr_sched_info += f" (Peak={PEAK_LR:.1e})"
+    else: lr_sched_info += f" (Start={PEAK_LR:.1e})"
+    
     gn_mode_map = {'none': 'None', 'periodic': 'Periodic', 'learnable': 'Learnable'}
     gn_info = f"GradNorm({gn_mode_map.get(GRADNORM_MODE, 'Unknown')})"
     if GRADNORM_MODE == 'learnable': gn_info += f" (Reset: {GRADNORM_RESET_ON_STAGE_UP})"
-    loss_parts.append(gn_info)
-    lines = [f"NN: {run_params['width']}x{run_params['depth']} ({arch},{act},{prec})", f"Opt: AdamW, Clip={GRADIENT_CLIP_VALUE}", f"LR: {lr_sched}", f"Loss: {'+'.join(loss_parts)}"]
+    
+    lines = [f"NN: {run_params['width']}x{run_params['depth']} ({arch},{act},{prec})", f"Opt: AdamW, Clip={GRADIENT_CLIP_VALUE}", f"LR: {lr_sched_info}", f"Loss: {'+'.join(loss_parts)}", f"GN: {gn_info}"]
     lines.append(f"StagedExtrap: ON (DataT={DATA_STABILITY_TARGET:.0e}, CRT={CR_STABILITY_TARGET:.0e})")
     lines.append(f"TargetFn: Freqs=[{TARGET_MIN_FREQ},{TARGET_MAX_FREQ}], Amp=[{TARGET_AMP_MIN},{TARGET_AMP_MAX}]")
     return "\n".join(lines)
@@ -512,14 +592,14 @@ def main():
     print(f"--- Using Seed: {actual_seed} ---")
     key = random.PRNGKey(actual_seed)
 
-    key, subkey = random.split(key); 
-    target_fns = generate_initial_target(subkey, 
+    key, subkey = random.split(key);
+    target_fns = generate_initial_target(subkey,
                                          n_freq=TARGET_N_FREQUENCIES,
                                          min_freq=TARGET_MIN_FREQ,
                                          max_freq=TARGET_MAX_FREQ,
-                                         amp_min=TARGET_AMP_MIN, 
+                                         amp_min=TARGET_AMP_MIN,
                                          amp_max=TARGET_AMP_MAX)
-    
+
     print(f"\n--- Starting Simplified Curriculum Training ---")
     key, subkey = random.split(key); model, params, run_params = run_training(subkey, target_fns, SAVE_DIR)
 
