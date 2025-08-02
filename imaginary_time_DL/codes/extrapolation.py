@@ -21,8 +21,8 @@ import json
 import math
 from typing import Callable, Tuple, Dict, Any, List, NamedTuple
 
-# ================== GLOBAL CONFIGURATION (USER PROVIDED) ==================
-jax.config.update("jax_enable_x64", False)
+# ================== GLOBAL CONFIGURATION ==================
+jax.config.update("jax_enable_x64", False) # by default 32-bit precision
 
 RUN_NAME = "finalrun_cr_normalized"
 ENABLE_PLOTTING = True
