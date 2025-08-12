@@ -20,7 +20,8 @@ Can we do better?
 header:Some technical information on the baseline code
 1) Instead taking backward gradient directly on derivative losses, the forward-on-backward gradient calculations are carried out.
 First compute the backward-mode (first-order) gradient of the neural net output on the model parameters, and then take Taylor-mode autodifferentiation on input x.
-2) Use of FAdam instead of Adam or AdamW. FAdam is more stable and consistent.
+2) Use of FAdam instead of Adam or AdamW. Much more stable and consistent. (Similar and more resource-consuming alternatives:AdaFisher)
+3) The question of gradient numerical safety in FAdam. Currently, eps=1e-8 but should preferably be lowered.
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
 PLEASE DISCARD BELOW FOR NOW.
