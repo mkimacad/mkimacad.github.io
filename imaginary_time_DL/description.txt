@@ -21,10 +21,13 @@ header:Some technical information on the baseline code
 First compute the backward-mode (first-order) gradient of the neural net output on the model parameters, and then take Taylor-mode autodifferentiation on input x.
 More stable, faster.
 2) Use of FAdam instead of Adam or AdamW. Much more stable and consistent. (Similar and more resource-consuming alternatives:AdaFisher)
-3) The question of gradient numerical safety in FAdam. Currently, eps=1e-20.
-These three points apply for the HolomorphicMLP code as well.
+Higher affordable initial learning rate, better final training and generalization error, and FAdam can start with higher initial learning rates than Adam(W).
+Augmented with Reduce_LR_on_Plateau.
+Also, the question of gradient numerical safety in FAdam. Currently, eps=1e-20.
+These two points apply for the HolomorphicMLP code as well.
 header:HolomorphicMLP
-Uses complex tanh activation function instead. Complex-valued input, complex-valued output. Assumes function to be holomorphic.
+Uses complex tanh activation function instead. Complex-valued input ($[-1,1]^2$ box training data, [-1,1] on real axis and imaginary axis), complex-valued output.
+Assumes function to be holomorphic.
 File:codes/holomorphic.py (DERIV_ORDER = 0)
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
