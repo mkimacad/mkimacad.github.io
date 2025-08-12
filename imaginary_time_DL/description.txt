@@ -25,6 +25,7 @@ Higher affordable initial learning rate, better final training and generalizatio
 Augmented with Reduce_LR_on_Plateau.
 Also, the question of gradient numerical safety in FAdam. Currently, eps=1e-20.
 These two points apply for the HolomorphicMLP code as well.
+However, we have to switch back to Adam for the Cauchy-Riemann MLP case, where FAdam fails to discover a good local minimum due to its limitation.
 header:HolomorphicMLP
 Uses complex tanh activation function instead. Complex-valued input ($[-1,1]^2$ box training data, [-1,1] on real axis and imaginary axis), complex-valued output.
 Assumes function to be holomorphic.
