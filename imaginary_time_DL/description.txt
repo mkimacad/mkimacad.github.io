@@ -10,7 +10,6 @@ $\textbf{Neural nets can extrapolate when aided by high-order derivatives.}$
 This is confirmed in codes/realmlp_high_order_deriv.py - use the repo browser below to access the file.
 We set DERIV_ORDER = 25 and confirm that neural nets, trained on domain $[-1,1]$ do extrapolate well to [-4,4].
 img:imgs/ref_extrapolation.png
-img:imgs/ref_error.png
 If we increase DERIV_ORDER further, then as long as training error can remain around 1e-6, we can expand the valid extrapolation domain further.
 This is costly, mostly requiring bigger neural nets, but at least in theory, there should be no issue.
 Think of using polynomial interpolations to extrapolate. Neural nets have more flexible functional form and better controls on numerical safety.
