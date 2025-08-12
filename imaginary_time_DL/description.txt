@@ -4,7 +4,7 @@ v2 code (Deprecated: August 1, 2025)
 v3 code (August 12-14, 2025 - major issues in v2 code, fixes in v3)
 Updating further soon
 Significant explanation update upcoming (v1 to v2 and v2 to v3 change) - for now please use this as basic information.
-header:Baseline code and the question of extrapolation in neural nets
+header:Baseline RealMLP code and the question of extrapolation in neural nets
 In contrast to the conventional expectation but quite trivially:
 $\textbf{Neural nets can extrapolate when aided by high-order derivatives.}$
 This is confirmed in codes/realmlp_high_order_deriv.py - use the repo browser below to access the file.
@@ -21,7 +21,11 @@ header:Some technical information on the baseline code
 First compute the backward-mode (first-order) gradient of the neural net output on the model parameters, and then take Taylor-mode autodifferentiation on input x.
 More stable, faster.
 2) Use of FAdam instead of Adam or AdamW. Much more stable and consistent. (Similar and more resource-consuming alternatives:AdaFisher)
-3) The question of gradient numerical safety in FAdam. Currently, eps=1e-8 but should preferably be lowered.
+3) The question of gradient numerical safety in FAdam. Currently, eps=1e-20.
+These three points apply for the HolomorphicMLP code as well.
+header:HolomorphicMLP
+Uses complex tanh activation function instead. Complex-valued input, complex-valued output. Assumes function to be holomorphic.
+File:codes/holomorphic.py (DERIV_ORDER = 0)
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
 PLEASE DISCARD BELOW FOR NOW.
