@@ -1,31 +1,29 @@
 header:History (dates-wise)
-v1 code (July 10-11, 2025)
-v2 code (August 1, 2025)
+v1 code (Deprecated: July 10-11, 2025)
+v2 code (Deprecated: August 1, 2025)
+v3 code (August 12-14, 2025 - major issues in v2 code, fixes in v3)
 Updating further soon
-Significant explanation update upcoming (v1 to v2 change) - for now please use this as basic information.
-header:Codes
-The v2 code can be viewed from the below repo viewer, located at codes/extrapolation.py. (August 1, 2025)
-The key point I want to make is:
-$\textbf{Neural nets can extrapolate, with the help of Cauchy-Riemann constraints!}$
-This overcomes the conventional wisdom that neural nets cannot extrapolate unless data are very linear or simple.
-header:Training visualization for the conventional neural net wisdom
-The code used for this training is available at codes/1d_extrapolation.py, accessible from the below repo viewer.
-img:imgs/1d_final.png
-So even when augmented with derivative data with resampling at every epoch, neural nets fail to extrapolate.
-Training loss neared 1e-9, at the practical practical limit of 32-bit precision, and yet neural nets fail to extrapolate. 
-header:Training visualization (v2 code)
-The code is at codes/extrapolation.py. The same target function as with the 1D training case above, just analytically continued to complex domain.
-This analytic continuation allows imposition of Cauchy-Riemann constraints to neural nets, assuming the function is holomorphic.
-(The images will be replaced with the new code runs. For now the below images are deprecated.)
-img:imgs/stage1.png
-img:imgs/stage2.png
-img:imgs/stage3.png
-img:imgs/stage4.png
-(The final epoch of each stage - stage1: epoch 42300, stage2: 65200, stage3: 94700, stage4: 174500)
-At any stage of training, data only come from the [-1.0,1.0] interpolation domain (along with the imginary part domain [-1.0, 1.0], which makes the data domain a 2D box). Cauchy-Riemann constraints outside the interpolation domain are imposed slowly by expanding the boundary of the 2D box where Cauchy-Riemann constraints are evaluated.
-These training visualizations demonstrate that neural nets learn holomorphicity as Cauchy-Riemann constraints are increasingly imposed, thereby allowing for better extrapolations.
-img:imgs/stage5.png
-Stage 5 reveals the limitation of using fixed target loss - if we want to extend the extrapolation domain, then we have to lower target data loss and Cauchy-Riemann (CR) constraint loss. From Stage 6, the target loss is therefore lowered.
+Significant explanation update upcoming (v1 to v2 and v2 to v3 change) - for now please use this as basic information.
+header:Baseline code and the question of extrapolation in neural nets
+In contrast to the conventional expectation but quite trivially:
+$\textbf{Neural nets can extrapolate when aided by high-order derivatives.}$
+This is confirmed in codes/realmlp_high_order_deriv.py - use the repo browser below to access the file.
+We set DERIV_ORDER = 25 and confirm that neural nets, trained on domain $[-1,1]$ do extrapolate well to [-4,4].
+img:imgs/ref_extrapolation.png
+img:imgs/ref_error.png
+If we increase DERIV_ORDER further, then as long as training error can remain around 1e-6, we can expand the valid extrapolation domain further.
+This is costly, mostly requiring bigger neural nets, but at least in theory, there should be no issue.
+Think of using polynomial interpolations to extrapolate. Neural nets have more flexible functional form and better controls on numerical safety.
+However, as with other interpolators, it is obvious that as we reach the maximum derivative order for training data, derivative extrapolation error would be large.
+Large extrapolation errors are masked by accurate extrapolation on the zero-th order derivative, but when we use extrapolation data further, we have problems.
+Can we do better?
+header:Some technical information on the baseline code
+1) Instead taking backward gradient directly on derivative losses, the forward-on-backward gradient calculations are carried out.
+First compute the backward-mode (first-order) gradient of the neural net output on the model parameters, and then take Taylor-mode autodifferentiation on input x.
+2) Use of FAdam instead of Adam or AdamW. FAdam is more stable and consistent.
+header:BELOW Completely DEPRECATED
+AWAITING NEW updates
+PLEASE DISCARD BELOW FOR NOW.
 header:On precision issues
 Are first-order derivative data enough to tell neural networks higher-order derivative?
 Apparently no. After all, if this were the case, we would likely only need zero-order derivative data to tell neural networks about higher-order derivatives.
