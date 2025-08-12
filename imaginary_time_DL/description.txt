@@ -16,6 +16,8 @@ Think of using polynomial interpolations to extrapolate. Neural nets have more f
 However, as with other interpolators, it is obvious that as we reach the maximum derivative order for training data, derivative extrapolation error would be large.
 Large extrapolation errors are masked by accurate extrapolation on the zero-th order derivative, but when we use extrapolation data further, we have problems.
 Can we do better?
+Also, with DERIV_ORDER=1 (augmentation with first-order derivative data), RealMLP extrapolation largely fails - see below:
+img:imgs/realmlp_deriv_1.png
 header:Some technical information on the baseline code
 1) Instead taking backward gradient directly on derivative losses, the forward-on-backward gradient calculations are carried out.
 First compute the backward-mode (first-order) gradient of the neural net output on the model parameters, and then take Taylor-mode autodifferentiation on input x.
