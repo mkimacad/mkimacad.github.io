@@ -29,6 +29,8 @@ header:HolomorphicMLP
 Uses complex tanh activation function instead. Complex-valued input ($[-1,1]^2$ box training data, [-1,1] on real axis and imaginary axis), complex-valued output.
 Assumes function to be holomorphic.
 File:codes/holomorphic.py (DERIV_ORDER = 0)
+img:imgs/holomorphic_extrapolation.png
+Lesson - complex tanh ensuring holomorphic function not enough to ensure good extrapolation error. Still need high-order derivative data.
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
 PLEASE DISCARD BELOW FOR NOW.
