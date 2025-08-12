@@ -24,14 +24,17 @@ More stable, faster.
 Higher affordable initial learning rate, better final training and generalization error, and FAdam can start with higher initial learning rates than Adam(W).
 Augmented with Reduce_LR_on_Plateau.
 Also, the question of gradient numerical safety in FAdam. Currently, eps=1e-20.
-These two points apply for the HolomorphicMLP code as well.
-However, we have to switch back to Adam for the Cauchy-Riemann MLP case, where FAdam fails to discover a good local minimum due to its limitation.
+3) Data are resampled at every epoch.
+These three points apply for the HolomorphicMLP code as well.
 header:HolomorphicMLP
 Uses complex tanh activation function instead. Complex-valued input ($[-1,1]^2$ box training data, [-1,1] on real axis and imaginary axis), complex-valued output.
 Assumes function to be holomorphic.
 File:codes/holomorphic.py (DERIV_ORDER = 0)
 img:imgs/holomorphic_extrapolation.png
 Lesson - complex tanh ensuring holomorphic function not enough to ensure good extrapolation error. Still need high-order derivative data.
+Even with first-order derivative data, we have below:
+img:imgs/holomorphic_deriv_1.png
+So we need high-order derivative data as well.
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
 PLEASE DISCARD BELOW FOR NOW.
