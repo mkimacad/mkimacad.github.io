@@ -59,7 +59,7 @@ def compute_normalization_stats(deriv_tensors: List[jnp.ndarray]) -> Normalizati
 class FAdamState(NamedTuple):
     count: jnp.ndarray
 
-def fadam(learning_rate=1e-3, eps=1e-8) -> optax.GradientTransformation:
+def fadam(learning_rate=1e-3, eps=1e-20) -> optax.GradientTransformation:
     def init_fn(params): return FAdamState(count=jnp.zeros([], jnp.int32))
     def update_fn(updates, state, params=None):
         global_grad_norm = optax.global_norm(updates)
