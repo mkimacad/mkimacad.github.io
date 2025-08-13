@@ -38,9 +38,12 @@ Even with first-order derivative data, we have below:
 img:imgs/holomorphic_deriv_1.png
 So we need high-order derivative data as well.
 header:DirectUVMLP
+The code is at codes/directuvmlp.py.
 img:imgs/directuvmlp_deriv_0.png
 img:imgs/directuvmlp_deriv_1.png
 header:DirectUVMLP with Cauchy-Riemann constraints
+The code is at codes/directuvmlp_CR.py.
+Instead of FAdam, AdamW is used here since AdamW is better in this special case.
 (Being updated)
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
