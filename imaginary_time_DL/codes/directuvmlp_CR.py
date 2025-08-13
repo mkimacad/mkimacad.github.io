@@ -15,7 +15,7 @@ from typing import Callable, Any, NamedTuple, List
 from jax.experimental.jet import jet
 
 # ================== GLOBAL CONFIGURATION ==================
-RUN_NAME = "directUVMLP_2D_FAdam_with_CR_Loss_lower_extrapolation"
+RUN_NAME = "directUVMLP_2D_FAdam_with_CR_Curriculum_Learning"
 
 @dataclass(frozen=True)
 class Config:
@@ -23,7 +23,7 @@ class Config:
     ENABLE_PLOTTING: bool = True; SAVE_MODELS: bool = True; SEED: int = 42
     MODEL_WIDTH: int = 512; MODEL_DEPTH: int = 6
     PEAK_LR: float = 1e-1
-    DERIV_ORDER: int = 1
+    DERIV_ORDER: int = 0
     DERIVATIVE_LOSS_WEIGHT: float = 1.0
     USE_NORMALIZATION: bool = True
     TARGET_N_FREQUENCIES: int = 6; TARGET_MIN_FREQ: float = 0.05; TARGET_MAX_FREQ: float = 1.0
@@ -31,10 +31,10 @@ class Config:
     PLATEAU_PATIENCE: int = 4; PLATEAU_FACTOR: float = 0.5
     PLATEAU_MIN_LR: float = 1e-10
     PLATEAU_IMPROVEMENT_REL_THRESHOLD: float = 1e-1
-    TOTAL_TRAINING_STEPS: int = 1_000_000
+    TOTAL_TRAINING_STEPS: int = 2_000_000
     LOG_EVERY_N_STEPS: int = 5000; GRADIENT_CLIP_VALUE: float = 1.0
     N_TRAINING_SAMPLES: int = 20
-    INTERPOLATION_HALF_WIDTH: float = 1.0; EXTRAPOLATION_HALF_WIDTH: float = 4.0
+    INTERPOLATION_HALF_WIDTH: float = 1.0; EXTRAPOLATION_HALF_WIDTH: float = 8.0
     ACTIVATION_FUNCTION: str = 'gelu'
     USE_RESIDUAL_CONNECTIONS: bool = True
     USE_HE_INITIALIZATION: bool = True
@@ -42,6 +42,9 @@ class Config:
     USE_CR_LOSS: bool = True
     CR_LOSS_WEIGHT: float = 1.0
     N_CR_POINTS: int = 50
+    # --- Curriculum Learning Configuration (NEW) ---
+    USE_CURRICULUM_LEARNING: bool = True
+    CURRICULUM_LOSS_THRESHOLD: float = 1e-5
 
 
 # ================== HELPERS ==================
@@ -86,6 +89,8 @@ class ReduceLROnPlateauState(NamedTuple):
 class TrainState(NamedTuple):
     params: Any; opt_state: Any; key: random.PRNGKey; step: int
     lr_plateau_state: ReduceLROnPlateauState; target_params: TargetFunctionParams; norm_stats: NormalizationStats
+    # --- Curriculum State (MODIFIED) ---
+    cr_half_width: float
 
 # --- NEURAL NETWORK DEFINITION ---
 class BaseMLP(nn.Module):
@@ -167,18 +172,13 @@ def calculate_cr_loss(model: nn.Module, params: Any, z_points: jnp.ndarray) -> j
         return jnp.array(0.0, dtype=jnp.float32)
 
     def get_jacobian(z_point):
-        # Define a function for a single point z -> (u, v)
         f = lambda z: model.apply({'params': params}, z.reshape(1, 2))[0]
-        # Return its jacobian: [[du/dx, du/dy], [dv/dx, dv/dy]]
         return jax.jacfwd(f)(z_point)
 
-    # Vmap to get Jacobians for all points. Shape: (N, 2, 2)
     jacobians = vmap(get_jacobian)(z_points)
-
     du_dx, du_dy = jacobians[:, 0, 0], jacobians[:, 0, 1]
     dv_dx, dv_dy = jacobians[:, 1, 0], jacobians[:, 1, 1]
 
-    # C-R equations: du/dx = dv/dy,  du/dy = -dv/dx
     cr_loss1 = safe_logcosh(du_dx - dv_dy)
     cr_loss2 = safe_logcosh(du_dy + dv_dx)
     return jnp.mean(cr_loss1 + cr_loss2)
@@ -207,31 +207,30 @@ def update_lr_on_plateau(state: TrainState, loss: float, cfg: Config) -> TrainSt
     lax.cond(new_lr < lr_state.lr, lambda: jax.debug.print(">>> LRPlateau: Reducing LR from {lr:.2e} to {nlr:.2e}", lr=lr_state.lr, nlr=new_lr), lambda: None)
     return state._replace(lr_plateau_state=lr_state._replace(lr=new_lr, best_loss=jnp.where(is_better, loss, lr_state.best_loss), patience_counter=jnp.where(reduce_cond, 0, new_counter)))
 
+# --- MODIFIED TRAINING STEP ---
 @partial(jit, static_argnames=['model', 'cfg', 'get_target_derivs_fn'])
 def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_target_derivs_fn: Callable):
     key, data_key, cr_key = random.split(state.key, 3)
     
-    # Sample points for the primary data loss (interpolation domain)
     z_train = random.uniform(data_key, (cfg.N_TRAINING_SAMPLES, 2), 
                               minval=-cfg.INTERPOLATION_HALF_WIDTH, 
                               maxval=cfg.INTERPOLATION_HALF_WIDTH)
     
-    # Sample points for the Cauchy-Riemann physics loss (extrapolation domain)
+    # Sample CR points from the CURRENT curriculum domain
+    cr_domain_min = -state.cr_half_width
+    cr_domain_max = state.cr_half_width
     z_cr = random.uniform(cr_key, (cfg.N_CR_POINTS, 2),
-                           minval=-cfg.EXTRAPOLATION_HALF_WIDTH,
-                           maxval=cfg.EXTRAPOLATION_HALF_WIDTH)
+                           minval=cr_domain_min,
+                           maxval=cr_domain_max)
 
-    # Get target values and derivatives for the data points
     target_derivs = get_target_derivs_fn(z_train)
 
     def loss_fn(params):
-        # === 1. DATA LOSS (Value + Derivative matching via jet) ===
+        # 1. DATA LOSS
         def get_model_derivs_series(z_scalar):
             def f_scalar_model(z_point):
-                uv_pred = model.apply({'params': params}, jnp.reshape(z_point, (1, 2)))[0]
-                return uv_pred
-            
-            direction = jnp.array([1.0, 0.0]) # Derivatives along the real axis
+                return model.apply({'params': params}, jnp.reshape(z_point, (1, 2)))[0]
+            direction = jnp.array([1.0, 0.0])
             series_in = (z_scalar,) + (direction,) + tuple(jnp.zeros_like(z_scalar) for _ in range(cfg.DERIV_ORDER))
             primal, series = jet(f_scalar_model, (z_scalar,), (series_in,))
             return (primal,) + tuple(series)
@@ -240,26 +239,25 @@ def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_targe
         
         data_loss = 0.0
         for k in range(cfg.DERIV_ORDER + 1):
-            pred_k = model_derivs_series[k]
-            target_k = target_derivs[k]
+            pred_k, target_k = model_derivs_series[k], target_derivs[k]
             pred_norm = (pred_k - state.norm_stats.centers[k]) / state.norm_stats.scales[k]
             target_norm = (target_k - state.norm_stats.centers[k]) / state.norm_stats.scales[k]
             loss_k = jnp.mean(jnp.sum(safe_logcosh(pred_norm - target_norm), axis=-1))
             weight = 1.0 if k == 0 else cfg.DERIVATIVE_LOSS_WEIGHT
             data_loss += weight * loss_k
         
-        # === 2. CAUCHY-RIEMANN LOSS ===
+        # 2. CAUCHY-RIEMANN LOSS
         cr_loss = lax.cond(
             cfg.USE_CR_LOSS and cfg.N_CR_POINTS > 0,
             lambda p: calculate_cr_loss(model, p, z_cr),
-            lambda p: 0.0, # Return 0 if CR loss is disabled
-            params
+            lambda p: 0.0, params
         )
         
-        # === 3. TOTAL LOSS ===
-        return data_loss + cfg.CR_LOSS_WEIGHT * cr_loss
+        total_loss = data_loss + cfg.CR_LOSS_WEIGHT * cr_loss
+        return total_loss, (data_loss, cr_loss)
 
-    total_loss, grads = jax.value_and_grad(loss_fn)(state.params)
+    # Get losses and gradients. has_aux=True returns the auxiliary outputs from loss_fn.
+    (total_loss, (data_loss, cr_loss)), grads = jax.value_and_grad(loss_fn, has_aux=True)(state.params)
 
     gnorm = optax.global_norm(grads)
     clip_coef = jnp.minimum(1.0, cfg.GRADIENT_CLIP_VALUE / (gnorm + 1e-12))
@@ -273,52 +271,52 @@ def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_targe
     updates, new_opt_state = temp_fadam_optimizer.update(grads, state.opt_state, state.params)
     new_params = optax.apply_updates(state.params, updates)
 
-    return state._replace(params=new_params, opt_state=new_opt_state, key=key, step=state.step + 1), total_loss
+    new_state = state._replace(params=new_params, opt_state=new_opt_state, key=key, step=state.step + 1)
+    # Return individual losses for curriculum logic
+    return new_state, (total_loss, data_loss, cr_loss)
 
 # ============================
-# RUN TRAINING
+# MODIFIED TRAINING RUNNER
 # ============================
 def run_training(key, cfg: Config, target_params, save_dir):
-    if cfg.ACTIVATION_FUNCTION.lower() == 'gelu':
-        activation_fn = nn.gelu
-    elif cfg.ACTIVATION_FUNCTION.lower() == 'tanh':
-        activation_fn = nn.tanh
-    else:
-        raise ValueError(f"Unsupported activation function: {cfg.ACTIVATION_FUNCTION}")
+    if cfg.ACTIVATION_FUNCTION.lower() == 'gelu': activation_fn = nn.gelu
+    elif cfg.ACTIVATION_FUNCTION.lower() == 'tanh': activation_fn = nn.tanh
+    else: raise ValueError(f"Unsupported activation function: {cfg.ACTIVATION_FUNCTION}")
     
     model = DirectUVMLP(cfg=cfg, activation=activation_fn)
-    
     key, init_key, norm_key = random.split(key, 3)
-    
     optimizer = fadam()
-    
     dummy_params = model.init(init_key, jnp.ones((1, 2)))['params']
     target_func = build_target_function(target_params)
     get_target_derivs_fn = jit(partial(get_target_derivs, target_func, max_order=cfg.DERIV_ORDER))
 
     print("--- Computing normalization stats for derivatives... ---")
-    z_stats = random.uniform(norm_key, (20000, 2), 
-                              minval=-cfg.INTERPOLATION_HALF_WIDTH, 
-                              maxval=cfg.INTERPOLATION_HALF_WIDTH)
-    
+    z_stats = random.uniform(norm_key, (20000, 2), minval=-cfg.INTERPOLATION_HALF_WIDTH, maxval=cfg.INTERPOLATION_HALF_WIDTH)
     chunk_size = 2000
     parts = [get_target_derivs_fn(z_stats[i:i+chunk_size]) for i in range(0, z_stats.shape[0], chunk_size)]
     target_derivs_for_norm = [jnp.concatenate([p[k] for p in parts], axis=0) for k in range(cfg.DERIV_ORDER + 1)]
-    print("  -> Finished computing derivatives for normalization stats.")
-
     norm_stats = compute_normalization_stats(target_derivs_for_norm)
-    if not jnp.all(jnp.isfinite(jnp.concatenate([c.reshape(-1) for c in norm_stats.centers]))):
-        norm_stats = NormalizationStats([jnp.nan_to_num(c, 0.0) for c in norm_stats.centers], [jnp.nan_to_num(s, 1.0) for s in norm_stats.scales])
 
     initial_lr_state = ReduceLROnPlateauState(lr=cfg.PEAK_LR, best_loss=jnp.inf, patience_counter=0)
-    dummy_state = TrainState(dummy_params, None, key, 0, initial_lr_state, target_params, norm_stats)
+    
+    # Initialize curriculum state
+    initial_cr_half_width = cfg.INTERPOLATION_HALF_WIDTH if cfg.USE_CURRICULUM_LEARNING else cfg.EXTRAPOLATION_HALF_WIDTH
+    
+    dummy_state = TrainState(dummy_params, None, key, 0, initial_lr_state, target_params, norm_stats, cr_half_width=initial_cr_half_width)
     checkpoint_path = os.path.join(save_dir, "model_checkpoint.msgpack")
+    
     state = load_checkpoint_state(checkpoint_path, dummy_state)
     if state is None:
         print("--- No checkpoint found. Creating initial state... ---")
         state = dummy_state._replace(opt_state=optimizer.init(dummy_params))
     else:
         print(f"--- Loaded state from checkpoint. Resuming at step {state.step}. ---")
+        # Handle curriculum state on reload
+        if cfg.USE_CURRICULUM_LEARNING:
+            loaded_cr_width = getattr(state, 'cr_half_width', cfg.INTERPOLATION_HALF_WIDTH)
+            state = state._replace(cr_half_width=loaded_cr_width)
+        else: # Not using curriculum, ensure it uses the full extrapolation domain
+            state = state._replace(cr_half_width=cfg.EXTRAPOLATION_HALF_WIDTH)
         state = state._replace(opt_state=optimizer.init(state.params), norm_stats=norm_stats, target_params=target_params)
 
     scan_step_fn = partial(training_step, model, cfg=cfg, get_target_derivs_fn=get_target_derivs_fn)
@@ -326,18 +324,51 @@ def run_training(key, cfg: Config, target_params, save_dir):
     arch = "Residual" if cfg.USE_RESIDUAL_CONNECTIONS else "Plain"
     act = cfg.ACTIVATION_FUNCTION.upper()
     print(f"\n--- Starting Training (NN: {arch} {act}-MLP, Optimizer: FAdam, With CR Loss) ---")
+    if cfg.USE_CURRICULUM_LEARNING: print(f"--- Curriculum Learning ENABLED. Threshold={cfg.CURRICULUM_LOSS_THRESHOLD:.1e} ---")
 
     start_step = state.step
     while state.step < cfg.TOTAL_TRAINING_STEPS:
         steps_to_run = min(cfg.LOG_EVERY_N_STEPS, cfg.TOTAL_TRAINING_STEPS - state.step)
         if steps_to_run <= 0: break
-        state, loss_history = lax.scan(scan_step_fn, state, jnp.arange(steps_to_run))
-        state = state._replace(key=random.split(state.key)[0])
-        state = update_lr_on_plateau(state, jnp.mean(loss_history), cfg)
-        print(f"  Steps {start_step}-{state.step}/{cfg.TOTAL_TRAINING_STEPS} | Avg Loss: {jnp.mean(loss_history):.3e} | LR: {state.lr_plateau_state.lr:.2e}")
+        
+        state, loss_histories = lax.scan(scan_step_fn, state, jnp.arange(steps_to_run))
+        
+        # Unpack the history of individual losses
+        total_loss_history, data_loss_history, cr_loss_history = loss_histories
+        
+        avg_total_loss = jnp.mean(total_loss_history)
+        avg_data_loss = jnp.mean(data_loss_history)
+        avg_cr_loss = jnp.mean(cr_loss_history)
+        
+        state = update_lr_on_plateau(state, avg_total_loss, cfg)
+        
+        print(f"  Steps {start_step}-{state.step}/{cfg.TOTAL_TRAINING_STEPS} | "
+              f"Total Loss: {avg_total_loss:.3e} | Data: {avg_data_loss:.3e} | CR: {avg_cr_loss:.3e} | "
+              f"LR: {state.lr_plateau_state.lr:.2e} | CR Domain: [±{state.cr_half_width:.1f}]")
+
+        # --- CURRICULUM ADVANCEMENT LOGIC ---
+        if cfg.USE_CURRICULUM_LEARNING:
+            can_advance = (avg_data_loss < cfg.CURRICULUM_LOSS_THRESHOLD) and \
+                          (avg_cr_loss < cfg.CURRICULUM_LOSS_THRESHOLD)
+            
+            def advance_curriculum(current_state):
+                new_width = current_state.cr_half_width + 1.0
+                jax.debug.print("🎉 CURRICULUM ADVANCING: Domain expands to [±{w:.1f}]", w=new_width)
+                # Reset LR plateau to give it a boost for the new, harder task
+                new_lr_state = ReduceLROnPlateauState(lr=cfg.PEAK_LR, best_loss=jnp.inf, patience_counter=0)
+                return current_state._replace(cr_half_width=new_width, lr_plateau_state=new_lr_state)
+
+            # Advance only if we haven't reached the full domain yet
+            is_not_max_domain = state.cr_half_width < cfg.EXTRAPOLATION_HALF_WIDTH
+            state = lax.cond(can_advance & is_not_max_domain,
+                             advance_curriculum,
+                             lambda s: s, # No-op
+                             state)
+
         start_step = state.step
         if cfg.SAVE_MODELS: save_checkpoint(checkpoint_path, state)
     return model, state
+
 
 # ================== PLOTTING & MAIN ==================
 def generate_info_text(cfg: Config, state: TrainState):
@@ -347,7 +378,9 @@ def generate_info_text(cfg: Config, state: TrainState):
     loss_info = f"Loss: Value+Deriv(w={cfg.DERIVATIVE_LOSS_WEIGHT})"
     if cfg.USE_CR_LOSS:
         loss_info += f" + CR(w={cfg.CR_LOSS_WEIGHT})"
-    lines = [f"Run: {cfg.RUN_NAME}", f"Optimizer: FAdam", nn_info, loss_info, f"Final Step: {state.step}"]
+    # Add curriculum info
+    curriculum_info = f"Final CR Domain: [±{getattr(state, 'cr_half_width', cfg.EXTRAPOLATION_HALF_WIDTH):.1f}]"
+    lines = [f"Run: {cfg.RUN_NAME}", "Optimizer: FAdam", nn_info, loss_info, f"Final Step: {state.step}", curriculum_info]
     return "\n".join(lines)
 
 def plot_result(model, state, save_dir, cfg: Config):
@@ -369,9 +402,11 @@ def plot_result(model, state, save_dir, cfg: Config):
     axs[0].plot(x_plot, uv_truth[:, 0], 'k--', lw=2, label='Ground Truth U(x, 0)')
     axs[0].plot(x_plot, uv_pred[:, 0], 'r', lw=2, alpha=0.8, label='Predicted U(x, 0)')
     axs[0].axvspan(-cfg.INTERPOLATION_HALF_WIDTH, cfg.INTERPOLATION_HALF_WIDTH, color='lightgreen', alpha=0.3, label='2D Data Domain')
-    if cfg.USE_CR_LOSS:
-        axs[0].axvspan(-cfg.EXTRAPOLATION_HALF_WIDTH, -cfg.INTERPOLATION_HALF_WIDTH, color='orange', alpha=0.1, hatch='/')
-        axs[0].axvspan(cfg.INTERPOLATION_HALF_WIDTH, cfg.EXTRAPOLATION_HALF_WIDTH, color='orange', alpha=0.1, hatch='/', label='CR Loss Domain')
+    
+    # Show the final CR loss domain
+    final_cr_width = getattr(state, 'cr_half_width', cfg.EXTRAPOLATION_HALF_WIDTH)
+    axs[0].axvspan(-final_cr_width, -cfg.INTERPOLATION_HALF_WIDTH, color='orange', alpha=0.1, hatch='/')
+    axs[0].axvspan(cfg.INTERPOLATION_HALF_WIDTH, final_cr_width, color='orange', alpha=0.1, hatch='/', label=f'Final CR Loss Domain (±{final_cr_width:.1f})')
 
     axs[0].set_title(f"Model Performance (Real Part) - {cfg.RUN_NAME}"); axs[0].set_ylabel("U component"); axs[0].grid(True, linestyle=':'); axs[0].legend()
     axs[0].text(0.02, 0.98, generate_info_text(cfg, state), transform=axs[0].transAxes, fontsize=10, va='top', bbox=dict(boxstyle='round', facecolor='aliceblue', alpha=0.8))
@@ -379,9 +414,8 @@ def plot_result(model, state, save_dir, cfg: Config):
     error_u = jnp.abs(uv_truth[:, 0] - uv_pred[:, 0])
     axs[1].plot(x_plot, error_u, 'b', lw=2, label='Absolute Error |U_true - U_pred|')
     axs[1].axvspan(-cfg.INTERPOLATION_HALF_WIDTH, cfg.INTERPOLATION_HALF_WIDTH, color='lightgreen', alpha=0.3)
-    if cfg.USE_CR_LOSS:
-        axs[1].axvspan(-cfg.EXTRAPOLATION_HALF_WIDTH, -cfg.INTERPOLATION_HALF_WIDTH, color='orange', alpha=0.1, hatch='/')
-        axs[1].axvspan(cfg.INTERPOLATION_HALF_WIDTH, cfg.EXTRAPOLATION_HALF_WIDTH, color='orange', alpha=0.1, hatch='/')
+    axs[1].axvspan(-final_cr_width, -cfg.INTERPOLATION_HALF_WIDTH, color='orange', alpha=0.1, hatch='/')
+    axs[1].axvspan(cfg.INTERPOLATION_HALF_WIDTH, final_cr_width, color='orange', alpha=0.1, hatch='/')
     axs[1].set_xlabel("x-axis (z = x + 0i)"); axs[1].set_ylabel("Absolute Error"); axs[1].set_yscale('log'); axs[1].grid(True, which="both", linestyle=':'); axs[1].legend()
     
     plt.tight_layout(); plt.savefig(os.path.join(save_dir, f"plot_final_{cfg.RUN_NAME}.png")); plt.show()
