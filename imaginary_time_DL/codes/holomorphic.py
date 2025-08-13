@@ -15,14 +15,14 @@ from typing import Callable, Any, NamedTuple, List
 from jax.experimental.jet import jet
 
 # ================== GLOBAL CONFIGURATION ==================
-RUN_NAME = "holomorphicMLP_forward_on_reverse_order_0_epstest_1"
+RUN_NAME = "holomorphicMLP_order_0_2D_1"
 
 @dataclass(frozen=True)
 class Config:
     RUN_NAME: str = RUN_NAME
     ENABLE_PLOTTING: bool = True; SAVE_MODELS: bool = True; SEED: int = 42
     MODEL_WIDTH: int = 512; MODEL_DEPTH: int = 5
-    PEAK_LR: float = 5e-1
+    PEAK_LR: float = 1e-1
     DERIV_ORDER: int = 0
     DERIVATIVE_LOSS_WEIGHT: float = 1.0
     USE_NORMALIZATION: bool = True
@@ -31,7 +31,7 @@ class Config:
     PLATEAU_PATIENCE: int = 4; PLATEAU_FACTOR: float = 0.5
     PLATEAU_MIN_LR: float = 1e-10
     PLATEAU_IMPROVEMENT_REL_THRESHOLD: float = 1e-1
-    TOTAL_TRAINING_STEPS: int = 500_000
+    TOTAL_TRAINING_STEPS: int = 700_000
     LOG_EVERY_N_STEPS: int = 5000; GRADIENT_CLIP_VALUE: float = 1.0
     N_TRAINING_SAMPLES: int = 20
     INTERPOLATION_HALF_WIDTH: float = 1.0; EXTRAPOLATION_HALF_WIDTH: float = 8.0
@@ -141,8 +141,12 @@ def update_lr_on_plateau(state: TrainState, loss: float, cfg: Config) -> TrainSt
 @partial(jit, static_argnames=['model', 'cfg', 'get_target_derivs_fn'])
 def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_target_derivs_fn: Callable):
     key, data_key = random.split(state.key)
-    x_coords = random.uniform(data_key, (cfg.N_TRAINING_SAMPLES, 1), minval=-cfg.INTERPOLATION_HALF_WIDTH, maxval=cfg.INTERPOLATION_HALF_WIDTH)
-    z_train = jnp.concatenate([x_coords, jnp.zeros_like(x_coords)], axis=1)
+
+    # FIXED: Sample from the 2D complex plane (real and imaginary parts) instead of just the real axis.
+    z_train = random.uniform(data_key, (cfg.N_TRAINING_SAMPLES, 2),
+                              minval=-cfg.INTERPOLATION_HALF_WIDTH,
+                              maxval=cfg.INTERPOLATION_HALF_WIDTH)
+
     target_derivs = get_target_derivs_fn(z_train)
 
     def loss_fn(params):
@@ -150,26 +154,26 @@ def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_targe
             def f_scalar_model(z_point):
                 w_complex = model.apply({'params': params}, jnp.reshape(z_point, (1, 2)))[0]
                 return jnp.stack([w_complex.real, w_complex.imag], axis=-1)
-            
+
             direction = jnp.array([1.0, 0.0])
             series_in = (z_scalar,) + (direction,) + tuple(jnp.zeros_like(z_scalar) for _ in range(cfg.DERIV_ORDER))
             primal, series = jet(f_scalar_model, (z_scalar,), (series_in,))
             return (primal,) + tuple(series)
-        
+
         model_derivs_series = vmap(get_model_derivs_series)(z_train)
-        
+
         total_loss = 0.0
         for k in range(cfg.DERIV_ORDER + 1):
             pred_k = model_derivs_series[k]
             target_k = target_derivs[k]
-            
+
             pred_norm = (pred_k - state.norm_stats.centers[k]) / state.norm_stats.scales[k]
             target_norm = (target_k - state.norm_stats.centers[k]) / state.norm_stats.scales[k]
-            
+
             loss_k = jnp.mean(jnp.sum(safe_logcosh(pred_norm - target_norm), axis=-1))
             weight = 1.0 if k == 0 else cfg.DERIVATIVE_LOSS_WEIGHT
             total_loss += weight * loss_k
-            
+
         return total_loss
 
     total_loss, grads = jax.value_and_grad(loss_fn)(state.params)
@@ -200,8 +204,10 @@ def run_training(key, cfg: Config, target_params, save_dir):
     get_target_derivs_fn = jit(partial(get_target_derivs, target_func, max_order=cfg.DERIV_ORDER))
 
     print("--- Computing normalization stats for derivatives... ---")
-    x_coords_stats = random.uniform(norm_key, (20000, 1), minval=-cfg.INTERPOLATION_HALF_WIDTH, maxval=cfg.INTERPOLATION_HALF_WIDTH)
-    z_stats = jnp.concatenate([x_coords_stats, jnp.zeros_like(x_coords_stats)], axis=1)
+    # FIXED: Sample from the 2D domain for normalization to match the training distribution.
+    z_stats = random.uniform(norm_key, (20000, 2),
+                             minval=-cfg.INTERPOLATION_HALF_WIDTH,
+                             maxval=cfg.INTERPOLATION_HALF_WIDTH)
     chunk_size = 2000
     parts = [get_target_derivs_fn(z_stats[i:i+chunk_size]) for i in range(0, z_stats.shape[0], chunk_size)]
     target_derivs_for_norm = [jnp.concatenate([p[k] for p in parts], axis=0) for k in range(cfg.DERIV_ORDER + 1)]
@@ -247,10 +253,10 @@ def plot_result(model, state, save_dir, cfg: Config):
     print("  -> Generating final plot...")
     target_func = build_target_function(state.target_params)
     apply_fn = jit(lambda params, z: model.apply({'params': params}, z))
-    
+
     x_plot = jnp.linspace(-cfg.EXTRAPOLATION_HALF_WIDTH, cfg.EXTRAPOLATION_HALF_WIDTH, 2000)
     z_plot_real = jnp.stack([x_plot, jnp.zeros_like(x_plot)], axis=-1)
-    
+
     w_truth = vmap(target_func)(z_plot_real)
     uv_truth = jnp.stack([w_truth.real, w_truth.imag], axis=-1)
 
@@ -258,18 +264,18 @@ def plot_result(model, state, save_dir, cfg: Config):
     uv_pred = jnp.stack([w_pred.real, w_pred.imag], axis=-1)
 
     fig, axs = plt.subplots(2, 1, figsize=(18, 12), sharex=True)
-    
+
     axs[0].plot(x_plot, uv_truth[:, 0], 'k--', lw=2, label='Ground Truth U(x, 0)')
     axs[0].plot(x_plot, uv_pred[:, 0], 'r', lw=2, alpha=0.8, label='Predicted U(x, 0)')
     axs[0].axvspan(-cfg.INTERPOLATION_HALF_WIDTH, cfg.INTERPOLATION_HALF_WIDTH, color='gray', alpha=0.2, label='Training Domain')
     axs[0].set_title(f"Model Performance (Real Part) - {cfg.RUN_NAME}"); axs[0].set_ylabel("U component"); axs[0].grid(True, linestyle=':'); axs[0].legend()
     axs[0].text(0.02, 0.98, generate_info_text(cfg, state), transform=axs[0].transAxes, fontsize=10, va='top', bbox=dict(boxstyle='round', facecolor='aliceblue', alpha=0.8))
-    
+
     error_u = jnp.abs(uv_truth[:, 0] - uv_pred[:, 0])
     axs[1].plot(x_plot, error_u, 'b', lw=2, label='Absolute Error |U_true - U_pred|')
     axs[1].axvspan(-cfg.INTERPOLATION_HALF_WIDTH, cfg.INTERPOLATION_HALF_WIDTH, color='gray', alpha=0.2)
     axs[1].set_xlabel("x-axis (z = x + 0i)"); axs[1].set_ylabel("Absolute Error"); axs[1].set_yscale('log'); axs[1].grid(True, which="both", linestyle=':'); axs[1].legend()
-    
+
     plt.tight_layout(); plt.savefig(os.path.join(save_dir, f"plot_final_{cfg.RUN_NAME}.png")); plt.show()
 
 def main():
