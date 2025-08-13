@@ -341,9 +341,9 @@ def main():
     cfg = Config()
     try:
         from google.colab import drive; drive.mount('/content/drive', force_remount=True)
-        base_dir = '/content/drive/MyDrive/uv_gradnorm_loss'
+        base_dir = '/content/drive/MyDrive/directuvmlp'
     except (ImportError, ModuleNotFoundError):
-        base_dir = 'uv_gradnorm_loss_results'
+        base_dir = 'directuvmlp'
     save_dir = os.path.join(base_dir, cfg.RUN_NAME); os.makedirs(save_dir, exist_ok=True)
     jax.config.update("jax_enable_x64", False)
     print(f"JAX backend: {jax.default_backend()} | Precision: 32-bit")
