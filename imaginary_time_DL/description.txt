@@ -39,6 +39,9 @@ img:imgs/holomorphic_deriv_1.png
 So we need high-order derivative data as well.
 header:DirectUVMLP
 img:imgs/directuvmlp_deriv_0.png
+img:imgs/directuvmlp_deriv_1.png
+header:DirectUVMLP with Cauchy-Riemann constraints
+(Being updated)
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
 PLEASE DISCARD BELOW FOR NOW.
