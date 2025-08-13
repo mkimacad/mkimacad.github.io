@@ -8,7 +8,7 @@ header:Baseline RealMLP code and the question of extrapolation in neural nets
 In contrast to the conventional expectation but quite trivially:
 $\textbf{Neural nets can extrapolate when aided by high-order derivatives.}$
 This is confirmed in codes/realmlp_high_order_deriv.py - use the repo browser below to access the file.
-We set DERIV_ORDER = 25 and confirm that neural nets, trained on domain $[-1,1]$ do extrapolate well to [-4,4].
+We set DERIV_ORDER = 25 and confirm that neural nets, trained on domain $[-1,1]$ do extrapolate well to [-6,6].
 img:imgs/ref_extrapolation.png
 If we increase DERIV_ORDER further, then as long as training error can remain around 1e-6, we can expand the valid extrapolation domain further.
 This is costly, mostly requiring bigger neural nets, but at least in theory, there should be no issue.
