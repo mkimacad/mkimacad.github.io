@@ -27,7 +27,7 @@ Higher affordable initial learning rate, better final training and generalizatio
 Augmented with Reduce_LR_on_Plateau.
 Also, the question of gradient numerical safety in FAdam. Currently, eps=1e-20.
 3) Data are resampled at every epoch.
-These three points apply for the HolomorphicMLP code as well.
+These three points apply for the HolomorphicMLP code and the DirectUVMLP (with or without Cauchy-Riemann) codes as well.
 header:HolomorphicMLP
 Uses complex tanh activation function instead. Complex-valued input ($[-1,1]^2$ box training data, [-1,1] on real axis and imaginary axis), complex-valued output.
 Assumes function to be holomorphic.
@@ -37,6 +37,8 @@ Lesson - complex tanh ensuring holomorphic function not enough to ensure good ex
 Even with first-order derivative data, we have below:
 img:imgs/holomorphic_deriv_1.png
 So we need high-order derivative data as well.
+header:DirectUVMLP
+img:imgs/directuvmlp_deriv_0.png
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
 PLEASE DISCARD BELOW FOR NOW.
