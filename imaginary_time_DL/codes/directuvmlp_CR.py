@@ -15,14 +15,14 @@ from typing import Callable, Any, NamedTuple, List
 from jax.experimental.jet import jet
 
 # ================== GLOBAL CONFIGURATION ==================
-RUN_NAME = "directUVMLP_2D_AdamW_with_CR_Loss_1"
+RUN_NAME = "directUVMLP_2D_FAdam_with_CR_Loss_lower_extrapolation"
 
 @dataclass(frozen=True)
 class Config:
     RUN_NAME: str = RUN_NAME
     ENABLE_PLOTTING: bool = True; SAVE_MODELS: bool = True; SEED: int = 42
     MODEL_WIDTH: int = 512; MODEL_DEPTH: int = 6
-    PEAK_LR: float = 3e-4 # Adjusted for AdamW
+    PEAK_LR: float = 1e-1
     DERIV_ORDER: int = 1
     DERIVATIVE_LOSS_WEIGHT: float = 1.0
     USE_NORMALIZATION: bool = True
@@ -34,13 +34,13 @@ class Config:
     TOTAL_TRAINING_STEPS: int = 1_000_000
     LOG_EVERY_N_STEPS: int = 5000; GRADIENT_CLIP_VALUE: float = 1.0
     N_TRAINING_SAMPLES: int = 20
-    INTERPOLATION_HALF_WIDTH: float = 1.0; EXTRAPOLATION_HALF_WIDTH: float = 8.0
+    INTERPOLATION_HALF_WIDTH: float = 1.0; EXTRAPOLATION_HALF_WIDTH: float = 4.0
     ACTIVATION_FUNCTION: str = 'gelu'
     USE_RESIDUAL_CONNECTIONS: bool = True
     USE_HE_INITIALIZATION: bool = True
     # --- Cauchy-Riemann Loss Configuration ---
     USE_CR_LOSS: bool = True
-    CR_LOSS_WEIGHT: float = 0.5
+    CR_LOSS_WEIGHT: float = 1.0
     N_CR_POINTS: int = 50
 
 
@@ -62,6 +62,19 @@ def compute_normalization_stats(deriv_tensors: List[jnp.ndarray]) -> Normalizati
     centers = [jnp.median(d, axis=0) for d in deriv_tensors]
     scales = [jnp.median(jnp.abs(d - c), axis=0) * 1.4826 + 1e-8 for d, c in zip(deriv_tensors, centers)]
     return NormalizationStats(centers=centers, scales=scales)
+
+# ================== FAdam (Fromage-like) IMPLEMENTATION ==================
+class FAdamState(NamedTuple):
+    count: jnp.ndarray
+
+def fadam(learning_rate=1e-3, eps=1e-20) -> optax.GradientTransformation:
+    def init_fn(params): return FAdamState(count=jnp.zeros([], jnp.int32))
+    def update_fn(updates, state, params=None):
+        global_grad_norm = optax.global_norm(updates)
+        normalized_updates = jax.tree_util.tree_map(lambda g: g / (global_grad_norm + eps), updates)
+        scaled_updates = jax.tree_util.tree_map(lambda g: -learning_rate * g, normalized_updates)
+        return scaled_updates, FAdamState(count=state.count + 1)
+    return optax.GradientTransformation(init_fn, update_fn)
 
 # ================== CORE COMPONENTS ==================
 class TargetFunctionParams(NamedTuple):
@@ -154,13 +167,18 @@ def calculate_cr_loss(model: nn.Module, params: Any, z_points: jnp.ndarray) -> j
         return jnp.array(0.0, dtype=jnp.float32)
 
     def get_jacobian(z_point):
+        # Define a function for a single point z -> (u, v)
         f = lambda z: model.apply({'params': params}, z.reshape(1, 2))[0]
+        # Return its jacobian: [[du/dx, du/dy], [dv/dx, dv/dy]]
         return jax.jacfwd(f)(z_point)
 
+    # Vmap to get Jacobians for all points. Shape: (N, 2, 2)
     jacobians = vmap(get_jacobian)(z_points)
+
     du_dx, du_dy = jacobians[:, 0, 0], jacobians[:, 0, 1]
     dv_dx, dv_dy = jacobians[:, 1, 0], jacobians[:, 1, 1]
 
+    # C-R equations: du/dx = dv/dy,  du/dy = -dv/dx
     cr_loss1 = safe_logcosh(du_dx - dv_dy)
     cr_loss2 = safe_logcosh(du_dy + dv_dx)
     return jnp.mean(cr_loss1 + cr_loss2)
@@ -193,23 +211,27 @@ def update_lr_on_plateau(state: TrainState, loss: float, cfg: Config) -> TrainSt
 def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_target_derivs_fn: Callable):
     key, data_key, cr_key = random.split(state.key, 3)
     
+    # Sample points for the primary data loss (interpolation domain)
     z_train = random.uniform(data_key, (cfg.N_TRAINING_SAMPLES, 2), 
                               minval=-cfg.INTERPOLATION_HALF_WIDTH, 
                               maxval=cfg.INTERPOLATION_HALF_WIDTH)
     
+    # Sample points for the Cauchy-Riemann physics loss (extrapolation domain)
     z_cr = random.uniform(cr_key, (cfg.N_CR_POINTS, 2),
                            minval=-cfg.EXTRAPOLATION_HALF_WIDTH,
                            maxval=cfg.EXTRAPOLATION_HALF_WIDTH)
 
+    # Get target values and derivatives for the data points
     target_derivs = get_target_derivs_fn(z_train)
 
     def loss_fn(params):
+        # === 1. DATA LOSS (Value + Derivative matching via jet) ===
         def get_model_derivs_series(z_scalar):
             def f_scalar_model(z_point):
                 uv_pred = model.apply({'params': params}, jnp.reshape(z_point, (1, 2)))[0]
                 return uv_pred
             
-            direction = jnp.array([1.0, 0.0])
+            direction = jnp.array([1.0, 0.0]) # Derivatives along the real axis
             series_in = (z_scalar,) + (direction,) + tuple(jnp.zeros_like(z_scalar) for _ in range(cfg.DERIV_ORDER))
             primal, series = jet(f_scalar_model, (z_scalar,), (series_in,))
             return (primal,) + tuple(series)
@@ -226,23 +248,29 @@ def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_targe
             weight = 1.0 if k == 0 else cfg.DERIVATIVE_LOSS_WEIGHT
             data_loss += weight * loss_k
         
+        # === 2. CAUCHY-RIEMANN LOSS ===
         cr_loss = lax.cond(
             cfg.USE_CR_LOSS and cfg.N_CR_POINTS > 0,
             lambda p: calculate_cr_loss(model, p, z_cr),
-            lambda p: 0.0,
+            lambda p: 0.0, # Return 0 if CR loss is disabled
             params
         )
         
+        # === 3. TOTAL LOSS ===
         return data_loss + cfg.CR_LOSS_WEIGHT * cr_loss
 
     total_loss, grads = jax.value_and_grad(loss_fn)(state.params)
 
-    optimizer = optax.chain(
-        optax.clip_by_global_norm(cfg.GRADIENT_CLIP_VALUE),
-        optax.adamw(learning_rate=state.lr_plateau_state.lr)
-    )
+    gnorm = optax.global_norm(grads)
+    clip_coef = jnp.minimum(1.0, cfg.GRADIENT_CLIP_VALUE / (gnorm + 1e-12))
+    grads = jax.tree_map(lambda g: g * clip_coef, grads)
+    leaves = jax.tree_leaves(grads)
+    grads_finite = jnp.all(jnp.stack([jnp.all(jnp.isfinite(l)) for l in leaves if l is not None]))
+    grads = lax.cond(grads_finite, lambda g: g, lambda g: jax.tree_map(jnp.zeros_like, g), grads)
 
-    updates, new_opt_state = optimizer.update(grads, state.opt_state, state.params)
+    current_lr = state.lr_plateau_state.lr
+    temp_fadam_optimizer = fadam(learning_rate=current_lr)
+    updates, new_opt_state = temp_fadam_optimizer.update(grads, state.opt_state, state.params)
     new_params = optax.apply_updates(state.params, updates)
 
     return state._replace(params=new_params, opt_state=new_opt_state, key=key, step=state.step + 1), total_loss
@@ -262,10 +290,7 @@ def run_training(key, cfg: Config, target_params, save_dir):
     
     key, init_key, norm_key = random.split(key, 3)
     
-    optimizer = optax.chain(
-        optax.clip_by_global_norm(cfg.GRADIENT_CLIP_VALUE),
-        optax.adamw(learning_rate=cfg.PEAK_LR)
-    )
+    optimizer = fadam()
     
     dummy_params = model.init(init_key, jnp.ones((1, 2)))['params']
     target_func = build_target_function(target_params)
@@ -300,7 +325,7 @@ def run_training(key, cfg: Config, target_params, save_dir):
     
     arch = "Residual" if cfg.USE_RESIDUAL_CONNECTIONS else "Plain"
     act = cfg.ACTIVATION_FUNCTION.upper()
-    print(f"\n--- Starting Training (NN: {arch} {act}-MLP, Optimizer: AdamW, With CR Loss) ---")
+    print(f"\n--- Starting Training (NN: {arch} {act}-MLP, Optimizer: FAdam, With CR Loss) ---")
 
     start_step = state.step
     while state.step < cfg.TOTAL_TRAINING_STEPS:
@@ -322,7 +347,7 @@ def generate_info_text(cfg: Config, state: TrainState):
     loss_info = f"Loss: Value+Deriv(w={cfg.DERIVATIVE_LOSS_WEIGHT})"
     if cfg.USE_CR_LOSS:
         loss_info += f" + CR(w={cfg.CR_LOSS_WEIGHT})"
-    lines = [f"Run: {cfg.RUN_NAME}", f"Optimizer: AdamW", nn_info, loss_info, f"Final Step: {state.step}"]
+    lines = [f"Run: {cfg.RUN_NAME}", f"Optimizer: FAdam", nn_info, loss_info, f"Final Step: {state.step}"]
     return "\n".join(lines)
 
 def plot_result(model, state, save_dir, cfg: Config):
