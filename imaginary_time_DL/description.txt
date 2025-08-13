@@ -48,6 +48,7 @@ header:DirectUVMLP with Cauchy-Riemann (CR) constraints
 The code is at codes/directuvmlp_CR.py.
 New change:Curriculum learning. Instead of directly imposing CR constraints at full $[-8,8]^2$, introduce CR constraints slowly from $[-1,1]^2$, $[-2,2]^2$, $[-3,3]^2$,.. to $[-8,8]^2$.
 Curriculum learning provides much better training performance.
+img:imgs/directuvmlp_cr_deriv_0_domain_3.png
 (Being updated)
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
