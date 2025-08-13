@@ -23,15 +23,15 @@ class Config:
     ENABLE_PLOTTING: bool = True; SAVE_MODELS: bool = True; SEED: int = 42
     MODEL_WIDTH: int = 512; MODEL_DEPTH: int = 6
     PEAK_LR: float = 1e-1
-    DERIV_ORDER: int = 0
+    DERIV_ORDER: int = 1
     DERIVATIVE_LOSS_WEIGHT: float = 1.0
     USE_NORMALIZATION: bool = True
     TARGET_N_FREQUENCIES: int = 6; TARGET_MIN_FREQ: float = 0.05; TARGET_MAX_FREQ: float = 1.0
     TARGET_AMP_MIN: float = 0.5; TARGET_AMP_MAX: float = 5.0
     PLATEAU_PATIENCE: int = 4; PLATEAU_FACTOR: float = 0.5
-    PLATEAU_MIN_LR: float = 1e-10
+    PLATEAU_MIN_LR: float = 1e-7
     PLATEAU_IMPROVEMENT_REL_THRESHOLD: float = 1e-1
-    TOTAL_TRAINING_STEPS: int = 2_000_000
+    TOTAL_TRAINING_STEPS: int = 4_000_000 # Increased from original
     LOG_EVERY_N_STEPS: int = 5000; GRADIENT_CLIP_VALUE: float = 1.0
     N_TRAINING_SAMPLES: int = 20
     INTERPOLATION_HALF_WIDTH: float = 1.0; EXTRAPOLATION_HALF_WIDTH: float = 8.0
@@ -42,7 +42,7 @@ class Config:
     USE_CR_LOSS: bool = True
     CR_LOSS_WEIGHT: float = 1.0
     N_CR_POINTS: int = 50
-    # --- Curriculum Learning Configuration (NEW) ---
+    # --- Curriculum Learning Configuration ---
     USE_CURRICULUM_LEARNING: bool = True
     CURRICULUM_LOSS_THRESHOLD: float = 1e-5
 
@@ -89,10 +89,9 @@ class ReduceLROnPlateauState(NamedTuple):
 class TrainState(NamedTuple):
     params: Any; opt_state: Any; key: random.PRNGKey; step: int
     lr_plateau_state: ReduceLROnPlateauState; target_params: TargetFunctionParams; norm_stats: NormalizationStats
-    # --- Curriculum State (MODIFIED) ---
     cr_half_width: float
 
-# --- NEURAL NETWORK DEFINITION ---
+# --- NEURAL NETWORK DEFINITION (Unchanged) ---
 class BaseMLP(nn.Module):
     width: int; depth: int; activation: Callable; use_he_init: bool
     @nn.compact
@@ -126,18 +125,9 @@ class DirectUVMLP(nn.Module):
     @nn.compact
     def __call__(self, z):
         kernel_init = nn.initializers.he_normal() if self.cfg.USE_HE_INITIALIZATION else nn.initializers.lecun_normal()
-
-        if self.cfg.USE_RESIDUAL_CONNECTIONS:
-            core_mlp = ResidualMLP(width=self.cfg.MODEL_WIDTH,
-                                   depth=self.cfg.MODEL_DEPTH - 1,
-                                   activation=self.activation,
-                                   use_he_init=self.cfg.USE_HE_INITIALIZATION)
-        else:
-            core_mlp = BaseMLP(width=self.cfg.MODEL_WIDTH,
-                               depth=self.cfg.MODEL_DEPTH - 1,
-                               activation=self.activation,
-                               use_he_init=self.cfg.USE_HE_INITIALIZATION)
-
+        mlp_module = ResidualMLP if self.cfg.USE_RESIDUAL_CONNECTIONS else BaseMLP
+        core_mlp = mlp_module(width=self.cfg.MODEL_WIDTH, depth=self.cfg.MODEL_DEPTH - 1,
+                              activation=self.activation, use_he_init=self.cfg.USE_HE_INITIALIZATION)
         features = core_mlp(z)
         return nn.Dense(2, name="dense_out", kernel_init=kernel_init)(features)
 
@@ -155,33 +145,23 @@ def get_target_derivs(f: Callable, z_data: jnp.ndarray, max_order: int) -> List[
     def f_wrapped(z_real):
         w_complex = f(z_real)
         return jnp.stack([w_complex.real, w_complex.imag], axis=-1)
-
     def get_series(z_scalar):
         direction = jnp.array([1.0, 0.0])
         series_in = (z_scalar,) + (direction,) + tuple(jnp.zeros_like(z_scalar) for _ in range(max_order))
         primal, series = jet(f_wrapped, (z_scalar,), (series_in,))
         return (primal,) + tuple(series)
-
     all_derivs_series = vmap(get_series)(z_data)
     return [d for d in all_derivs_series]
 
 @partial(jit, static_argnames=['model'])
 def calculate_cr_loss(model: nn.Module, params: Any, z_points: jnp.ndarray) -> jnp.ndarray:
-    """Calculates the mean Cauchy-Riemann loss over a set of points."""
-    if z_points.shape[0] == 0:
-        return jnp.array(0.0, dtype=jnp.float32)
-
+    if z_points.shape[0] == 0: return jnp.array(0.0, dtype=jnp.float32)
     def get_jacobian(z_point):
         f = lambda z: model.apply({'params': params}, z.reshape(1, 2))[0]
         return jax.jacfwd(f)(z_point)
-
     jacobians = vmap(get_jacobian)(z_points)
-    du_dx, du_dy = jacobians[:, 0, 0], jacobians[:, 0, 1]
-    dv_dx, dv_dy = jacobians[:, 1, 0], jacobians[:, 1, 1]
-
-    cr_loss1 = safe_logcosh(du_dx - dv_dy)
-    cr_loss2 = safe_logcosh(du_dy + dv_dx)
-    return jnp.mean(cr_loss1 + cr_loss2)
+    du_dx, du_dy, dv_dx, dv_dy = jacobians[:, 0, 0], jacobians[:, 0, 1], jacobians[:, 1, 0], jacobians[:, 1, 1]
+    return jnp.mean(safe_logcosh(du_dx - dv_dy) + safe_logcosh(du_dy + dv_dx))
 
 
 # ================== TRAINING STEP AND UTILITIES ==================
@@ -197,44 +177,63 @@ def load_checkpoint_state(path, dummy_state: TrainState):
         print(f"-> Checkpoint read failed: {e}. Starting from scratch.")
         return None
 
+# --- MODIFIED LR SCHEDULER WITH REFRESH MECHANISM ---
 @partial(jit, static_argnames=['cfg'])
 def update_lr_on_plateau(state: TrainState, loss: float, cfg: Config) -> TrainState:
     lr_state = state.lr_plateau_state
+    
     is_better = loss < lr_state.best_loss * (1.0 - cfg.PLATEAU_IMPROVEMENT_REL_THRESHOLD)
+    new_best_loss = jnp.where(is_better, loss, lr_state.best_loss)
     new_counter = jnp.where(is_better, 0, lr_state.patience_counter + 1)
-    reduce_cond = (new_counter >= cfg.PLATEAU_PATIENCE)
-    new_lr = jnp.where(reduce_cond, jnp.maximum(lr_state.lr * cfg.PLATEAU_FACTOR, cfg.PLATEAU_MIN_LR), lr_state.lr)
-    lax.cond(new_lr < lr_state.lr, lambda: jax.debug.print(">>> LRPlateau: Reducing LR from {lr:.2e} to {nlr:.2e}", lr=lr_state.lr, nlr=new_lr), lambda: None)
-    return state._replace(lr_plateau_state=lr_state._replace(lr=new_lr, best_loss=jnp.where(is_better, loss, lr_state.best_loss), patience_counter=jnp.where(reduce_cond, 0, new_counter)))
+    
+    patience_exhausted = (new_counter >= cfg.PLATEAU_PATIENCE)
 
-# --- MODIFIED TRAINING STEP ---
+    def handle_patience_exhausted():
+        # This function is called only when patience is exhausted.
+        # It decides whether to reduce the LR or refresh it if stuck.
+        is_stuck_at_min_lr = lr_state.lr <= cfg.PLATEAU_MIN_LR
+
+        def refresh_lr_state():
+            # ACTION: Refresh LR to PEAK_LR because we are stuck at the minimum.
+            jax.debug.print("💥 LR Plateau Stuck! Refreshing LR from {lr:.2e} to {nlr:.2e}", lr=lr_state.lr, nlr=cfg.PEAK_LR)
+            # Reset the scheduler completely to give it a fresh start.
+            return ReduceLROnPlateauState(lr=cfg.PEAK_LR, best_loss=jnp.inf, patience_counter=0)
+
+        def reduce_lr_state():
+            # ACTION: Reduce LR because we are not yet at the minimum.
+            reduced_lr = jnp.maximum(lr_state.lr * cfg.PLATEAU_FACTOR, cfg.PLATEAU_MIN_LR)
+            jax.debug.print(">>> LRPlateau: Reducing LR from {lr:.2e} to {nlr:.2e}", lr=lr_state.lr, nlr=reduced_lr)
+            # Update LR and reset counter.
+            return lr_state._replace(lr=reduced_lr, patience_counter=0)
+        
+        # If we are already at the minimum LR, refresh. Otherwise, just reduce.
+        return lax.cond(is_stuck_at_min_lr, refresh_lr_state, reduce_lr_state)
+
+    def keep_lr_state():
+        # ACTION: No change in LR, just update the tracking values.
+        return lr_state._replace(best_loss=new_best_loss, patience_counter=new_counter)
+
+    # Decide which action to take based on whether patience was exhausted.
+    # The best_loss needs to be updated regardless.
+    new_lr_state = lax.cond(patience_exhausted, handle_patience_exhausted, keep_lr_state)
+    new_lr_state = new_lr_state._replace(best_loss=new_best_loss)
+    
+    return state._replace(lr_plateau_state=new_lr_state)
+
 @partial(jit, static_argnames=['model', 'cfg', 'get_target_derivs_fn'])
 def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_target_derivs_fn: Callable):
     key, data_key, cr_key = random.split(state.key, 3)
-    
-    z_train = random.uniform(data_key, (cfg.N_TRAINING_SAMPLES, 2), 
-                              minval=-cfg.INTERPOLATION_HALF_WIDTH, 
-                              maxval=cfg.INTERPOLATION_HALF_WIDTH)
-    
-    # Sample CR points from the CURRENT curriculum domain
-    cr_domain_min = -state.cr_half_width
-    cr_domain_max = state.cr_half_width
-    z_cr = random.uniform(cr_key, (cfg.N_CR_POINTS, 2),
-                           minval=cr_domain_min,
-                           maxval=cr_domain_max)
-
+    z_train = random.uniform(data_key, (cfg.N_TRAINING_SAMPLES, 2), minval=-cfg.INTERPOLATION_HALF_WIDTH, maxval=cfg.INTERPOLATION_HALF_WIDTH)
+    z_cr = random.uniform(cr_key, (cfg.N_CR_POINTS, 2), minval=-state.cr_half_width, maxval=state.cr_half_width)
     target_derivs = get_target_derivs_fn(z_train)
 
     def loss_fn(params):
-        # 1. DATA LOSS
         def get_model_derivs_series(z_scalar):
-            def f_scalar_model(z_point):
-                return model.apply({'params': params}, jnp.reshape(z_point, (1, 2)))[0]
+            f_scalar_model = lambda z_point: model.apply({'params': params}, jnp.reshape(z_point, (1, 2)))[0]
             direction = jnp.array([1.0, 0.0])
             series_in = (z_scalar,) + (direction,) + tuple(jnp.zeros_like(z_scalar) for _ in range(cfg.DERIV_ORDER))
             primal, series = jet(f_scalar_model, (z_scalar,), (series_in,))
             return (primal,) + tuple(series)
-        
         model_derivs_series = vmap(get_model_derivs_series)(z_train)
         
         data_loss = 0.0
@@ -246,37 +245,26 @@ def training_step(model: nn.Module, state: TrainState, _, cfg: Config, get_targe
             weight = 1.0 if k == 0 else cfg.DERIVATIVE_LOSS_WEIGHT
             data_loss += weight * loss_k
         
-        # 2. CAUCHY-RIEMANN LOSS
-        cr_loss = lax.cond(
-            cfg.USE_CR_LOSS and cfg.N_CR_POINTS > 0,
-            lambda p: calculate_cr_loss(model, p, z_cr),
-            lambda p: 0.0, params
-        )
-        
+        cr_loss = lax.cond(cfg.USE_CR_LOSS and cfg.N_CR_POINTS > 0, lambda p: calculate_cr_loss(model, p, z_cr), lambda p: 0.0, params)
         total_loss = data_loss + cfg.CR_LOSS_WEIGHT * cr_loss
         return total_loss, (data_loss, cr_loss)
 
-    # Get losses and gradients. has_aux=True returns the auxiliary outputs from loss_fn.
     (total_loss, (data_loss, cr_loss)), grads = jax.value_and_grad(loss_fn, has_aux=True)(state.params)
 
     gnorm = optax.global_norm(grads)
     clip_coef = jnp.minimum(1.0, cfg.GRADIENT_CLIP_VALUE / (gnorm + 1e-12))
     grads = jax.tree_map(lambda g: g * clip_coef, grads)
-    leaves = jax.tree_leaves(grads)
-    grads_finite = jnp.all(jnp.stack([jnp.all(jnp.isfinite(l)) for l in leaves if l is not None]))
-    grads = lax.cond(grads_finite, lambda g: g, lambda g: jax.tree_map(jnp.zeros_like, g), grads)
-
+    
     current_lr = state.lr_plateau_state.lr
     temp_fadam_optimizer = fadam(learning_rate=current_lr)
     updates, new_opt_state = temp_fadam_optimizer.update(grads, state.opt_state, state.params)
     new_params = optax.apply_updates(state.params, updates)
 
     new_state = state._replace(params=new_params, opt_state=new_opt_state, key=key, step=state.step + 1)
-    # Return individual losses for curriculum logic
     return new_state, (total_loss, data_loss, cr_loss)
 
 # ============================
-# MODIFIED TRAINING RUNNER
+# RUN TRAINING (Unchanged)
 # ============================
 def run_training(key, cfg: Config, target_params, save_dir):
     if cfg.ACTIVATION_FUNCTION.lower() == 'gelu': activation_fn = nn.gelu
@@ -298,8 +286,6 @@ def run_training(key, cfg: Config, target_params, save_dir):
     norm_stats = compute_normalization_stats(target_derivs_for_norm)
 
     initial_lr_state = ReduceLROnPlateauState(lr=cfg.PEAK_LR, best_loss=jnp.inf, patience_counter=0)
-    
-    # Initialize curriculum state
     initial_cr_half_width = cfg.INTERPOLATION_HALF_WIDTH if cfg.USE_CURRICULUM_LEARNING else cfg.EXTRAPOLATION_HALF_WIDTH
     
     dummy_state = TrainState(dummy_params, None, key, 0, initial_lr_state, target_params, norm_stats, cr_half_width=initial_cr_half_width)
@@ -312,12 +298,9 @@ def run_training(key, cfg: Config, target_params, save_dir):
     else:
         print(f"--- Loaded state from checkpoint. Resuming at step {state.step}. ---")
         # Handle curriculum state on reload
-        if cfg.USE_CURRICULUM_LEARNING:
-            loaded_cr_width = getattr(state, 'cr_half_width', cfg.INTERPOLATION_HALF_WIDTH)
-            state = state._replace(cr_half_width=loaded_cr_width)
-        else: # Not using curriculum, ensure it uses the full extrapolation domain
-            state = state._replace(cr_half_width=cfg.EXTRAPOLATION_HALF_WIDTH)
-        state = state._replace(opt_state=optimizer.init(state.params), norm_stats=norm_stats, target_params=target_params)
+        loaded_cr_width = getattr(state, 'cr_half_width', initial_cr_half_width)
+        state = state._replace(cr_half_width=loaded_cr_width, opt_state=optimizer.init(state.params), 
+                               norm_stats=norm_stats, target_params=target_params)
 
     scan_step_fn = partial(training_step, model, cfg=cfg, get_target_derivs_fn=get_target_derivs_fn)
     
@@ -331,14 +314,9 @@ def run_training(key, cfg: Config, target_params, save_dir):
         steps_to_run = min(cfg.LOG_EVERY_N_STEPS, cfg.TOTAL_TRAINING_STEPS - state.step)
         if steps_to_run <= 0: break
         
-        state, loss_histories = lax.scan(scan_step_fn, state, jnp.arange(steps_to_run))
+        state, (total_loss_history, data_loss_history, cr_loss_history) = lax.scan(scan_step_fn, state, jnp.arange(steps_to_run))
         
-        # Unpack the history of individual losses
-        total_loss_history, data_loss_history, cr_loss_history = loss_histories
-        
-        avg_total_loss = jnp.mean(total_loss_history)
-        avg_data_loss = jnp.mean(data_loss_history)
-        avg_cr_loss = jnp.mean(cr_loss_history)
+        avg_total_loss, avg_data_loss, avg_cr_loss = jnp.mean(total_loss_history), jnp.mean(data_loss_history), jnp.mean(cr_loss_history)
         
         state = update_lr_on_plateau(state, avg_total_loss, cfg)
         
@@ -346,39 +324,30 @@ def run_training(key, cfg: Config, target_params, save_dir):
               f"Total Loss: {avg_total_loss:.3e} | Data: {avg_data_loss:.3e} | CR: {avg_cr_loss:.3e} | "
               f"LR: {state.lr_plateau_state.lr:.2e} | CR Domain: [±{state.cr_half_width:.1f}]")
 
-        # --- CURRICULUM ADVANCEMENT LOGIC ---
         if cfg.USE_CURRICULUM_LEARNING:
-            can_advance = (avg_data_loss < cfg.CURRICULUM_LOSS_THRESHOLD) and \
-                          (avg_cr_loss < cfg.CURRICULUM_LOSS_THRESHOLD)
+            can_advance = (avg_data_loss < cfg.CURRICULUM_LOSS_THRESHOLD) and (avg_cr_loss < cfg.CURRICULUM_LOSS_THRESHOLD)
+            is_not_max_domain = state.cr_half_width < cfg.EXTRAPOLATION_HALF_WIDTH
             
             def advance_curriculum(current_state):
                 new_width = current_state.cr_half_width + 1.0
                 jax.debug.print("🎉 CURRICULUM ADVANCING: Domain expands to [±{w:.1f}]", w=new_width)
-                # Reset LR plateau to give it a boost for the new, harder task
                 new_lr_state = ReduceLROnPlateauState(lr=cfg.PEAK_LR, best_loss=jnp.inf, patience_counter=0)
                 return current_state._replace(cr_half_width=new_width, lr_plateau_state=new_lr_state)
 
-            # Advance only if we haven't reached the full domain yet
-            is_not_max_domain = state.cr_half_width < cfg.EXTRAPOLATION_HALF_WIDTH
-            state = lax.cond(can_advance & is_not_max_domain,
-                             advance_curriculum,
-                             lambda s: s, # No-op
-                             state)
+            state = lax.cond(can_advance & is_not_max_domain, advance_curriculum, lambda s: s, state)
 
         start_step = state.step
         if cfg.SAVE_MODELS: save_checkpoint(checkpoint_path, state)
     return model, state
 
 
-# ================== PLOTTING & MAIN ==================
+# ================== PLOTTING & MAIN (Unchanged) ==================
 def generate_info_text(cfg: Config, state: TrainState):
     arch = "Residual" if cfg.USE_RESIDUAL_CONNECTIONS else "Plain"
     act = cfg.ACTIVATION_FUNCTION.upper()
     nn_info = f"NN: {arch} {act}-MLP {cfg.MODEL_WIDTH}x{cfg.MODEL_DEPTH}"
     loss_info = f"Loss: Value+Deriv(w={cfg.DERIVATIVE_LOSS_WEIGHT})"
-    if cfg.USE_CR_LOSS:
-        loss_info += f" + CR(w={cfg.CR_LOSS_WEIGHT})"
-    # Add curriculum info
+    if cfg.USE_CR_LOSS: loss_info += f" + CR(w={cfg.CR_LOSS_WEIGHT})"
     curriculum_info = f"Final CR Domain: [±{getattr(state, 'cr_half_width', cfg.EXTRAPOLATION_HALF_WIDTH):.1f}]"
     lines = [f"Run: {cfg.RUN_NAME}", "Optimizer: FAdam", nn_info, loss_info, f"Final Step: {state.step}", curriculum_info]
     return "\n".join(lines)
@@ -388,26 +357,19 @@ def plot_result(model, state, save_dir, cfg: Config):
     print("  -> Generating final plot...")
     target_func = build_target_function(state.target_params)
     apply_fn = jit(lambda params, z: model.apply({'params': params}, z))
-    
     x_plot = jnp.linspace(-cfg.EXTRAPOLATION_HALF_WIDTH, cfg.EXTRAPOLATION_HALF_WIDTH, 2000)
     z_plot_real = jnp.stack([x_plot, jnp.zeros_like(x_plot)], axis=-1)
-    
     w_truth = vmap(target_func)(z_plot_real)
     uv_truth = jnp.stack([w_truth.real, w_truth.imag], axis=-1)
-
     uv_pred = apply_fn(state.params, z_plot_real)
-
     fig, axs = plt.subplots(2, 1, figsize=(18, 12), sharex=True)
     
     axs[0].plot(x_plot, uv_truth[:, 0], 'k--', lw=2, label='Ground Truth U(x, 0)')
     axs[0].plot(x_plot, uv_pred[:, 0], 'r', lw=2, alpha=0.8, label='Predicted U(x, 0)')
     axs[0].axvspan(-cfg.INTERPOLATION_HALF_WIDTH, cfg.INTERPOLATION_HALF_WIDTH, color='lightgreen', alpha=0.3, label='2D Data Domain')
-    
-    # Show the final CR loss domain
     final_cr_width = getattr(state, 'cr_half_width', cfg.EXTRAPOLATION_HALF_WIDTH)
     axs[0].axvspan(-final_cr_width, -cfg.INTERPOLATION_HALF_WIDTH, color='orange', alpha=0.1, hatch='/')
     axs[0].axvspan(cfg.INTERPOLATION_HALF_WIDTH, final_cr_width, color='orange', alpha=0.1, hatch='/', label=f'Final CR Loss Domain (±{final_cr_width:.1f})')
-
     axs[0].set_title(f"Model Performance (Real Part) - {cfg.RUN_NAME}"); axs[0].set_ylabel("U component"); axs[0].grid(True, linestyle=':'); axs[0].legend()
     axs[0].text(0.02, 0.98, generate_info_text(cfg, state), transform=axs[0].transAxes, fontsize=10, va='top', bbox=dict(boxstyle='round', facecolor='aliceblue', alpha=0.8))
     
