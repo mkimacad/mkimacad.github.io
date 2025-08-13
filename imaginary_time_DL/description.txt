@@ -37,6 +37,8 @@ Extrapolation works to [-2,2] but beyond that, extrapolation fails.
 Lesson - complex tanh ensuring holomorphic function not enough to ensure good extrapolation error. Still need high-order derivative data.
 Even with first-order derivative data, we have below:
 img:imgs/holomorphic_deriv_1.png
+With fifth-order derivative data, we have:
+img:imgs/holomorphic_deriv_5.png
 So we need high-order derivative data as well.
 header:DirectUVMLP
 The code is at codes/directuvmlp.py.
