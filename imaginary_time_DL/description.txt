@@ -41,9 +41,9 @@ header:DirectUVMLP
 The code is at codes/directuvmlp.py.
 img:imgs/directuvmlp_deriv_0.png
 img:imgs/directuvmlp_deriv_1.png
-header:DirectUVMLP with Cauchy-Riemann constraints
+header:DirectUVMLP with Cauchy-Riemann (CR) constraints
 The code is at codes/directuvmlp_CR.py.
-Instead of FAdam, AdamW is used here since AdamW is better in this special case.
+However, training largely fails here - difficult to impose CR constraints on $[-8,8]^2$, so the extrapolation domain lowered to $[-4,4]^2$.
 (Being updated)
 header:BELOW Completely DEPRECATED
 AWAITING NEW updates
