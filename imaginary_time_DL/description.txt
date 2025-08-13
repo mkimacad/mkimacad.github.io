@@ -33,6 +33,7 @@ Uses complex tanh activation function instead. Complex-valued input ($[-1,1]^2$ 
 Assumes function to be holomorphic.
 File:codes/holomorphic.py (DERIV_ORDER = 0)
 img:imgs/holomorphic_extrapolation.png
+Extrapolation works to [-2,2] but beyond that, extrapolation fails.
 Lesson - complex tanh ensuring holomorphic function not enough to ensure good extrapolation error. Still need high-order derivative data.
 Even with first-order derivative data, we have below:
 img:imgs/holomorphic_deriv_1.png
