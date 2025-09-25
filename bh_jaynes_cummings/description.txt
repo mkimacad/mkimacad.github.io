@@ -39,7 +39,8 @@ We expect black holes to be similar initially.
 After all, if quantum gravity breaks non-gravitational quantum superpositions by entanglement, then unless quantum mechanics is being modified, then non-gravitational quantum superpositions will be broken, and their effects will be known non-gravitationally.
 In the past, we have had this idea of black hole complementarity, but the idea has largely been gone out of fashion. So I will not speak of it.
 This is why we are talking of fine-grained entropy even if we seem to be discussing coarse-grained entropy in the small corrections theorem.
-Because $\textbf{it is really hard to break pure non-gravitational superpositions by quantum gravity effects without any effect on coarse-grained non-gravitational states}$.
+Because:
+$$\textbf{it is really hard to break pure non-gravitational superpositions by quantum gravity effects without any effect on coarse-grained non-gravitational states.}$$
 If we expect semiclassical no drama pictures to be maintained down to full evaporation, we should be able to discuss in terms of coarse-grained states and how they are corrected over time due to quantum gravity effects.
 By the way, the "extended" small corrections theorem exactly goes over this issue - does the full fine-grained state change the theorem? The answer in the theorem was no, as long as the conventional semiclassical picture is assumed.
 Now again, the "wise man" would say that people like Prof. Pennington has done hundreds of thousands of calculations more than I ever did so I should not just deduce his thoughts from what is publically available.
