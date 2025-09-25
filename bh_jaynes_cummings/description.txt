@@ -19,6 +19,7 @@ Of course I also use JT in one of my papers to inspire some properties, but this
 If I say replica wormhole holography examples succeed because bulk theories are very different from actual observable black hole bulk theories, would 'you' be outraged.
 But that has been the point of many critiques.
 $$\textbf{Bulk averaging over geometries at the leading order does not arise in actual observable black hole theories.}$$
+Don't get this confuse you - yes, replica wormholes do say that differences from path integrals without replica wormhole become noticeable around Page time. But it is the formulation of the 'gravitational' path integral incorporating replica worhmoles that allows us to calculate the effect size of replica wormholes itself that is questioned here. Within JT, this holds by definition, but would this port in anyway to observable or at least minimally physically plausible black holes?
 And this goes all in circle again. If you take the boundary theory instead, then it's $\textbf{a random theory ensemble}$, which is also far from what we expect from the non-gravitational EFT understanding of observable black holes (and $\textbf{far worse}$).
 Without further discussions, we could still say ETH does not save replica wormholes, and its problematic effect is visible in parts of the Hilbert space of radiations being inside a black hole.
 Which in turn we could say arise from these theories not actually being a model of observable black holes. So we need to go further.
