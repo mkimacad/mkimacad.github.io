@@ -2,6 +2,80 @@ header:On simulation code (baseline: codes/jaynes_improved.py)
 Main parameters at the end (currently line 368 # parameters):
 M (number of radiation qubits), N (number of particles in the black hole), reduc (multiplicative factor by which interaction time is reduced).
 The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
+
+header:Digression / some personal vents (1) (added: September 25, 2025): replica wormholes SYK/JT thing.
+So I have this very intelligent and well-established and famous faculty member that is way more senior to me. (I am nothing really at this point.)
+He gave me wise wisdoms and advices.
+However, there are things that I disagree even with a world-class physicist.
+At the meeting, I thought I was really dumb, but after recovery, I realized I was not completely dumb.
+So I largely forgot about replica wormholes being justified via SYK/JT or eigenstate thermalization hypothesis (ETH).
+But he brought this up, and at the time I didn't recall. However, I remembered back why I largely didn't think about it too much.
+First of all, of course holographic gravity does not model our reality, which makes things a lot weird, given that his point was that qubit models I am bringing up are not really physics, and I don't have theories that describe the reality, so there is nothing to talk about.
+Like yeah, the whole thing about replica wormholes justified via ETH really only makes sense...
+$$\textbf{if we can somehow non-gravitationally think that coupling is random or some fine-grained theory is random non-gravitationally.}$$
+Now 'you' may say that holographically in the bulk, there is nothing random, so replica wormholes are perfectly good.
+But this bulk theory (let's say JT) is very different from what we expect as a bulk black hole theory.
+Of course I also use JT in one of my papers to inspire some properties, but this is another level.
+If I say replica wormhole holography examples succeed because bulk theories are very different from actual observable black hole bulk theories, would 'you' be outraged.
+But that has been the point of many critiques.
+$$\textbf{Bulk averaging over geometries at the leading order does not arise in actual observable black hole theories.}$$
+And this goes all in circle again. If you take the boundary theory instead, then it's $\textbf{a random theory ensemble}$, which is also far from what we expect from the non-gravitational EFT understanding of observable black holes (and $\textbf{far worse}$).
+Without further discussions, we could still say ETH does not save replica wormholes, and its problematic effect is visible in parts of the Hilbert space of radiations being inside a black hole.
+Which in turn we could say arise from these theories not actually being a model of observable black holes. So we need to go further.
+Replica wormholes are $\textbf{unitary}$. $\textbf{But only up to the limit}$, and $\textbf{not proven to be generically unitary}$. That's the case, somewhat as a digression to the paper and rest of the contents here, that I wanted to defend.
+
+header:Digression / some personal vents (2) - continuing from (1), fine-grained entropy or coarse-grained entropy?
+Now "you" may say that I have misunderstood the information problem. 
+$$\textbf{Yes, the information problem is all about fine-grained entropy.}$$
+I get that.
+Raju's corrections to mixed state to get pure states are "large corrections", and only "small" in terms of coarse-grained observables.
+After all, we need large correction accumulatiosn to generate reverse monotonic entanglement entropy increases, so we would expect large corrections at the end. (Duh!)
+The real question, I think, is:
+$$\textbf{whether we can initially start from small corrections that can eventually accumulate to large corrections to reverse entanglement entropy increases}$$
+which is what Prof. Samir Mathur has been trying to discuss in his small corrections theorem.
+There will be large corrections, the question is whether we can start from small corrections and accumulate.
+Why small corrections initially? Well, think about ordinary life. $\textbf{We don't have to consult quantum gravity to make good predictions}$.
+We expect black holes to be similar initially.
+After all, if quantum gravity breaks non-gravitational quantum superpositions by entanglement, then unless quantum mechanics is being modified, then non-gravitational quantum superpositions will be broken, and their effects will be known non-gravitationally.
+In the past, we have had this idea of black hole complementarity, but the idea has largely been gone out of fashion. So I will not speak of it.
+This is why we are talking of fine-grained entropy even if we seem to be discussing coarse-grained entropy in the small corrections theorem.
+Because $\textbf{it is really hard to break pure non-gravitational superpositions by quantum gravity effects without any effect on coarse-grained non-gravitational states}$.
+If we expect semiclassical no drama pictures to be maintained down to full evaporation, we should be able to discuss in terms of coarse-grained states and how they are corrected over time due to quantum gravity effects.
+By the way, the "extended" small corrections theorem exactly goes over this issue - does the full fine-grained state change the theorem? The answer in the theorem was no, as long as the conventional semiclassical picture is assumed.
+Now again, the "wise man" would say that people like Prof. Pennington has done hundreds of thousands of calculations more than I ever did so I should not just deduce his thoughts from what is publically available.
+However, I do think that this coarse-grained thing is what he had in mind when he was debating with Prof. Suvrat Raju. Both sides have not seemed to get their points, but I think I do.
+
+header:Continuing digression (2), but the punch line
+The debate should really be:
+$$\textbf{is it possible in theory for an observer to collect all radiations and verify purity of radiations?}$$
+If we can, then we can describe in terms of fine-grained corrections to coarse-grained states. (Prof. Pennington and for this matter, Prof. Mathur)
+If we cannot, then the small corrections theorem does not even make sense. (the 'wise man' and possibly Prof. Raju)
+Unless this question is properly addressed (and I think the latter camp refuses to acknowledge that this question even matters), no progress can be made.
+Obviously, as you can notice I am in the first camp, and I think it is a conservative option.
+We just asking for entropy here. How can quantum gravity induce large entropy changes and yet not leave their marks on non-gravitational observables?
+And it makes sense to ask whether holography of information can be consistent with the first no drama vision, at least I think.
+But the conversation becomes really difficult, because the other camp does not acknowledge relevance of the question itself.
+"that you are not doing physics" makes zero contribution, and this mode of arguments actually allows for detractors outside to say "oh physics is no longer interested in modeling the reality".
+Because you are forcing physics calculations to be about something very distant from modeling the reality, when we should have more talks about whether this ever gets to have relevance in modeling our reality and what we mean by that.
+"You" may say that this is philosophy, not physics, but screw all that. Let's just try to think about the real world and do whatever we need, whether that may seem to be philosophy or physics, I wish we do not care so much about that.
+
+The fun thing is that different people belong to different "camps" when asked different questions - this is normal, but variance is much more than what the field itself seems to realize overall.
+One physicist may be on the replica wormhole camp but also believe that in theory, observing all radiations can produce a purification result.
+Another physicist may defend replica wormholes but believe that coarse-grained observables will not solve the information problem, and we have to make fine-grained calculations.
+
+So my plea is: please recognize that variance is much greater than you realize.
+The black hole information problem is not resolved partly because of this variance.
+
+And no, I do not claim here that I resolved the information problem.
+I may be slightly interested in resolving it. But I am not "trying" to resolve it here.
+The wise man would say that I am trying to resolve the information problem.
+
+Maybe one day, after doing hard works and very basic contributions that go neglected by all these wise people, I may be able to resolve it.
+I do not expect it, and I just wish these wise men can be more thankful of basic stuffs that students contribute today.
+No arrogance. It's all we hope for.
+The world is better run by millions of those better-than-average people than just few genius guys, and science is no exception.
+I just wish this is more recognized before charging that some person is trying to resolve great wonders of the world. Anyway.
+
 header:History (date-wise)
 Paper V1/github.io description: May 25-31, 2025
 A memo on the necessity of gravity quantization, forked to https://mkimacad.github.io/gravity_quantization: May 31-June 2, 2025
