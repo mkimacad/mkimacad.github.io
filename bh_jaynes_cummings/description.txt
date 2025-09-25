@@ -5,7 +5,7 @@ The codes model the interaction Hamiltonian only, but this is fine since "free H
 
 header:Digression / some personal vents (1) (added: September 25, 2025): replica wormholes SYK/JT thing.
 So I have this very intelligent and well-established and famous faculty member that is way more senior to me. (I am nothing really at this point.)
-He gave me wise wisdoms and advices.
+He, the wise man and the wise teacher to be greatly respected, gave me important wisdoms and advices.
 However, there are things that I disagree even with a world-class physicist.
 At the meeting, I thought I was really dumb, but after recovery, I realized I was not completely dumb.
 So I largely forgot about replica wormholes being justified via SYK/JT or eigenstate thermalization hypothesis (ETH).
@@ -70,13 +70,13 @@ The black hole information problem is not resolved partly because of this varian
 
 And no, I do not claim here that I resolved the information problem.
 I may be slightly interested in resolving it. But I am not "trying" to resolve it here.
-The wise man would say that I am trying to resolve the information problem.
+The wise teacher would say that I am trying to resolve the information problem.
 
 Maybe one day, after doing hard works and very basic contributions that go neglected by all these wise people, I may be able to resolve it.
-I do not expect it, and I just wish these wise men can be more thankful of basic stuffs that students contribute today.
+I do not expect it, and I only wish that people can be more thankful of basic stuffs that all kinds of people contribute today.
 No arrogance. It's all we hope for.
 The world is better run by millions of those better-than-average people than just few genius guys, and science is no exception.
-I just wish this is more recognized before charging that some person is trying to resolve great wonders of the world. Anyway.
+I just wish this is more recognized and voices of better-than-average be more heard and respected.
 
 header:History (date-wise)
 Paper V1/github.io description: May 25-31, 2025
