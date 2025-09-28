@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal vents for and against replica wormholes</title>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .project-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .project-title {
+            font-size: 2.2em;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .project-subtitle {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .project-images {
+            margin: 30px 0;
+        }
+        
+        .image-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .image-row.two-images {
+            gap: 40px;
+        }
+        
+        .image-container {
+            text-align: center;
+            max-width: 540px;
+        }
+        
+        .project-image {
+            max-width: 100%;
+            width: 100%;
+            height: auto;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .project-image[src$=".svg"] {
+            width: 100%;
+            min-width: 400px;
+            max-width: 540px;
+        }
+        
+        .project-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            cursor: pointer;
+        }
+        
+        .image-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 95%;
+            max-height: 95%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .image-modal img {
+            width: 100%;
+            height: auto;
+            display: block;
+            min-width: 600px;
+        }
+        
+        .image-modal img[src$=".svg"] {
+            min-width: 800px;
+            max-width: 1200px;
+        }
+        
+        .image-modal-caption {
+            padding: 15px;
+            background: white;
+            text-align: center;
+            font-size: 1.1em;
+            color: #333;
+            border-top: 1px solid #eee;
+        }
+        
+        .image-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .image-modal-close:hover {
+            background: rgba(0,0,0,0.7);
+        }
+        
+        .image-caption {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        .project-description {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            margin: 30px 0;
+            text-align: left;
+            font-size: 1.1em;
+            color: #555;
+            font-style: normal;
+            border-left: none;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        .description-section {
+            margin: 30px 0;
+        }
+        
+        .description-header {
+            font-size: 1.4em;
+            color: #2c3e50;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .description-image {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .description-image:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Enhanced link styling */
+        .auto-link {
+            color: #3498db;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .auto-link:hover {
+            color: #2980b9;
+            border-bottom-color: #2980b9;
+            text-decoration: none;
+        }
+        
+        .auto-link:visited {
+            color: #8e44ad;
+        }
+        
+        .auto-link:visited:hover {
+            color: #732d91;
+            border-bottom-color: #732d91;
+        }
+
+        /* LaTeX equation styling */
+        .latex-equation {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            overflow-x: auto;
+            text-align: center;
+        }
+        
+        .latex-inline {
+            background: #f1f3f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        /* PDF viewer section */
+        .pdf-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ecf0f1;
+        }
+        
+        .pdf-container {
+            width: 100%;
+            min-height: 800px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        .pdf-frame {
+            width: 100%;
+            height: 800px;
+            border: none;
+        }
+        
+        .file-browser-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ecf0f1;
+        }
+        
+        .file-browser-container {
+            width: 100%;
+            min-height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .file-browser-frame {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Project Header -->
+        <div class="project-header">
+            <h1 class="project-title">Personal vents for and against replica wormholes</h1>
+            <p class="project-subtitle">(by Minseong Kim)</p>
+            
+            
+            <!-- Dynamic Project Description -->
+            <div id="projectDescription" class="project-description">
+                <div class="loading">Loading description...</div>
+            </div>
+
+        
+        <!-- File Browser Section -->
+        <div class="file-browser-section">
+            <h1>📁 Repository File Explorer</h1>
+            <div class="file-browser-container">
+                <iframe id="fileBrowserFrame" class="file-browser-frame" src="filebrowser.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- Image Modal -->
+        <div id="imageModal" class="image-modal">
+            <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+            <div class="image-modal-content">
+                <img id="modalImage" src="" alt="">
+                <div id="modalImageCaption" class="image-modal-caption"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Function to convert custom inequality commands to LaTeX
+        function convertCustomInequalities(text) {
+            // Replace \lineq with < and \gineq with >
+            return text.replace(/\\lineq/g, '<').replace(/\\gineq/g, '>');
+        }
+        
+        // Enhanced text processing that handles LaTeX and URLs together
+        function processTextWithLatexAndUrls(text) {
+            // Skip if text already contains HTML tags to avoid breaking existing links
+            if (/<[^>]*>/.test(text)) {
+                return text;
+            }
+            
+            // First convert custom inequality commands
+            text = convertCustomInequalities(text);
+            
+            // Create a structure to track different types of content
+            const tokens = [];
+            let currentIndex = 0;
+            
+            // First, find all LaTeX expressions (display math $$...$$ and inline $...$)
+            const latexDisplayRegex = /\$\$([^$]+?)\$\$/g;
+            const latexInlineRegex = /(?<!\$)\$([^$\n]+?)\$(?!\$)/g;
+            
+            // Find display math first
+            let match;
+            while ((match = latexDisplayRegex.exec(text)) !== null) {
+                tokens.push({
+                    type: 'latex-display',
+                    start: match.index,
+                    end: match.index + match[0].length,
+                    content: match[0],
+                    mathContent: match[1]
+                });
+            }
+            
+            // Reset regex
+            latexDisplayRegex.lastIndex = 0;
+            
+            // Find inline math, but avoid areas already marked as display math
+            while ((match = latexInlineRegex.exec(text)) !== null) {
+                const isOverlapping = tokens.some(token => 
+                    match.index >= token.start && match.index < token.end
+                );
+                
+                if (!isOverlapping) {
+                    tokens.push({
+                        type: 'latex-inline',
+                        start: match.index,
+                        end: match.index + match[0].length,
+                        content: match[0],
+                        mathContent: match[1]
+                    });
+                }
+            }
+            
+            // Reset regex
+            latexInlineRegex.lastIndex = 0;
+            
+            // Find URLs, avoiding LaTeX areas
+            const urlRegex = /\b(?:(?:https?:\/\/|ftp:\/\/)[^\s<>"{}|\[\]^`]+[^\s<>"{}|\[\]^`.,;:!?]|www\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.(?:com|org|net|edu|gov|io|co\.uk|github\.io|arxiv\.org)(?:\/[^\s<>"{}|\[\]^`]*[^\s<>"{}|\[\]^`.,;:!?])?)\b/gi;
+            
+            while ((match = urlRegex.exec(text)) !== null) {
+                const isOverlapping = tokens.some(token => 
+                    match.index >= token.start && match.index < token.end
+                );
+                
+                if (!isOverlapping) {
+                    tokens.push({
+                        type: 'url',
+                        start: match.index,
+                        end: match.index + match[0].length,
+                        content: match[0]
+                    });
+                }
+            }
+            
+            // Reset regex
+            urlRegex.lastIndex = 0;
+            
+            // Sort tokens by start position
+            tokens.sort((a, b) => a.start - b.start);
+            
+            // Build the result by processing tokens in order
+            let result = '';
+            let lastIndex = 0;
+            
+            for (const token of tokens) {
+                // Add text before this token
+                result += text.substring(lastIndex, token.start);
+                
+                // Add the processed token
+                if (token.type === 'latex-display') {
+                    result += `<div class="latex-equation">$$${token.mathContent}$$</div>`;
+                } else if (token.type === 'latex-inline') {
+                    result += `<span class="latex-inline">$${token.mathContent}$</span>`;
+                } else if (token.type === 'url') {
+                    let url = token.content;
+                    let displayUrl = token.content;
+                    
+                    // Determine if we need to add protocol
+                    if (!token.content.startsWith('http://') && 
+                        !token.content.startsWith('https://') && 
+                        !token.content.startsWith('ftp://')) {
+                        url = 'https://' + token.content;
+                    }
+                    
+                    // Smart truncation for very long URLs
+                    if (displayUrl.length > 60) {
+                        if (displayUrl.includes('/')) {
+                            const parts = displayUrl.split('/');
+                            if (parts.length > 3) {
+                                displayUrl = parts[0] + '//' + parts[2] + '/.../' + parts[parts.length - 1];
+                            } else {
+                                displayUrl = displayUrl.substring(0, 57) + '...';
+                            }
+                        } else {
+                            displayUrl = displayUrl.substring(0, 57) + '...';
+                        }
+                    }
+                    
+                    result += `<a href="${url}" class="auto-link" target="_blank" rel="noopener noreferrer" title="${token.content}">${displayUrl}</a>`;
+                }
+                
+                lastIndex = token.end;
+            }
+            
+            // Add remaining text
+            result += text.substring(lastIndex);
+            
+            return result;
+        }
+        
+        // Load and parse description.txt
+        async function loadDescription() {
+            const descriptionContainer = document.getElementById('projectDescription');
+            
+            try {
+                // Try to fetch description.txt directly from the current directory
+                const textUrl = `https://raw.githubusercontent.com/mkimacad/mkimacad.github.io/main/bh_jaynes_cummings/description.txt`;
+                
+                const response = await fetch(textUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Description file not found (${response.status})`);
+                }
+                
+                const content = await response.text();
+                parseDescription(content);
+                
+            } catch (error) {
+                console.error('Error loading description:', error);
+                descriptionContainer.innerHTML = `
+                    <div class="description-section">
+                        <p>Description could not be loaded from description.txt</p>
+                        <p><em>Default: Main simulation python file: jaynes_improved.py. Main parameters at the end: M (number of atoms), N (number of photons), reduc (multiplicative factor by which interaction time is reduced).</em></p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Parse description content with header:, img:, LaTeX, and URL handling
+        function parseDescription(content) {
+            const descriptionContainer = document.getElementById('projectDescription');
+            const lines = content.split('\n');
+            let html = '';
+            
+            for (let line of lines) {
+                const trimmed = line.trim();
+                
+                if (trimmed.startsWith('header:')) {
+                    const text = trimmed.slice(7).trim();
+                    const processedText = processTextWithLatexAndUrls(text);
+                    html += `<div class="description-header">${processedText}</div>`;
+                    
+                } else if (trimmed.startsWith('img:')) {
+                    const img = trimmed.slice(4).trim();
+                    html += `<img src="${img}" alt="${img}" class="description-image"
+                                 onclick="openImageModal(this,'${img}')"
+                                 onerror="this.style.display='none'">`;
+                    
+                } else if (trimmed === '') {
+                    html += '<br>';
+                    
+                } else if (trimmed) {
+                    // Process both LaTeX and URLs together
+                    const processedText = processTextWithLatexAndUrls(trimmed);
+                    html += `<p>${processedText}</p>`;
+                }
+            }
+            
+            descriptionContainer.innerHTML = html || '<p>No description content found.</p>';
+            
+            // Render MathJax after content is loaded
+            renderMathJax();
+        }
+        
+        // Render MathJax with proper error handling and async support
+        function renderMathJax() {
+            if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                const descriptionContainer = document.getElementById('projectDescription');
+                MathJax.typesetPromise([descriptionContainer]).catch(function (err) {
+                    console.log('MathJax typeset error: ' + err.message);
+                });
+            } else if (typeof MathJax !== 'undefined' && MathJax.Hub) {
+                // Fallback for older MathJax versions
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, "projectDescription"]);
+            } else {
+                // MathJax not ready yet, try again after a short delay
+                setTimeout(renderMathJax, 200);
+            }
+        }
+        
+        // Open image modal
+        function openImageModal(img, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalImageCaption');
+            
+            modal.style.display = 'block';
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+            modalCaption.textContent = caption || img.alt;
+        }
+        
+        // Close image modal
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const imageModal = document.getElementById('imageModal');
+            
+            if (event.target === imageModal) {
+                closeImageModal();
+            }
+        }
+        
+        // Initialize page - wait for MathJax to be ready
+        window.onload = function() {
+            // Wait a bit for MathJax to fully initialize before loading description
+            setTimeout(loadDescription, 500);
+        };
+    </script>
+</body>
+</html>
