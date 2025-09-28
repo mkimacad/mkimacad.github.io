@@ -1,0 +1,127 @@
+header:Concrete model of replica wormholes: SYK/JT
+So we have this SYK/JT model of replica wormholes.
+The key logics go as:
+1. SYK model in the boundary with random coupling constants.
+2. For a specific black hole, a particular coupling constant is realized.
+3. I want to know the behavior over a typical black hole.
+4. Invoke eigenstate thermalization hypothesis (ETH) to argue that statistical mechanics can discover some properties/observables in a fine-grained theory.
+5. Now calculate $E[\log Z]$, but since this is difficult, we use the replica trick, which makes us calculate $E[Z^n]$.
+6. In the bulk JT gravity side $E[Z^n]$ in the bounary is not just an expectation and is a full gravitational path integral involving topologies.
+7. Since ETH was invoked, thermodynamic relations can be used to calculate fine-grained entropy. With this calculation, we recover the Page curve.
+
+header:Generically, we still do not know if replica wormholes are unitary
+That we have SYK/JT does not mean that replica wormholes are unitary generically. Multiple very plausible (and more than that, theoretically sound) counter-possibiities remain:
+1. It could be that they are unitary only because of JT gravity quirks.
+2. Somewhat importantly, if we consider JT gravity theory alone, then since it follows usual rules of quantum mechanics, we should see no replica wormholes.
+In fact, this point is often misunderstood by replica wormhole proponents. "Detractors" do get SYK/JT. It is just that JT used in replica wormholes is not actually JT.
+There is no guarantee that JT with replica wormhole corrections is actually a unitary theory. It does not matter that a particular instance of SYK theory is a perfectly unitary theory.
+After all, do you consider a classical theory to be a linear unitary theory just because it could be understood as an ensemble theory of some quantum realizations or theories? I do not think so.
+This often becomes an interpretational issue/dance, leading to multiple interpretations:
+2-a. We are just using JT to holographically interpret SYK, and it's fine that we are not actually using the actual JT. We just use a non-unitary theory to prove points about a unitary theory.
+2-b. Replica wormholes are the right ways to understand JT. New subdominant saddles are hiding all the way, waiting to be uncovered.
+  
+header:Another argument for replica wormholes against critics that is not by itself alone convincing
+Argument 1
+1. SYK is not actually random (fixed coupling constant) for a particular black hole realization.
+2. A specific SYK realization is dual to a different quantum gravity theory, not JT.
+3. However, JT works as an effective (semiclassical?) bulk theory that is still able to provide most of the answers at the semiclassical level.
+Against Argument 1
+But this is a flawed argument. Let's see what happens when applied to our real bulk theory.
+A. We have a well-known semiclassical bulk theory that describes our reality. It is shown to have limits in black hole contexts.
+B. It is argued that adding replica wormholes will solve the problem.
+C. However, the above interpretation of SYK/JT requires us to think of the semiclassical bulk theory as an ensemble theory of bulk theories.
+D. But this well-known semiclassical bulk theory is not an ensemble theory of bulk theories.
+D/1. The semiclassical bulk theory rather corresponds to a fairly stable classical spacetime theory - a particular realization of spacetime.
+D/2. Differently stated, we live in a particular 'coupling constant' instance of a boundary theory with random coupling constants.
+D/3. And the theory obtained from this particular instance is not an ensemble theory of bulk theories.
+D/4. After all, we are not going to say that the known bulk theory does not cover 'atypical states'.
+So typicality arguments cannot be used to justify the interpretation of the bulk theory as an ensemble theory.
+E. So using a particular instance of a 'random' boundary theory to justify replica wormholes generically does not work, and randomness of SYK does matter.
+F. QM, on the natural setting, forbids replica wormholes regardless of JT gravity or not.
+G. Of course in case bulk EFT itself requires corrections, then replica wormholes can be justified even within unitary quantum mechanics.
+We could say that using 'random' SYK as a boundary dual requires subtle corrections to JT in order for holography to make sense.
+Again, this does not necessarily mean that JT theory requires these corrections, nor does JT with replica wormholes is necessarily a unitary theory.
+Argument 2
+4. "Suppose that some bulk theory is the right bulk theory. Then it may be argued that different boundary theories can be 'described' by the same bulk theory as in SYK/JT.
+It is argued that fine-grained theories are in the boundary theory, and we living in the bulk theory do not know which fine-grained theory is correct."
+Against Argument 2
+This is also a flawed argument, and the same counterargument applies as with Argument 1. If we have the bulk theory as an ensemble theory then eventually there are atypical states
+such that the bulk theory fails. The very ETH argument invokes typicality, so we cannot argue that black holes are one of these "rare" atypical cases that justify replica wormholes.
+
+header:A key trouble
+Indeed, we could say that the troubles with replica wormholes are visible in Hilbert space factorization, where we must consider parts of the black hole interior as corresponding to radiations.
+With all the quirks and issues above, we cannot simply brush this aside as a weird but rightful outcome of the entanglement wedge duality.
+  
+header:Fun twist
+After the meeting that went horribly bad, described in history below, I actually came to realize something important, and this is now going to become my new paper.
+I should thank 'the true teacher'. Never realized how great his wisdom is so that his hint about ETH would prompt me to realize an important thing.
+  
+header:Now history behind why this is introduced and written...
+So I have this very intelligent and well-established and famous faculty member (or "master" / "guru") that is way more senior to me. (I am nothing really at this point.)
+He, the master to be greatly respected, gave me important wisdoms and advices.
+However, there are things that I disagree even with a world-class physicist.
+At the meeting, I thought I was really dumb, but after recovery, I realized I was not completely dumb.
+So I largely forgot about replica wormholes being justified via SYK/JT or eigenstate thermalization hypothesis (ETH).
+But he brought this up, and at the time I didn't recall. However, I remembered back why I largely didn't think about it too much... which is now stated above.
+header:Qubit models vs SYK?
+1. Most models of holographic gravity are yet to model our reality.
+2. Which made a lot of points about qubit models made by the master very weird, since.. isn't SYK also a crude model, at least in context of black hole physics.
+I mean, yeah I have qubits flying over and so on, but is that really that worse than the SYK setup?
+After all, the sacrifice made in the SYK setup is it lost a bit of realism to have a clean theory that we can directly work on.
+He said I don't have a theory, so that usually should be the end of the discussion, but personally I just do not understand.
+I may be stupid, and I know that this is the usual grammar in the field..
+but it seems like saying that we should not talk about quantum computers unless we have a full theory of realizing quantum computers..
+when the full theory actually put forward takes much less of realism.
+  
+header:History continued - fine-grained entropy or coarse-grained entropy?
+During the meeting, the master said that I am misunderstanding the information problem. And I can say:
+$$\textbf{Yes, the information problem is all about fine-grained entropy.}$$
+I get that.
+Raju's corrections to mixed state to get pure states are "large corrections", and only "small" in terms of coarse-grained observables.
+After all, we need large correction accumulatiosn to generate reverse monotonic entanglement entropy increases, so we would expect large corrections at the end. (Duh!)
+The real question, I think, is:
+$$\textbf{whether we can initially start from small corrections that can eventually accumulate to large corrections to reverse entanglement entropy increases}$$
+which is what Prof. Samir Mathur has been trying to discuss in his small corrections theorem.
+There will be large corrections, the question is whether we can start from small corrections and accumulate.
+Why small corrections initially? Well, think about ordinary life. $\textbf{We don't have to consult quantum gravity to make good predictions}$.
+We expect black holes to be similar initially.
+After all, if quantum gravity breaks non-gravitational quantum superpositions by entanglement, then unless quantum mechanics is being modified, then non-gravitational quantum superpositions will be broken, and their effects will be known non-gravitationally.
+In the past, we have had this idea of black hole complementarity, but the idea has largely been gone out of fashion. So I will not speak of it.
+This is why we are talking of fine-grained entropy even if we seem to be discussing coarse-grained entropy in the small corrections theorem.
+Because:
+$$\textbf{it is really hard to break pure non-gravitational superpositions by quantum gravity effects without any effect on coarse-grained non-gravitational states.}$$
+If we expect semiclassical no drama pictures to be maintained down to full evaporation, we should be able to discuss in terms of coarse-grained states and how they are corrected over time due to quantum gravity effects.
+By the way, the "extended" small corrections theorem exactly goes over this issue - does the full fine-grained state change the theorem? The answer in the theorem was no, as long as the conventional semiclassical picture is assumed.
+Now again, the "wise man" would say that people like Prof. Pennington has done hundreds of thousands of calculations more than I ever did so I should not just deduce his thoughts from what is publically available.
+However, I do think that this coarse-grained thing is what he had in mind when he was debating with Prof. Suvrat Raju. Both sides have not seemed to get their points, but I think I do.
+
+header:History continued - the punch line
+The debate should really be:
+$$\textbf{is it possible in theory for an observer to collect all radiations and verify purity of radiations?}$$
+If we can, then we can describe in terms of fine-grained corrections to coarse-grained states. (Prof. Pennington and for this matter, Prof. Mathur)
+If we cannot, then the small corrections theorem does not even make sense. (the 'master' and possibly Prof. Raju)
+Unless this question is properly addressed (and I think the latter camp refuses to acknowledge that this question even matters), no progress can be made.
+Obviously, as you can notice I am in the first camp, and I think it is a conservative option.
+We just asking for entropy here. How can quantum gravity induce large entropy changes and yet not leave their marks on non-gravitational observables?
+And it makes sense to ask whether holography of information can be consistent with the first no drama vision, at least I think.
+But the conversation becomes really difficult, because the other camp does not acknowledge relevance of the question itself.
+"that you are not doing physics" makes zero contribution, and this mode of arguments actually allows for detractors outside to say "oh physics is no longer interested in modeling the reality".
+Because you are forcing physics calculations to be about something very distant from modeling the reality, when we should have more talks about whether this ever gets to have relevance in modeling our reality and what we mean by that.
+"You" may say that this is philosophy, not physics, but screw all that. Let's just try to think about the real world and do whatever we need, whether that may seem to be philosophy or physics, I wish we do not care so much about that.
+
+The fun thing is that different people belong to different "camps" when asked different questions - this is normal, but variance is much more than what the field itself seems to realize overall.
+One physicist may be on the replica wormhole camp but also believe that in theory, observing all radiations can produce a purification result.
+Another physicist may defend replica wormholes but believe that coarse-grained observables will not solve the information problem, and we have to make fine-grained calculations.
+
+So my plea is: please recognize that variance is much greater than you realize.
+The black hole information problem is not resolved partly because of this variance.
+
+And no, I do not claim here that I resolved the information problem.
+I may be slightly interested in resolving it. But I am not "trying" to resolve it here.
+The wise master would say that I am trying to resolve the information problem.
+
+Maybe one day, after doing hard works and very basic contributions that often go neglected, I may be able to resolve it.
+I do not expect it, and I only wish that people can be more thankful of basic stuffs that all kinds of people contribute today.
+No arrogance. It's all we hope for.
+The world is better run by millions of those better-than-average people than just few genius guys, and science is no exception.
+I just wish this is more recognized and voices of better-than-average be more heard and respected.
