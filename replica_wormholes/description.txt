@@ -9,6 +9,18 @@ The key logics go as:
 6. In the bulk JT gravity side $E[Z^n]$ in the bounary is not just an expectation and is a full gravitational path integral involving topologies.
 7. Since ETH was invoked, thermodynamic relations can be used to calculate fine-grained entropy. With this calculation, we recover the Page curve.
 
+header:Reminder - Schwarzian action equality does not mean two theories are really equal!
+Since integrating out non-boundary after solving EOM in JT gravity results in the same Schwarzian action as the SYK boundary theory in SYK/JT,
+it may be thought that these two theories are totally equivalent.
+However, this does not mean these theories are not totally equivalent.
+Because we are doing path integrals, so this is a question about quantization.
+Now you may say that this is actually perturbative (conventional) versus non-perturbative (replica wormholes).
+Is it? 
+Replica topologies are in Wick-rotated time - or Euclidean time. So this is not usual non-perturbative contributions.
+We are just stating that somehow topologies also go through Euclidean time. Are they genuine non-perturbative contributions?
+SYK calculations suggest they are so, but this does not grant that SYK with replica wormholes is a unitary theory.
+Indeed, in SYK/JT with replica wormholes, the JT bulk side is an ensemble theory, so does not need to be a unitary theory, even if a particular SYK instance is unitary.
+
 header:Generically, we still do not know if replica wormholes are unitary
 That we have SYK/JT does not mean that replica wormholes are unitary generically. Multiple very plausible (and more than that, theoretically sound) counter-possibiities remain:
 1. It could be that they are unitary only because of JT gravity quirks.
