@@ -2,12 +2,14 @@ header:Concrete model of replica wormholes: SYK/JT
 So we have this SYK/JT model of replica wormholes.
 The key logics go as:
 1. SYK model in the boundary with random coupling constants.
-2. For a specific black hole, a particular coupling constant is realized.
+2. For a specific black hole, a particular coupling constant(s) is realized - one particular SYK instance.
 3. I want to know the behavior over a typical black hole.
 4. Invoke eigenstate thermalization hypothesis (ETH) to argue that statistical mechanics can discover some properties/observables in a fine-grained theory.
+4-a. ETH: for thermal quantities, a microstate is approximated by a thermal state in SYK instance.
+4-b. Large-N self-averaging property: for the large-N limit, an ensemble state is similar to a state in a particular SYK instance.
 5. Now calculate $E[\log Z]$, but since this is difficult, we use the replica trick, which makes us calculate $E[Z^n]$.
 6. In the bulk JT gravity side $E[Z^n]$ in the bounary is not just an expectation and is a full gravitational path integral involving topologies.
-7. Since ETH was invoked, thermodynamic relations can be used to calculate fine-grained entropy. With this calculation, we recover the Page curve.
+7. Thermodynamic relations can be used to calculate fine-grained entropy. With this calculation, we recover the Page curve.
 
 header:Reminder - Schwarzian action equality does not mean two theories are really equal!
 Since integrating out non-boundary after solving EOM in JT gravity results in the same Schwarzian action as the SYK boundary theory in SYK/JT,
