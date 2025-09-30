@@ -31,6 +31,13 @@ In this straightforward understanding, replica wormholes are corrections to JT t
 This does not address whether the actual dual to one SYK instance, which will not be JT, can be probed semiclassically.
 We cannot understand JT plus replica wormholes semiclassically - we have firewalls (see: arXiv:2411.09548). So more probe is required.
 
+header:Possibly trivia, possibly not
+Indeed, what Suvrat Raju said in "lessons from the information problem" is that what replica wormholes compute is coarse-grained entropy, not fine-grained.
+We could possibly save this by invoking eigenstate thermalization hypothesis (ETH).
+However, the paradox Raju suggests is deep for replica wormholes, and unless the bulk EFT is being corrected, ETH alone does not save the paradox.
+And indeed, it is simple to accept that the bulk EFT is being corrected - after all, we are using JT as an ensemble theory.
+Therefore, for a single instance, when ensemble states no longer approximate true microstates, then we need EFT corrections. Simple as that.
+
 header:Generically, we still do not know if replica wormholes are unitary
 That we have SYK/JT does not mean that replica wormholes are unitary generically. Multiple very plausible (and more than that, theoretically sound) counter-possibiities remain:
 1. It could be that they are unitary only because of JT gravity quirks.
