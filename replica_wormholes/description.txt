@@ -14,14 +14,22 @@ The key logics go as:
 header:Reminder - Schwarzian action equality does not mean two theories are really equal!
 Since integrating out non-boundary after solving EOM in JT gravity results in the same Schwarzian action as the SYK boundary theory in SYK/JT,
 it may be thought that these two theories are totally equivalent.
-However, this does not mean these theories are not totally equivalent.
+However, this does not mean these theories are totally equivalent.
 Because we are doing path integrals, so this is a question about quantization.
 Now you may say that this is actually perturbative (conventional) versus non-perturbative (replica wormholes).
 Is it? 
 Replica topologies are in Wick-rotated time - or Euclidean time. So this is not usual non-perturbative contributions.
 We are just stating that somehow topologies also go through Euclidean time. Are they genuine non-perturbative contributions?
-SYK calculations suggest they are so, but this does not grant that SYK with replica wormholes is a unitary theory.
+SYK calculations suggest they are so, but this does not grant that JT with replica wormholes is a unitary theory.
 Indeed, in SYK/JT with replica wormholes, the JT bulk side is an ensemble theory, so does not need to be a unitary theory, even if a particular SYK instance is unitary.
+
+header:More precisely..
+The real issue is whether we are using JT theory as an ensemble theory or not.
+For non-black hole contexts, ensemble states approximate actual microstates closely.
+Replica wormholes show that in black holes, ensemble states do not approximate actual microstates, so Euclidean-time calculations are critical.
+In this straightforward understanding, replica wormholes are corrections to JT theory so that we can truly probe Euclidean-time observables.
+This does not address whether the actual dual to one SYK instance, which will not be JT, can be probed semiclassically.
+We cannot understand JT plus replica wormholes semiclassically - we have firewalls (see: arXiv:2411.09548). So more probe is required.
 
 header:Generically, we still do not know if replica wormholes are unitary
 That we have SYK/JT does not mean that replica wormholes are unitary generically. Multiple very plausible (and more than that, theoretically sound) counter-possibiities remain:
