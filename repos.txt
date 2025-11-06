@@ -1,24 +1,16 @@
 Overview (to be replaced with CV, later)
 overviews
+A unitary and deterministic theory of quantum measurements
+measurement
 Black hole research papers overview and links
 blackholes
 Quantum Thermal Search
 quantum_thermal_search
-AdS/PINN: extending holographic gravity via deep learning
+AdS/PINN: extending holographic gravity via deep learning (works in progress)
 ads_vaebm
-Imaginary-time deep learning
+Imaginary-time deep learning (works in progress)
 imaginary_time_DL
-Nonlinear quantum computing? (Non-publication memo, forked from gravity_quantization)
-other_quantum_computers
-Study Notes
-studynotes
-Random thoughts about quantum physics (not necessarily research)
-qm_random_thoughts
-Random thoughts about computation (not necessarily research, should largely be inactive)
-comp_random_thoughts
-Coffee (not necessarily research)
-coffee
-Music (not necessarily research, overlapping with deep learning)
+Music (works in progress)
 music
-Other thoughts (other theories, etc.)
+Other thoughts (To be updated, merged)
 other_thoughts
