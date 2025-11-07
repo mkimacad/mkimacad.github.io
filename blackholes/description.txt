@@ -1,71 +1,12 @@
-header:Black hole research papers and notes involved
-$$\textbf{What happened to empty black hole branches in a superposition?}$$
-$$\textbf{My semiclassical spacetime should still be safe!}$$
-A Jaynes-Cummings (JCM) model of black holes: https://mkimacad.github.io/bh_jaynes_cummings [Submitted to a journal]
-$$\textbf{Bulk Hilbert space factorization in holography, quo vadis?}$$
-Investigating the Karch-Randall braneworld and the small corrections theorem: https://mkimacad.github.io/braneworld [Published in Fortschritte der Physik - Progress of Physics]
-$$\textbf{Let's cool a quantum system to solve search problems but w/o varying } H\text{?}$$
-$$\textbf{Adiabatic quantum computing is dead(?), but quantum cooling alive?}$$
-Quantum thermal search (partially involving a black hole "eventually"): https://mkimacad.github.io/quantum_thermal_search [Published in Quantum Information Processing]
-$$\textbf{Collapse is irrelevant: expectation-based semiclassical gravity problematic!}$$
-A different take into the JCM model with regards to quantization of gravity: https://mkimacad.github.io/gravity_quantization [Submitted to a philosophy of science journal]
-$$\textbf{Can we please accept non-linearity in EFT?}$$
-An analysis (study note?) of "An apologia for islands" paper: https://mkimacad.github.io/review_apologia [Just an analysis]
-$$\textbf{Can't black holes impose finite timelines for everyone?}$$
-A minor "side" somewhat philosophical paper regarding the nature of singularities (time can be finite despite effectively also being infinite, "black hole singularities can be beneficial"): https://mkimacad.github.io/philsci_time [Published in Sophia]
-header:Common storyline 1: the question of temperature transitions
-Bekenstein-Hawking temperature gets hotter as black holes evaporate.
-This holds if the semiclassical Hawking picture is correct.
-The problem is that after complete evaporation, we expect tranquility, so temperature goes from extremely hot to suddenly cold for the horizon vacuum behavior.
-The empty black hole limit of Schwarzschild spacetime is just Minkowski spacetime. The former features lasting radiations at asymptotic infinity, while the latter features none of that.
-The black hole information problem suggests this is indeed problematic, as since unitarity cannot be upheld. A fix is required such that effective temperature eventually decreases at very-late-time evaporation.
-header:Common storyline 2: a unique no-hair ground state: the empty black hole branch
-The conventional expectation is that the no-hair principle largely holds for black holes even in quantum contexts.
-One way to interpret this, combined with restoration of pure state evolution and unitarity for the black hole exterior, is that the empty Schwarzschild black hole state is uniquely given.
-Even without the no-hair principle, the intuition is that there is nothing inside the empty Schwarzschild black hole so its state should be unique if we continue to have interior-exterior effective field theory factorization.
-This is the key to demonstrating unitarity of the black hole exterior in the JCM model of black holes.
-header:Common storyline 3: three versions of semiclassical effective field theory (semiclassical EFT)
-The argument in the JCM model is that we have to distinguish two (and eventually three) semiclassicality:
-A) mostly classical stability of background spacetime when viewed from the black hole exterior,
-B) conventional semiclassical EFT (Møller-Rosenfeld semiclassical gravity) - EFT on background spacetime obtained by averaging out stress-energy tensor.
-A) holds, while B) eventually breaks down for late-time evaporation.
-The reason why conventional semiclassical EFT breaks down is that as aforementioned, Minkowski spacetime and Schwarzschild spacetime differ in terms of lasting radiations at asymptotic infinity. While we obtain Minkowski as the zero Schwarzschild radius limit of Schwarzschild spacetime, the former is not obtained as the zero-temperature limit of the latter.
-The JCM model suggests that we can safely handle all sorts of hairs and microstates within the black hole interior, but once we have a unique ground state of the black hole interior, then the black hole is forced to evaporate into the ground state, which means zero entanglement entropy.
-But there is another version of semiclassicality, which says:
-C) for black holes, we can safely apply EFT on each spacetime outcome, and form a superposition linearly. This continues to hold in the JCM model, and strictly quantum-gravitational calculations are unnecessary - EFT is fine.
-For A), we use the fact that black hole evaporation is a slow process involving extremely many effective "qubits". The central limit theorem then affords us normal distributions for small intervals, resulting in a largely classical description up to normal distribution variances - see the JCM model github page. Furthermore after the entanglement entropy turnaround point, variance has to start decreasing, which limits deviations from the average outcome. The calculation involves the total energy emitted up to some time t.
-header:Common storyline 4: black hole paradoxes arise due to degrees of freedom double counting in EFT with a black hole
-See 'the analysis for the apologia paper' github page as a possible starting point.
-The double counting understanding is essentially what is argued by the holography of information view. Proponents have, I think, successfully demonstrated that while quantum gravity does have some differences from conventional gauge theories, the Gauss law principle applies for gravity as well such that we can measure effectively non-locally from asymptotic infinity (such as null infinity).
-Non-perturbatively, a diffeomorphism-invariant quantum gravity observables cannot be local. However, the islands view suggests that perturbatively at each perturbation order, we can dress a local operator around a Wilson line such that local treatments remain and gauge invariance is not broken at each order.
-Nevertheless, eventually islands suggest that this local EFT treatment commits to double counting with visible effects, and we have to take out extra degrees of freedom - "islands," "replica wormholes" are all about taking extra dofs out.
-header:(In relation to the common storyline 4:) Different paths toward the empty black hole branch, but no hair at the end
-There are many paths for a black hole to become empty. The "average expectation" (conventional) semiclassical EFT remembers all these paths.
-In the JCM model before the black hole is completely emptied in some outcomes (of a superposition), the semiclassical EFT is completely fine, and these different paths do not need to be forgotten to restore unitarity.
-But for the empty black hole outcome, since this outcome is assumed to be uniquely given ("the" ground state of the black hole interior), these paths are forgotten, and path information radiates away to the exterior.
-The limiting behavior (or correlation function) of EFT under Schwarzschild spacetime as Schwarzschild radius goes to zero and the behavior (or correlation function) of EFT under Minkowski spacetime differ. EFT is still being upheld, but corrections are made to reflect such discontinuities. 
-If we maintain the conventional semiclassical EFT entirely (no discontinuity corrections), then quantum states or Hilbert space factorization has to be modified. Within the holographic bulk EFT, this gives an illusion of non-unitarity or non-linearity.
-header:(In relation to the common storyline 4:) On a black hole implementation of quantum thermal search (QTS)
-The idea behind QTS is to throw (the initial state of) system $S$ into a black hole. $S$ alone has Hamiltonian that depends on a given search problem. If every feasible input has same search results, then every state has same energy. If not, then there are ground states with energy different from excited states. If the black hole exterior $EXT$ has temperature colder than $S$, then heat and energy should flow out of $S$ to $EXT$.
-In QTS contexts, black holes serve to provide an interaction mechanism between $S$ and $EXT$ that does not care about the Hilbert space and Hamiltonian details of $S$.
-The only thing the interaction really cares about is whether $S$ and the black hole interior $IN$ exhausted all the energy to its ground state.
-If every state of $S$ has same energy, then there is no further evaporation than what the black hole without $S$ would have evaporated. If not, then there is additional evaporation, providing an implementation of QTS.
-This relies on the assumption that there is (Hilbert space, Hamiltonian-wise) double counting of (infalling) $S$ in the black hole exterior and the interior.
-If the assumption is not the case, then we have to ask whether the ground energy of $S$ is understood as additional energy that would be radiated away to the exterior as well.
-But since the black hole interaction is assumed to not care about the exact details of $S$, the Hamiltonian information about $S$ would then be lost if the ground energy of $S$ is also additionally radiated away. This loss of information actually becomes worse for easy search problems, which suggests that double counting should be there.
-header:Additional notes on storyline 4, double counting, with regards to entanglement wedge
-Double counting is seen in the entanglement wedge of (Karch-Randall) double holography. In the brane representation, you have KR brane and non-brane Hilbert space factorization. It is sort of a non-gravitational representation, though the KR brane gravitates. But the entanglement wedge of non-brane in the bulk overlaps with the KR brane. This makes one suspect that the brane representation commits to double counting, but it is actually the bulk representation that commits to double counting. The entanglement wedge suggests that in the bulk, information on KR brane also leaks to what should be non-brane. But bulk EFT double counts such that KR brane can completely be factorized from rest of the bulk, which turns out to be wrong according to the entanglement wedge duality. This is where holography of information appears implicitly: bulk does not factorize well since it works under a quantum gravity theory - "information spreads". In contrast, the dual boundary theory remains non-gravitational, and the usual factorization rules continue to apply. 
-header:Common storyline 5: on gravity quantization
-It is often said that collapse mechanisms may allow for "average expectation"-type Møller-Rosenfeld semiclassical gravity such that gravity does not need to be quantized.
-But the (Møller-Rosenfeld-)Hawking picture of black hole evaporation and the JCM model offer two contrasting pictures of black hole evaporation that do not involve measurements. The former results in a final mixed state for the black hole exterior, whereas the latter results in a final pure state.
-This arises due to the assumed nature of quantum gravity. Does gravity respond to each non-gravitational quantum outcome? Møller-Rosenfeld-Hawking says we can proceed as if the answer is no. The JCM model says the answer is yes, even if gravity is not yet fully quantized.
-header:Common storyline 6: on Page curve
-Holography of information says that quantum gravity's observables are different from non-gravitational theory's observables.
-While quantum gravity is different from typical gauge theories, they share the Gauss law. Information is at asymptotic infinity (such as null infinity).
-This is very likely true. However, unitarity of quantum physics and AdS/CFT does not resolve the information problem.
-To resolve the information problem, we need to show what happens around the black hole horizon where we still expect non-gravitational EFT (on curved background spacetime) to mostly work.
-This is why the Page curve given in terms of non-gravitational observables is so important. 
-(See sidenote.txt in this sub-repo as well for storyline 4 and 6 in relevance to the braneworld paper.)
-header:Slightly different views about the small corrections theorem within my papers
-If we believe that information on a black hole is actually encoded in its horizon, then assumed local interaction behaviors change. This should be the case for double holography, which allows us to evade the small corrections theorem. (The braneworld paper view)
-However, such full holography is actually unnecessary, and we only need to properly account for the empty black hole outcome to escape the small corrections theorem. (The JCM model paper view)
+header: To be updated.
+To be updated.
+Meanwhile my latest statement belongs to mkimacad.github.io/measurement + mkimacad.github.io/braneworld .
+The former provides a (more) mature (and latest) understnading of black hole physics, especially JT gravity.
+
+Anyway, what does one mean by resolving the information problem?
+If Hilbert space factorization breakdown resolves the information problem, did we really resolve it?
+
+If bulk EFT is an ensemble theory, and if it has to be heavily corrected for an actual bulk theory,
+did we resolve the information problem?
+(early-time evaporaton, ensemble theory approximately = ensemble theory)
+(late-time evaporation, ensemble theory \= or != actual theory)
