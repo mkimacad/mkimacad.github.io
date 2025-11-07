@@ -3,8 +3,8 @@ Main parameters at the end (currently line 368 # parameters):
 M (number of radiation qubits), N (number of particles in the black hole), reduc (multiplicative factor by which interaction time is reduced).
 The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
 
-header:Big digression and personal vents for and against replica wormholes
-see mkimacad.github.io/replica_wormholes 
+header:JT gravity-inspired theory of measurements?
+see mkimacad.github.io/measurement 
 
 header:History (date-wise)
 Paper V1/github.io description: May 25-31, 2025
