@@ -1,15 +1,7 @@
-Overview (to be replaced with CV, later)
+Overview (to be updated, the page undergoing overhaul at this point)
 overviews
 A unitary and deterministic theory of quantum measurements
 measurement
-Black hole research papers overview and links
-blackholes
-Quantum Thermal Search
-quantum_thermal_search
-AdS/PINN: extending holographic gravity via deep learning (works in progress)
-ads_vaebm
-Imaginary-time deep learning (works in progress)
-imaginary_time_DL
 Music (works in progress)
 music
 Other thoughts (To be updated, merged)
