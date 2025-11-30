@@ -1,1 +1,37 @@
-header:forthcoming
+header:Descriptions forthcoming but meanwhile some reflections
+Yep.
+header:1) Classicality.
+WARNING: This is actually nothing directly related to the papers below.
+The problem I had with the conventional story about emergence of classicality, and the one I struggled with, is the question of variance.
+We all know that the quantum state of our macroscopic world is definitely not a coherent state.
+Now we are all told this story about quantum harmonic oscillators being able to approximate our world locally.
+But that does not license us to think that quantum states are coherent states.
+What the above story does, when we justify classical mechanics, is the incoherent dance between harmonic oscillator models and classical mechanical worlds.
+If we are describing some perturbations to the classical harmonic oscillator world for the ideal classical world, then we are probably fine using coherent states.
+But we have classical mechanics as dynamics to justify from quantum physics, which means the world is already outside the domain of harmonic oscillators.
+Locally and in static and kinematics sense, this may work. Not really so as dynamics.
+And even when we accept the quantum harmonic oscillator picture, why particularly coherent states?
+The classical world is supposed to be emergent, not reliant on some microscopic state being `correct'.
+
+But aren't we guaranteed that on average, classical mechanics hold from quantum mechanics? 
+Yes.
+But this is not enough. Think of this way. A heavily localized state will have large variance on momentum.
+A classical state features small variance on both momentum and position.
+Now you can rely on the average, but the problem is that momentum add up, not average out. So variance actually increases.
+Basic statistics, assuming no covariance between random variables:
+$$Var(\sum_k a_kX_k) = \sum_k a_k^2 Var(X_k)$$
+On average, if we set $a_k=1/n$ then variance goes by $1/n^2$ so the variance will continue to drop by averaging.
+But this is about total momentum. For position, we should be looking at distance away from the average position.
+While the average position stabilizes as $n \to \infty$, this variance stabilizes to a non-finite value trivially (if you know stat). So we are in trouble.
+Start from a low single-particle position variance and have a problem in momentum.
+Start from a large single-particle position variance and position variance never disappears.
+It is this question of variance that troubled me significantly, and I have been puzzled...
+Until now.
+
+What I have in mind now is what other people may initially think as already known - the environment consistently measuring some quantum state such that classicality holds path-wise if we zoom out enough. 
+Now there are some problems with this idea - it relies on quantum measurements.. which probably should be explained by properly identifying the classical domain anyway. So we are sorting of explaining things by the ones that are in need of an explanations.
+As somehow the classical world emerges, supposedly non-unitary quantum measurements are automatically being done according to the aforementioned explanation..
+Which is so wrong.
+This issue is now less of a problem if there does exists a unitary account of quantum measurements, and in fact in case such an account exists, we can outline when a quantum world becomes visible to the classical world classically and remains largely invisible.
+header:2) Some philosophical details.
+In additional to the sleeping beauty problem, if this gets published, what I would like to additionally say about philosophical importance of the quantum formalism outside physics.
