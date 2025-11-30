@@ -20,7 +20,7 @@ A classical state features small variance on both momentum and position.
 Now you can rely on the average, but the problem is that momentum add up, not average out. So variance actually increases.
 Basic statistics, assuming no covariance between random variables:
 $$Var(\sum_k a_kX_k) = \sum_k a_k^2 Var(X_k)$$
-On average, if we set $a_k=1/n$ then variance goes by $1/n^2$ so the variance will continue to drop by averaging.
+On average, if we set $a_k=1/n$ then variance goes by $1/n$ (coefficient-wise $1/n^2$) so the variance will continue to drop by averaging.
 But this is about total momentum. For position, we should be looking at distance away from the average position.
 While the average position stabilizes as $n \to \infty$, this variance stabilizes to a non-finite value trivially (if you know stat). So we are in trouble.
 Start from a low single-particle position variance and have a problem in momentum.
