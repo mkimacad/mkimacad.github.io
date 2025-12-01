@@ -34,8 +34,10 @@ As somehow the classical world emerges, supposedly non-unitary quantum measureme
 Which is so wrong.
 This issue is now less of a problem if there does exists a unitary account of quantum measurements, and in fact in case such an account exists, we can outline when a quantum world becomes visible to the classical world classically and remains largely invisible.
 header:2) Trivia
-I think Ted Jacobson's thermodynamic spacetime 'sort of' foreshadowed this ensemble theory approach to quantum gravity - he got it for wrong reasons, though.
+A) I think Ted Jacobson's thermodynamic spacetime 'sort of' foreshadowed this ensemble theory approach to quantum gravity - he got it for wrong reasons, though.
 This casts general relativity as an ensemble reflection - in normal times, GR is correct, but for black holes, GR might be wrong.
 Except GR being wrong is yet to be supported, so a more reasonable idea would be the one I propose in my paper.
+
+B) If you think about energy conservation in quantum mechanics, it actually sort of breaks down whenever measurements are done. Where does that energy and its variaton go? Maybe quantum gravity has an answer for this, and it would be correct.
 header:3) Some philosophical details.
 In additional to the sleeping beauty problem, if this gets published, what I would like to additionally say about philosophical importance of the quantum formalism outside physics.
