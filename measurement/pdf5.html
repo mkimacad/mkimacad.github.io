@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .pdf-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pdf-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .pdf-title {
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .pdf-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .control-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+        
+        .control-button:hover {
+            background: #2980b9;
+        }
+        
+        .control-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .pdf-viewer {
+            flex: 1;
+            border: none;
+            background: white;
+        }
+        
+        .loading-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #e74c3c;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .error-details {
+            font-size: 0.9em;
+            color: #666;
+            max-width: 500px;
+        }
+        
+        .download-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        .download-link:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-container">
+        <div class="pdf-header">
+            <div class="pdf-title">📄 quantum_probability.pdf</div>
+            <div class="pdf-controls">
+                <button class="control-button" onclick="downloadPDF()">⬇ Download</button>
+                <button class="control-button" onclick="openInNewTab()">🔗 Open in New Tab</button>
+            </div>
+        </div>
+        
+        <div id="loadingContainer" class="loading-container">
+            <div class="loading-spinner"></div>
+            <div>Loading PDF...</div>
+        </div>
+        
+        <div id="errorContainer" class="error-container" style="display: none;">
+            <div class="error-icon">📄❌</div>
+            <div class="error-message">Unable to load PDF</div>
+            <div class="error-details">
+                The PDF file "quantum_probability.pdf" could not be found or loaded. 
+                Please ensure the file exists in the repository.
+            </div>
+            <a href="pdf/quantum_probability.pdf" class="download-link" download>
+                Try Direct Download
+            </a>
+        </div>
+        
+        <iframe id="pdfViewer" class="pdf-viewer" style="display: none;"></iframe>
+    </div>
+    
+    <script>
+        const pdfFilename = 'pdf/quantum_probability.pdf';
+        const pdfViewer = document.getElementById('pdfViewer');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const errorContainer = document.getElementById('errorContainer');
+        
+        // Check if PDF exists and load it
+        async function loadPDF() {
+            try {
+                // First, try to check if the PDF exists
+                const response = await fetch(pdfFilename, { method: 'HEAD' });
+                
+                if (response.ok) {
+                    // PDF exists, load it in the iframe
+                    pdfViewer.src = pdfFilename;
+                    
+                    // Wait for iframe to load
+                    pdfViewer.onload = function() {
+                        loadingContainer.style.display = 'none';
+                        pdfViewer.style.display = 'block';
+                    };
+                    
+                    // Handle loading errors
+                    pdfViewer.onerror = function() {
+                        showError();
+                    };
+                } else {
+                    throw new Error('PDF not found');
+                }
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                showError();
+            }
+        }
+        
+        function showError() {
+            loadingContainer.style.display = 'none';
+            errorContainer.style.display = 'flex';
+        }
+        
+        function downloadPDF() {
+            const link = document.createElement('a');
+            link.href = pdfFilename;
+            link.download = pdfFilename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function openInNewTab() {
+            window.open(pdfFilename, '_blank');
+        }
+        
+        // Initialize
+        window.onload = function() {
+            // Small delay to show loading animation
+            setTimeout(loadPDF, 500);
+        };
+    </script>
+</body>
+</html>
