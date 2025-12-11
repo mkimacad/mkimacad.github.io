@@ -33,6 +33,7 @@ Now there are some problems with this idea - it relies on quantum measurements..
 As somehow the classical world emerges, supposedly non-unitary quantum measurements are automatically being done according to the aforementioned explanation..
 Which is so wrong.
 This issue is now less of a problem if there does exists a unitary account of quantum measurements, and in fact in case such an account exists, we can outline when a quantum world becomes visible to the classical world classically and remains largely invisible.
+
 header:2) Trivia
 A) I think Ted Jacobson's thermodynamic spacetime 'sort of' foreshadowed this ensemble theory approach to quantum gravity - he got it for wrong reasons, though.
 This casts general relativity as an ensemble reflection - in normal times, GR is correct, but for black holes, GR might be wrong.
@@ -42,5 +43,12 @@ B) If you think about energy conservation in quantum mechanics, it actually sort
 
 C) If (quantum) EFT breaks down as is necessary for islands/replica wormholes, then most analysis about massive gravitons in islands/replica wormholes break down.
 You need more than EFT analysis - a full string-theoretic analysis is required. I do not think anyone has done that satisfactorily.
-header:3) Some philosophical details.
-In additional to the sleeping beauty problem, if this gets published, what I would like to additionally say about philosophical importance of the quantum formalism outside physics.
+
+header: 3) An ensemble theory is a sort-of psi-epistemic theory. Doesn't it provide some shortcuts?
+Of course this only makes sense if one does accept some theory to be an ensemble theory.
+But if this is accepted, then an ensemble theory is sort-of a psi-epistemic theory.
+I can claim that because an ensemble theory is only an effective theory, no more than one knowledge (epistemic) state ever maps to the same ontic reality.
+(Instead, it's more that multiple actual states map to the same effective coarse-grained knowledge state.)
+But what if an ensemble theory is taken too far, we add `non-perturbative' corrections and so forth?
+Then it would be difficult not to go in conflict with psi-ontology theorems.
+By adding non-perturbative corrections, either one do not believe in an 'ensemble' theory, or something else.
