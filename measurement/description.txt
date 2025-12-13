@@ -52,3 +52,6 @@ I can claim that because an ensemble theory is only an effective theory, no more
 But what if an ensemble theory is taken too far, we add `non-perturbative' corrections and so forth?
 Then it would be difficult not to go in conflict with psi-ontology theorems.
 By adding non-perturbative corrections, either one do not believe in an 'ensemble' theory, or something else.
+
+header: 4) We do not need another measurement theory. We already have one.
+Context - right after the AMPS firewall paper. Firewalls requiring a new measurement theory and all that. But really, firewalls already have their measurement theory inherently. So no need for that. The Born rule is safe in a unitary fashion. Unless you need to collapse quantum states immediately.
