@@ -55,3 +55,6 @@ By adding non-perturbative corrections, either one do not believe in an 'ensembl
 
 header: 4) We do not need another measurement theory. We already have one.
 Context - right after the AMPS firewall paper. Firewalls requiring a new measurement theory and all that. But really, firewalls already have their measurement theory inherently. So no need for that. The Born rule is safe in a unitary fashion. Unless you need to collapse quantum states immediately.
+
+header: 5) Everyone should have a renewed interest in quantum computing!
+JT/RMT -> now effective postselection feasible if we can figure out the right theory out of the ensemble. But the quantum computation that this right theory does cannot be replaced by classical computing. Massive advantage.
