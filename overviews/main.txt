@@ -1,2 +1,5 @@
 img:sora_dripper_prompt.png
-header: To be updated.
+header: To be updated BUT:
+I know this is not how things mostly work today, but I need a new home university for my phd.
+I found no place in my previous home university, so decided to move out.
+So if any university, professor or lab wishes to pick me up as their phd student, please contact me (mkimacad@gmail.com).
