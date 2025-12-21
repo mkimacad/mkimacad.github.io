@@ -1,5 +1,8 @@
 header:Descriptions forthcoming but meanwhile some reflections
-Yep.
+Yep. And I am moving because it just seems that I cannot find any space in the current university.
+So if any graduate school wishes to pick me up as their phd student (in today's time, I know this is not how things mostly work, but):
+please contact me via the email in the manuscript pdf.
+And will need to update descriptions here, but for now need some time adjusting. So the below is just reflections, not proper descriptions.
 header:1) Classicality.
 WARNING: This is actually nothing directly related to the papers below.
 The problem I had with the conventional story about emergence of classicality, and the one I struggled with, is the question of variance.
@@ -58,3 +61,17 @@ Context - right after the AMPS firewall paper. Firewalls requiring a new measure
 
 header: 5) Everyone should have a renewed interest in quantum computing!
 JT/RMT -> now effective postselection feasible if we can figure out the right theory out of the ensemble. But the quantum computation that this right theory does cannot be replaced by classical computing. Massive advantage.
+
+header: 6) Discreteness of string theory
+The results of this paper partially come from discrete aspects of string theory (eg. discrete symmetry) that normally does not appear in quantum field theory.
+
+header: 7) Some trivia.
+Lately (December, 2025), I discovered a series of papers by Alexey Kryukov via philsci-archive. The paper contents actually differ from this paper despite initial illusions of similarity.
+From what I understand, Kryukov's papers attempt to derive the Born rule from the (prior) normal distribution on minimum-uncertainty quasi-classical states.
+Of course this is with the assumption that transition probability somewhat relates to some distance measure.
+And then Kryukov finds that the Born rule is the only consistent one.
+The results are beautiful, though in a way this is largely a result of the powerful assumption that transition probability relates to some distance measure, and that part is the one hard to justify in purely physical terms.
+The normal distribution prior can be justified as a random walk of a particle approximating a Brownian motion, whch supposedly resembles the classical analog of a measurement process, with random Hamiltonians picked from a Gaussian Hamiltonian ensemble.
+(Kryukov also proves that the Schrodinger equation collapses to classical mechanics whenever evolution is restricted to the classical state manifold.
+That proof works mostly as: when the "wavepacket spread" part is removed, we can obtain classical mechanics from quantum mechanics.)
+
