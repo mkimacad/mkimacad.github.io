@@ -20,5 +20,6 @@ Note that this is different from New Keynesian-styled effective demand treatment
 Whenever effective demand is lower than the notional/ex-ante demand (thus disequilibrium), firms re-adjust their demand prediction to actual effective demand and then re-calculates their pricing strategy. This can result in a recessonary spiral.
 Whenever effective demand is higher than notional demand, then firms again re-adjust ther demand prediction, which can result in an expansionary spiral.
 These are valid phenomena, which may be controlled or suppressed by monetary policy, but modern macro mostly ignore these by design.
+(and short-side rules and all that.)
 header:On multipliers
 Um (And I guess I forgot, oh no.)
