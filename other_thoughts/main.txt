@@ -1,2 +1,24 @@
+header:A thought on why modern macroeconomics is going astray
+If you look at a lot of trade models and macro models, a large amount of time is devoted in checking whether there IS a solution ("equilibrium").
+But this is clearly not normal.
+Don't you find weird that there are "yay" (tenure or job) moments when a model with a solution is found that can reasonably describe the outcomes?
+Because what we usually expect is that we do good modeling of the reality, and if it is too constraining then we find reasons why it's too constraining.
+But in econ, it is often that we search for a model that can produce a solution and if it can explain some outcomes then however unrealistic the model assumptions are...
+Now I know that there are classics on philosophy of economics, but my understanding goes that the modern philosophy of economics denies the view that realism of the assumptions does not matter as long as a model can explain the final outcomes.
+Also this "equilibrium"-centered analysis results in the following problem, and I know that in economics, "equilibrium" really simply refers to a model solution.
+EXAMPLE 1)
+Suppose a central bank targets some inflation rate successfully.
+Whenever this success is repeated, people simply take granted this inflation rate when making decisions.
+However, unlike in some ideal models, people's expectations are not perfect so their collective decisions based on their common anchor inflation rate will likely not produce the target inflation rate.
+So over time, the success triggers its downfall, and inflation rate drifts away from the target, and there can be a systemic bias.
+This means that unlike in many macro models, where price (interest rate) adjustments suffice, you need quantity (quantity of money) adjustments as well.
+Which all modern central banks all practically commit to, but this does not properly appear in modern macro models.
+And this highlights that quantity adjustments matter, and not all macro adjustments can be thought as responding to price adjustments.
+CONTINUED - effective demand:
+Indeed, in a way, we can cast Keynes's effective demand arguments in terms of quantity adjustments.
+Note that this is different from New Keynesian-styled effective demand treatments. There, effective demand is only used as a tool for price-setting firms in the equilibrium, and out-of-equilibrium effective demand being different from ex-ante demand.
+Whenever effective demand is lower than the notional/ex-ante demand (thus disequilibrium), firms re-adjust their demand prediction to actual effective demand and then re-calculates their pricing strategy. This can result in a recessonary spiral.
+Whenever effective demand is higher than notional demand, then firms again re-adjust ther demand prediction, which can result in an expansionary spiral.
+These are valid phenomena, which may be controlled or suppressed by monetary policy, but modern macro mostly ignore these by design.
 header:On multipliers
-Um
+Um (And I guess I forgot, oh no.)
