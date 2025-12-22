@@ -21,5 +21,7 @@ Whenever effective demand is lower than the notional/ex-ante demand (thus disequ
 Whenever effective demand is higher than notional demand, then firms again re-adjust ther demand prediction, which can result in an expansionary spiral.
 These are valid phenomena, which may be controlled or suppressed by monetary policy, but modern macro mostly ignore these by design.
 (and short-side rules and all that.)
+header:Exponential growth eventually is untenable
+At least if physics still applies to economic processes. No amount of efficiency gains can support exponential growth.
 header:On multipliers
 Um (And I guess I forgot, oh no.)
