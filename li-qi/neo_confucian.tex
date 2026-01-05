@@ -28,117 +28,211 @@ rmp,
 \usepackage{bm}% bold math
 \usepackage{algorithm,algpseudocode}
 \usepackage{amsthm}
-%\usepackage{subcaption}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype} % Improves typography
+\usepackage{hyperref} % Add hypertext capabilities
+
+% Hyperref setup for better links
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    citecolor=blue,
+}
+
 \theoremstyle{definition}
 \newtheorem{conj}{Conjecture}
 \newtheorem{thm}{Theorem}
 \newtheorem{lem}{Lemma}
 \newtheorem{remark}{Remark}
 \newtheorem{defn}{Definition}
-%\usepackage{hyperref}% add hypertext capabilities
-%\usepackage[mathlines]{lineno}% Enable numbering of text and display math
-%\linenumbers\relax % Commence numbering lines
-
-%\usepackage[showframe,%Uncomment any one of the following lines to test 
-%%scale=0.7, marginratio={1:1, 2:3}, ignoreall,% default settings
-%%text={7in,10in},centering,
-%%margin=1.5in,
-%%total={6.5in,8.75in}, top=1.2in, left=0.9in, includefoot,
-%%height=10in,a5paper,hmargin={3cm,0.8in},
-%]{geometry}
 
 \begin{document}
 
 %\preprint{Preprint}
 
-\title{Li and Qi as theory and model in contemporary mathematics}% Force line breaks with \\
-%\thanks{A footnote to the article title}%
+\title{Li and Qi as Theory and Model in Contemporary Mathematics}
 
 \author{Minseong Kim}
 \email{mkimacad@gmail.com}
-%\affiliation{University of Illinois Urbana-Champaign}
-%\thanks{ORCiD:0000-0003-2115-081X}
+\affiliation{University of Illinois Urbana-Champaign}
+\thanks{ORCiD:0000-0003-2115-081X}
 
-%\collaboration{MUSO Collaboration}%\noaffiliation
-
-\date{January 3, 2026 (incomplete draft)}% It is always \today, today,
-             %  but any date may be explicitly specified
+\date{January 5, 2026 (draft)}
 
 \begin{abstract}
-In contemporary mathematics (in particular, logic/model theory), a theory is roughly a set of axioms or rules - essential and core truths. A model then is roughly a set of objects that satisfy the theory. In neo-Confucian terms, this naturally corresponds to li (theory) and qi (model). We describe how results in contemporary mathematics translate to the li-qi analysis. Differently but equivalently stated, we demonstrate how formal logic and model theory can be interpreted in neo-Confucian terms.
+In contemporary mathematics---specifically within logic and model theory---a \textit{Theory} is defined as a set of axioms or rules representing essential, core truths. A \textit{Model} is a set of objects that satisfy these axioms. We posit that this relationship maps naturally onto the neo-Confucian concepts of \textit{li} (principle/pattern) and \textit{qi} (material force/object). This paper translates fundamental results from mathematical logic, such as the Lindstr\"om, L\"owenheim-Skolem, and Tennenbaum theorems, into the vocabulary of \textit{li-qi} analysis. By doing so, we demonstrate that the "One Li, Many Qi" debate can be rigorously formalized, revealing that the nature of \textit{qi}'s uniqueness is contingent upon whether the universe is viewed as a computable or non-computable system.
 \end{abstract}
-%FILL IN KEYWORDS
 
-\keywords{li-qi, neo-Confucianism, logic, model theory}%Use showkeys class option if keyword
-                              %display desired
+\keywords{li-qi, neo-Confucianism, logic, model theory, computability}
 \maketitle
-%\newpage
-
-%\tableofcontents
 
 \section{Introduction}
-To be filled in
+
+The relationship between \textit{li} (principle/pattern) and \textit{qi} (material force/matter) has been the central metaphysical debate in neo-Confucian philosophy for centuries. Historically, this debate has centered on ontological priority and separability: is \textit{li} prior to \textit{qi}? Can \textit{li} exist independently of \textit{qi}, or is \textit{li} merely the immanent order within \textit{qi}? Thinkers such as Zhu Xi argued for a dualistic view where \textit{li} is logically prior to \textit{qi} \cite{zhu1189}, while later scholars like Wang Fuzhi argued for a monistic view where \textit{li} is merely the order of \textit{qi} and cannot exist separately \cite{wang1690}.
+
+In this paper, we propose a novel hermeneutic framework for this ancient debate using contemporary mathematical logic, specifically model theory. In model theory, we distinguish between a \textbf{Theory} (a set of sentences or axioms in a formal language) and a \textbf{Model} (a mathematical structure that satisfies those sentences) \cite{chang90}. We posit that the attributes of a mathematical Theory map remarkably well onto the neo-Confucian concept of \textit{li}, while the attributes of a Model map onto \textit{qi}.
+
+It is important to note at the outset that classical model theory typically analyzes static structures. While neo-Confucian \textit{qi} is often conceptualized as dynamic and generative ("vital force"), this paper focuses on the structural relationship between principle and instantiation. Therefore, we abstract away the temporal dynamics of \textit{qi} to focus on its logical relation to \textit{li}.
+
+By adopting this isomorphism, we can apply rigorous theorems from mathematical logic---such as Lindstr\"om's theorem, the L\"owenheim-Skolem theorems, G\"odel's Incompleteness theorems, and Tennenbaum's theorem---to the philosophical analysis of \textit{li} and \textit{qi}. This approach allows us to formalize questions regarding the uniqueness of \textit{qi} given a specific \textit{li} (the "One Li, Many Qi" problem) and the constraints empirical reality places on abstract principle.
 
 \section{Contemporary mathematics and the li-qi analysis}
+
 \subsection{Why contemporary mathematics naturally provides a good analogy for the li-qi analysis}
-To be filled in
+
+Model theory is fundamentally the study of the relationship between formal languages (syntax) and their interpretations (semantics) \cite{hodges93}. Syntax consists of symbols and rules of formation without inherent meaning, analogous to pure \textit{li} in its most abstract, pre-material state. Semantics involves mapping these symbols onto a domain of objects---a universe---to assign them truth values, analogous to the instantiation of \textit{li} within concrete \textit{qi}.
+
+The correspondence is not merely superficial. In neo-Confucianism, \textit{li} determines the nature of things, yet it is often described as "empty" or "pure" without the substantiality of \textit{qi}. Similarly, a mathematical theory defines the properties that a structure must have, yet the theory itself is a linguistic abstraction. The structure (the model) provides the "flesh and blood" realization of those properties.
+\begin{table}[ht]
+\caption{\label{tab:isomorphism}
+Correspondence between Neo-Confucian Metaphysics and Mathematical Logic.}
+\centering
+\begin{tabular}{llll}
+\hline\hline
+\textbf{Concept} & \textbf{Confucian} & \textbf{Math} & \textbf{Attributes} \\
+\hline
+Principle &
+\textit{Li} &
+Theory (Syntax) &
+\parbox[t]{0.45\columnwidth}{Abstract, axiomatic, rules, logical priority} \\
+
+Material Force &
+\textit{Qi} &
+Model (Semantics) &
+\parbox[t]{0.45\columnwidth}{Concrete, structural, objects, instantiation} \\
+
+Relation &
+\textit{Li--Qi} &
+Satisfaction ($\models$) &
+\parbox[t]{0.45\columnwidth}{The structure (\textit{qi}) satisfies the axioms (\textit{li})} \\
+\hline\hline
+\end{tabular}
+\end{table}
 
 \subsection{Lindstr\"om theorem: compactness, downward L\"owenheim-Skolem and first-order logic}
 \label{subsec:lindstrom}
-The most common version of the Lindstr\"om theorem states that first-order logic is the most powerful logic with both compactness and the downward L\"owenheim-Skolem theorem up to some common assumptions about logic. This requires an understanding about compactness and downward L\"owenheim-Skolem, which we provide in the following.
 
-Compactness in logic states that if all finite subsets of axioms (subsets of li) have models (qi), then there must be a model for the entire set of axioms (`theory' or the full set of `li') and vice versa. Compactness implies that if a theory is inconsistent, then it can be discovered with a finite proof (which implies finitely many axioms utilized). Furthermore, at least one of possible `li' extrapolations from our finite qi experiences is the full set of `li'. An empirical inquiry through qi is not futile for understanding li.
+The most common version of the Lindstr\"om theorem states that first-order logic is the most powerful logic possessing both the compactness property and the downward L\"owenheim-Skolem property (given certain standard assumptions about logic) \cite{lindstrom69}. Understanding these two properties sheds light on the epistemological limits of \textit{li}.
 
-The downward L\"owenheim-Skolem property states that if a theory (the full set of `li') has a model and this model has infinitely many elements, then there is a countable model - in other words, li has a qi instance (or realization) where the number of qi elements can be counted with standard natural numbers (0,1,2,3, and so forth indefinitely). Despite li having different qi realizations, if we are only interested in extracting li from qi, then we can study an alternative qi realization where every qi element, in principle, can be enumerated even if the actual qi universe contains non-enumerable (inaccessible) qi elements. Therefore, understanding li is not tied to enumerating inaccessible qi elements.
+\textbf{Compactness} in logic states that a set of sentences (axioms) has a model if and only if every finite subset of it has a model. In the context of \textit{li-qi}, let us interpret a finite subset of axioms as the limited "local principles" we discern from finite empirical observation. Compactness guarantees that if our finite, local observations are consistent (i.e., they have local \textit{qi} realizations), then they can be extended to a global \textit{li} that governs the entire universe. This provides a logical foundation for the intelligibility of the cosmos: inductive inquiry is not futile because consistent local patterns mathematically guarantee the existence of a coherent universal \textit{li}.
 
-More specifically, the downward L\"owenheim-Skolem theorem states that if model $M$ of cardinality $\kappa$, then there is a sub-model $M'$ of $M$ with any inrinite cardinality $\kappa' < \kappa$ that satisfies the theory as well.
+The \textbf{Downward L\"owenheim-Skolem} property states that if a theory (the full set of \textit{li}) has an infinite model, then it has a countable model \cite{skolem20}. Put simply, even if the "true" universe of \textit{qi} contains elements so vast they are mathematically "inaccessible" (uncountable), there exists a simplified realization of \textit{li} where every element can be enumerated using standard natural numbers (0, 1, 2, ...). 
+Specifically, if a model $M$ has cardinality $\kappa$, there is a sub-model $M'$ with any infinite cardinality $\kappa' < \kappa$ that satisfies the theory. In neo-Confucian terms, this implies that understanding \textit{li} does not require access to the non-enumerable vastness of the cosmos; \textit{li} can be fully realized in a countable, accessible \textit{qi} domain.
 
-The Lindstr\"om theorem in neo-Confucian terms then says that first-order logic is the strongest formal logic that allows for a non-futile empirical inquiry through qi and has an analysis of li not tied to enumerating inaccessible qi elements - li can be realized with enumerable qi elements.
+\subsection{Peano arithmetic and the failure of Categoricity}
+\label{subsec:peano}
 
-\subsection{A case of Peano arithmetic: model multiplicity is not a question of model cardinality}
-Talks about the L\"owenheim-Skolem theorem give the impression that model multiplicity is all about the size (cardinality) of the model. But Peano arithmetic (PA), a canonical first-order theory of natural number arithmetic, suggests this is not the case. 
+The central question---does one \textit{li} determine a unique \textit{qi}?---corresponds to the mathematical concept of \textbf{Categoricity}. A theory is categorical if all its models are isomorphic (structurally identical). If \textit{li} were categorical, there would effectively be only "One Qi."
 
-PA (both theory and model) has its language as $\mathcal{L}_{PA}$:
-\begin{equation}
-\mathcal{L}_{PA} = \{0,1,+,\times, <\}
-\end{equation}
-A Peano arithmetic (PA) model $M$ adds domain $D$ with $0_M,1_M \in D$ ($0_M,1_M$ corresponding to 0,1 in $\mathcal{L}_{PA}$) to the above language such that $+^M:D\times D \to D$, $\times^M : D \times D \to D $ and $<^M$ is a boolean relation that compares two numbers in the model, all corresponding to their counterparts in $\mathcal{L}_{PA}$.
+However, Peano Arithmetic (PA), the canonical first-order theory of natural numbers, illustrates the failure of categoricity.
+PA has the language $\mathcal{L}_{PA} = \{0,1,+,\times, <\}$. A model $M$ consists of a domain $D$ and interpretations of these symbols. 
+Compactness implies that if we append axioms stating the existence of a number $c$ greater than every standard natural number ($\exists x, x>n$ for all $n \in \mathbb{N}$), the resulting theory is still consistent. This leads to **non-standard models** containing "infinite" integers. Because PA admits both standard and non-standard models, it is not categorical. 
 
-Append PA with $\exists x\,\,x>c$ for $\forall c \in \mathbb{N}$ where $\mathbb{N}$ are standard natural numbers ($0,1,..30,..$). Compactness then says that there is a model for this appended PA. Therefore, this model is a model of PA as well, and the downward L\"owenheim-Skolem property allows for a countable nonstandard submodel as well. Therefore, nonstandard models and their `infinite-like' numbers cannot be eliminated in Peano arithmetic from the theory (`li') perspective, and model (`qi') multiplicity is not about model cardinality.
+This proves that if \textit{li} is framed in first-order logic, \textit{li} is structurally incapable of pinning down a unique \textit{qi} universe; "model multiplicity" is unavoidable.
 
-To eliminate `infinite-like' nonstandard numbers, induction has to be utilized in the following form:
-\begin{equation}
-\forall P\subseteq \mathbb{N'}: ((0\in P\land \forall n\in \mathbb{N}': (n\in P \rightarrow (n+1)\in P))\rightarrow \forall n\in \mathbb{N}': n\in P)
-\end{equation}
-This involves quantifying over all properties $P$, which are treated as sub-classes, and $\mathbb{N}'$ here would just be defined as the class of all numbers (which are sets) in PA, distinguished from the class $\mathbb{N}$ of standard natural numbers. The purpose of this induction is to equate $\mathbb{N}'$ with $\mathbb{N}$. However, defining over all sub-classes is prohibited in first-order logic (because sub-classes are not sets), and therefore this induction axiom cannot be first-order. It is well-known that there is no loophole around this, and while we can rely on countably many induction axioms (`axiom schema'), there are uncountably many properties $P$, which means some properties cannot be captured by the induction schema.
+Furthermore, **G\"odel's First Incompleteness Theorem** provides a crucial constraint. G\"odel showed that for any recursive set of axioms capable of arithmetic (our \textit{li}), there exist statements that are true in the standard model (our \textit{qi}) but unprovable from the axioms.
+In neo-Confucian terms, this implies a fundamental epistemic gap: even if we possess the correct set of principles (\textit{li}), the actual manifestation of the universe (\textit{qi}) contains truths (semantic facts) that transcend those principles' deductive power (syntactic proofs). Thus, \textit{qi} possesses a semantic richness that \textit{li} cannot exhaust.
 
-Qi multiplicity correspond to one li therefore has nothing to do with cardinality and is fundamental.
+Attempts to fix this via induction fail in first-order logic. The induction axiom:
+\begin{multline}
+\forall P\subseteq \mathbb{N'}: \Big( (0\in P \land \forall n\in \mathbb{N}': (n\in P \rightarrow (n+1)\in P)) \\ 
+\rightarrow \forall n\in \mathbb{N}': n\in P \Big)
+\end{multline}
+requires quantifying over all properties $P$ (subsets). Since first-order logic cannot quantify over subsets, we rely on an axiom schema restricted to definable properties. This leaves uncountably many properties of \textit{qi} undefined by \textit{li}, cementing the disconnect between the single theory and its multiple possible models.
 
-\subsection{Tennenbaum's theorem and its generalizations: a computability twist}
+\subsection{Tennenbaum's theorem: Mechanism vs. Vitalism}
 \label{subsec:tennenbaum}
-However, there is a twist: Tennenbaum's theorem states that if we require $+^M,\times^M,<^M$ to be recursive (`computable') in a PA model, then only one countable model of PA is allowed. For the purpose of this paper, we just need to understand that these functions and relations can be understood as following some finite procedures or algorithms when input numbers (whether standard or nonstandard) are given.
 
-In terms of li and qi, this means that li can possibly pin down one instance of qi - therefore, li and qi may actually be the same thing, just differently represented.
+There is, however, a significant twist. **Tennenbaum's theorem** states that the standard model of natural numbers is the \textit{only} countable model of PA in which addition and multiplication are recursive (computable) functions \cite{tennenbaum59}.
 
-\subsection{How far does first-order logic inform the li-qi analysis - a new twist}
-One important consequence of the analysis in Section \ref{subsec:lindstrom} is that li cannot pin down all qi truths, and essential truths (`li') are distinguished from non-essential truths, which may differ depending on an actual qi realization of li.
+This introduces a profound philosophical dichotomy regarding the nature of \textit{qi}:
+\begin{enumerate}
+    \item \textbf{The Mechanical Universe:} If we postulate that the operations of \textit{qi} follow algorithmic, computable procedures, Tennenbaum's theorem forces uniqueness. The "One Li" of arithmetic pins down exactly "One Qi." This supports a view where \textit{li} and \textit{qi} are inseparable because the principle fully defines the material instantiation.
+    \item \textbf{The Vitalist Universe:} If, however, \textit{qi} possesses non-computable qualities—a "vitalism" or spontaneity that transcends algorithmic definition—then the constraints loosen. Non-standard models become possible, re-opening the door to \textit{qi} multiplicity.
+\end{enumerate}
 
-Li does not pin down one instance of qi and therefore li and qi are not simply different representations of the same essence, with li referring to the core aspects of the universe. In that an instance of qi does not pin down li, we could say that li is prior to qi, supporting the orthodox neo-Confucian dualist view, represented by Zhu Xi. However, an alternative interpretation is certainly possible - we could use all known empirical facts from qi as li, regardless of what may be deemed as essential or not. Then first-order logic arguments would say that even under the ideal epistemic conditions, this `li' would have other realizations - one li, multiple instances of qi. If we do not value logical consequences of li and only empirical discoveries matter, then these alternative qi instances (alternative models) are irrelevant, and the qi-monist view, represented by Wang Fuzhi, is consistent with the first-order logic framework.
+Thus, the debate between Monism and Dualism may mathematically hinge on whether one views the action of \textit{qi} as algorithmic (computable) or transcendent (non-computable).
 
-As the name `formal logic' (which first-order logic is part of) implies, if we value logical consequences, then it is difficult to adopt the qi-monist view. However, this is a philosophical choice, not a choice imposed by formal logic alone. Are empirical facts all that matter (qi-monism represented by Wang Fuzhi)? Or should we distinguish essential truths (li and axioms) from non-essential truths that are not axioms but are empirically known (orthodox li-qi dualism represented by Zhu Xi)? Or should we understand li and qi as providing cross-restrictions on each other - empirical observations from qi restrict possible `li', while these `li' themselves restrict possible future empirical observations, thereby constraining qi as well (li-qi symbiosis, represented by Yulgok Yi I)? These questions cannot be addressed by logic alone.
+\subsection{How far does first-order logic inform the li-qi analysis}
 
-And then the twist of Section \ref{subsec:tennenbaum} is there - if computability is an important criterion (we can understand rules and orders of the world in algorithmic ways), then it may be feasible that `li' actually identifies `qi' instance uniquely - therefore, even without taking the empirical understanding, qi-monism may be viable - if we understand `qi' in a recursive (computable) way, then `li; is automatically understood.
+The analysis of Lindstr\"om and L\"owenheim-Skolem (Section \ref{subsec:lindstrom}) suggests that \textit{li} cannot fully determine \textit{qi}. Essential truths (axioms) are distinguished from accidental truths (model-dependent facts). This distinction supports the orthodox dualism of Zhu Xi: \textit{li} is prior to \textit{qi} because \textit{li} represents the core structure, while \textit{qi} contains contingent variations.
 
-However, Peano arithmetic (PA) is only one part of mathematics. The Zermelo-Fraenkel set theory with the axiom of choice (ZFC) is often considered to be the core foundation of modern mathematics (at least in the traditional sense), and it is known that there exists no computable model of ZFC. Therefore, there are limitations to what computability can constrain, and therefore qi multiplicity is not easily ruled out.
+Conversely, if we prioritize empirical reality, we might adopt the set of all true sentences in the physical universe as our theory. Yet, logical limitations suggest that even this "True Arithmetic" has non-standard models. However, if one disregards the logical necessity of alternative models and focuses solely on the empirical instance we inhabit, the \textit{qi}-monist view of Wang Fuzhi becomes consistent: the empirical facts are all that matter.
+
+Or perhaps we should understand \textit{li} and \textit{qi} as providing cross-restrictions on each other—a symbiotic relationship represented by Yulgok Yi I, where \textit{qi} constrains the realization of \textit{li} just as \textit{li} orders \textit{qi} \cite{chung95}. This suggests a dialectic that logic alone may not resolve.
+
+Finally, while Tennenbaum's theorem offers a path to uniqueness via computability, we must remember that Peano Arithmetic is a fragment of mathematics. Zermelo-Fraenkel set theory (ZFC), the foundation of modern mathematics, has no computable models. If the ultimate \textit{li} of the universe resembles ZFC rather than PA, then computability cannot save us from multiplicity. The richness of \textit{qi} seemingly always outstrips the constraints of \textit{li}.
+\begin{table*}[t]
+\caption{\label{tab:theorems}
+Mathematical Theorems and their Implications for the \textit{Li--Qi} Relationship.}
+\centering
+\begin{tabular}{l l l}
+\hline\hline
+\textbf{Theorem} &
+\textbf{Mathematical Content} &
+\textbf{Neo-Confucian Interpretation} \\
+\hline
+Compactness &
+\parbox[t]{0.40\textwidth}{Local consistency implies global consistency.} &
+\parbox[t]{0.40\textwidth}{Finite local observations of \textit{qi} imply a coherent universal \textit{li}.} \\
+
+L\"owenheim--Skolem &
+\parbox[t]{0.40\textwidth}{Infinite models admit countable realizations.} &
+\parbox[t]{0.40\textwidth}{\textit{Li} does not require an inaccessible \textit{qi}.} \\
+
+Incompleteness &
+\parbox[t]{0.40\textwidth}{True statements exist that are unprovable.} &
+\parbox[t]{0.40\textwidth}{Semantic truth (\textit{qi}) exceeds syntactic proof (\textit{li}).} \\
+
+Non-Categoricity &
+\parbox[t]{0.40\textwidth}{First-order theories admit non-isomorphic models.} &
+\parbox[t]{0.40\textwidth}{One \textit{li}, many possible \textit{qi}.} \\
+
+Tennenbaum &
+\parbox[t]{0.40\textwidth}{Computable models of arithmetic are unique.} &
+\parbox[t]{0.40\textwidth}{Mechanical \textit{qi} collapses multiplicity into unity.} \\
+\hline\hline
+\end{tabular}
+\end{table*}
+
+\begin{table}[b]
+\caption{\label{tab:philosophy}
+Historical Positions Reframed via Logic.}
+\centering
+\begin{tabular}{l l}
+\hline\hline
+\textbf{Stance} & \textbf{Logical Counterpart} \\
+\hline
+Zhu Xi (Dualism) &
+\parbox[t]{0.65\columnwidth}{Theory precedes model; axioms underdetermine structure.} \\
+
+Wang Fuzhi (Monism) &
+\parbox[t]{0.65\columnwidth}{Only the physical model exists; theory records truths.} \\
+
+Yi Yulgok (Symbiosis) &
+\parbox[t]{0.65\columnwidth}{Mutual constraint between axioms and structures.} \\
+
+Computationalism &
+\parbox[t]{0.65\columnwidth}{Computability enforces uniqueness (example: Tennenbaum).} \\
+\hline\hline
+\end{tabular}
+\end{table}
+
 
 \section{Conclusion}
-To be filled in
+
+This paper has attempted to reframe the classic neo-Confucian debate regarding \textit{li} and \textit{qi} through the lens of modern model theory. We have shown that if we accept the mapping of \textit{li} to formal Theory and \textit{qi} to Model, the mathematical properties of logic provide a rich vocabulary for articulation. 
+
+The results of Lindstr\"om and L\"owenheim-Skolem suggest that a pure principle (\textit{li}) is fundamentally incapable of uniquely determining a material reality (\textit{qi}), lending credence to the dualist separation. G\"odel's Incompleteness Theorem further highlights that the semantic truth of \textit{qi} always overflows the syntactic proofs of \textit{li}. However, Tennenbaum's theorem suggests that if reality is fundamentally computational, the "One Li, Many Qi" problem collapses into uniqueness.
+
+Finally, we must acknowledge that classical model theory treats structures as static. Neo-Confucian \textit{qi}, however, is inherently dynamic and generative. While this paper has successfully analyzed the structural relationship between principle and instantiation, future research should extend this analysis using dynamic logic or category theory to better capture the transformative nature of \textit{qi}, moving beyond the static \textit{li-qi} isomorphism presented here.
 
 \section*{Data availability and declaration of interests}
+
 The author(s) have no funding source to declare. Furthermore, there is no conflict of interests. 
 
 \bibliography{infoamp2}% Produces the bibliography via BibTeX.
 
 \end{document}
-%
-% ****** End of file ******
