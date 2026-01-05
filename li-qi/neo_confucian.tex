@@ -56,8 +56,6 @@ rmp,
 
 \author{Minseong Kim}
 \email{mkimacad@gmail.com}
-\affiliation{University of Illinois Urbana-Champaign}
-\thanks{ORCiD:0000-0003-2115-081X}
 
 \date{January 5, 2026 (draft)}
 
@@ -69,7 +67,6 @@ In contemporary mathematics---specifically within logic and model theory---a \te
 \maketitle
 
 \section{Introduction}
-
 The relationship between \textit{li} (principle/pattern) and \textit{qi} (material force/matter) has been the central metaphysical debate in neo-Confucian philosophy for centuries. Historically, this debate has centered on ontological priority and separability: is \textit{li} prior to \textit{qi}? Can \textit{li} exist independently of \textit{qi}, or is \textit{li} merely the immanent order within \textit{qi}? Thinkers such as Zhu Xi argued for a dualistic view where \textit{li} is logically prior to \textit{qi} \cite{zhu1189}, while later scholars like Wang Fuzhi argued for a monistic view where \textit{li} is merely the order of \textit{qi} and cannot exist separately \cite{wang1690}.
 
 In this paper, we propose a novel hermeneutic framework for this ancient debate using contemporary mathematical logic, specifically model theory. In model theory, we distinguish between a \textbf{Theory} (a set of sentences or axioms in a formal language) and a \textbf{Model} (a mathematical structure that satisfies those sentences) \cite{chang90}. We posit that the attributes of a mathematical Theory map remarkably well onto the neo-Confucian concept of \textit{li}, while the attributes of a Model map onto \textit{qi}.
@@ -77,6 +74,8 @@ In this paper, we propose a novel hermeneutic framework for this ancient debate 
 It is important to note at the outset that classical model theory typically analyzes static structures. While neo-Confucian \textit{qi} is often conceptualized as dynamic and generative ("vital force"), this paper focuses on the structural relationship between principle and instantiation. Therefore, we abstract away the temporal dynamics of \textit{qi} to focus on its logical relation to \textit{li}.
 
 By adopting this isomorphism, we can apply rigorous theorems from mathematical logic---such as Lindstr\"om's theorem, the L\"owenheim-Skolem theorems, G\"odel's Incompleteness theorems, and Tennenbaum's theorem---to the philosophical analysis of \textit{li} and \textit{qi}. This approach allows us to formalize questions regarding the uniqueness of \textit{qi} given a specific \textit{li} (the "One Li, Many Qi" problem) and the constraints empirical reality places on abstract principle.
+
+Table \ref{tab:isomorphism}, \ref{tab:philosophy} and \ref{tab:theorems} provide the summaries. For a comprehensive modern review of the metaphysical commitments of Neo-Confucianism, particularly regarding the ontological status of \textit{li} and \textit{qi}, see Angle and Tiwald \cite{angle17} or Liu \cite{liu17b}, as well as \cite{oldstone23}.
 
 \section{Contemporary mathematics and the li-qi analysis}
 
@@ -144,8 +143,7 @@ requires quantifying over all properties $P$ (subsets). Since first-order logic 
 
 \subsection{Tennenbaum's theorem: Mechanism vs. Vitalism}
 \label{subsec:tennenbaum}
-
-There is, however, a significant twist. **Tennenbaum's theorem** states that the standard model of natural numbers is the \textit{only} countable model of PA in which addition and multiplication are recursive (computable) functions \cite{tennenbaum59}.
+There is, however, a significant twist. Tennenbaum's theorem states that the standard model of natural numbers is the \textit{only} countable model of PA in which addition and multiplication are recursive (computable) functions \cite{tennenbaum59}.
 
 This introduces a profound philosophical dichotomy regarding the nature of \textit{qi}:
 \begin{enumerate}
@@ -156,14 +154,14 @@ This introduces a profound philosophical dichotomy regarding the nature of \text
 Thus, the debate between Monism and Dualism may mathematically hinge on whether one views the action of \textit{qi} as algorithmic (computable) or transcendent (non-computable).
 
 \subsection{How far does first-order logic inform the li-qi analysis}
-
 The analysis of Lindstr\"om and L\"owenheim-Skolem (Section \ref{subsec:lindstrom}) suggests that \textit{li} cannot fully determine \textit{qi}. Essential truths (axioms) are distinguished from accidental truths (model-dependent facts). This distinction supports the orthodox dualism of Zhu Xi: \textit{li} is prior to \textit{qi} because \textit{li} represents the core structure, while \textit{qi} contains contingent variations.
 
 Conversely, if we prioritize empirical reality, we might adopt the set of all true sentences in the physical universe as our theory. Yet, logical limitations suggest that even this "True Arithmetic" has non-standard models. However, if one disregards the logical necessity of alternative models and focuses solely on the empirical instance we inhabit, the \textit{qi}-monist view of Wang Fuzhi becomes consistent: the empirical facts are all that matter.
 
 Or perhaps we should understand \textit{li} and \textit{qi} as providing cross-restrictions on each other—a symbiotic relationship represented by Yulgok Yi I, where \textit{qi} constrains the realization of \textit{li} just as \textit{li} orders \textit{qi} \cite{chung95}. This suggests a dialectic that logic alone may not resolve.
 
-Finally, while Tennenbaum's theorem offers a path to uniqueness via computability, we must remember that Peano Arithmetic is a fragment of mathematics. Zermelo-Fraenkel set theory (ZFC), the foundation of modern mathematics, has no computable models. If the ultimate \textit{li} of the universe resembles ZFC rather than PA, then computability cannot save us from multiplicity. The richness of \textit{qi} seemingly always outstrips the constraints of \textit{li}.
+While Tennenbaum's theorem suggests a path to uniqueness via computability, we must remember that Peano Arithmetic is a fragment of mathematics. Zermelo-Fraenkel set theory (ZFC), the foundation of modern mathematics, has no computable models \cite{hamkins13}. If the ultimate \textit{li} of the universe resembles ZFC rather than PA, then computability cannot save us from multiplicity.
+
 \begin{table*}[t]
 \caption{\label{tab:theorems}
 Mathematical Theorems and their Implications for the \textit{Li--Qi} Relationship.}
@@ -197,7 +195,7 @@ Tennenbaum &
 \end{tabular}
 \end{table*}
 
-\begin{table}[b]
+\begin{table}[h]
 \caption{\label{tab:philosophy}
 Historical Positions Reframed via Logic.}
 \centering
