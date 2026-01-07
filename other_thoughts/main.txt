@@ -1,3 +1,5 @@
+header:Coordination, industrial organization and computer science
+(To be updated)
 header:A thought on why modern macroeconomics is going astray
 If you look at a lot of trade models and macro models, a large amount of time is devoted in checking whether there IS a solution ("equilibrium").
 But this is clearly not normal.
