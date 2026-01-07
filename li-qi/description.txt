@@ -3,3 +3,9 @@ Meanwhile.. some memo before the actual thing is written here
 header:On mental causation
 So a mathematical theory is like 'mental state', while a model is like 'physical state'.
 This would subscribe us to a class of theories where there are physical multiplicity for a single mental state.. which seems to be the default nowadays.
+A mental state would basically be like a sentence (describing some object) and a physical state would basically be like an object.
+As with a mathematical theory, a sentence describing a physical state would prove some sentence describing a consequent physical state.
+Each sentence can be considered a mental state, and therefore, there is overdetermination, but this is nothing problematic.
+Mental and physical still describe different things, and mental states are more "fundamental" in that they describe what are fundamental.
+After all, different physical states (different mathematical models) are consistent with the same mental state.
+We 'experience' mental states (sentences), not objects, and this is why it seems that physical and mental seem so separated.
