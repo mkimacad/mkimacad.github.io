@@ -2,6 +2,10 @@ Overview (to be updated, the page undergoing overhaul at this point - I need a n
 overviews
 A unitary and deterministic theory of quantum measurements
 measurement
+Fermionic adiabatic quantum computing
+fermionic
+Philosophy
+philosophy
 Music (works in progress)
 music
 Other thoughts (To be updated, merged)
