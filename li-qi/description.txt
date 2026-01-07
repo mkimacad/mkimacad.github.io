@@ -9,3 +9,5 @@ Each sentence can be considered a mental state, and therefore, there is overdete
 Mental and physical still describe different things, and mental states are more "fundamental" in that they describe what are fundamental.
 After all, different physical states (different mathematical models) are consistent with the same mental state.
 We 'experience' mental states (sentences), not objects, and this is why it seems that physical and mental seem so separated.
+header:Category Theory?
+(To be updated)
