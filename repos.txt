@@ -4,7 +4,7 @@ A unitary and deterministic theory of quantum measurements
 measurement
 Fermionic adiabatic quantum computing
 fermionic
-Philosophy
+Philosophy and Social Sciences
 philosophy
 Music (works in progress)
 music
