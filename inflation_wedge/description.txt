@@ -1,2 +1,5 @@
 header:To be updated
 to be updated..
+header:meanwhile..
+I personally don't get why the Blanchard-Kiyotaki message gets reverberated. It's clear nowadays that we do not need sticky price or some rigidities to have monetary non-neutrality. The paper here is one approach. If we are fine with finitely many equilibria instead of infinitely many, then we can use the Kimball aggregator to create kinks so that finitely many equilibria can be generated, with monetary policy picking one of these equilibria. 
+So why?
