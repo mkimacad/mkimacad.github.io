@@ -3,3 +3,6 @@ to be updated..
 header:meanwhile..
 I personally don't get why the Blanchard-Kiyotaki message gets reverberated. It's clear nowadays that we do not need sticky price or some rigidities to have monetary non-neutrality. The paper here is one approach. If we are fine with finitely many equilibria instead of infinitely many, then we can use the Kimball aggregator to create kinks so that finitely many equilibria can be generated, with monetary policy picking one of these equilibria. 
 So why?
+header:and forgot to mention this..
+Soskice and Iversen (2000). It doesn't exactly have monetary non-neutrality but it has monetary regime non-neutrality in case there are finitely many firms. Within each monetary policy regime (or rule), money is neutral but different regimes create different outcomes. So monetary policy matters this way too.
+The limitation, of course, is that as the number of firms increases, its effect diminishes so we can think of them as irrelevant.
