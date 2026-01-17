@@ -1,2 +1,2 @@
-Quantum thermal search (partially morphed into fermionic quantum computing)
+Published: Quantum thermal search (partially morphed into fermionic quantum computing)
 quantum_thermal_search
