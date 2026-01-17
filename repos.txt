@@ -4,6 +4,10 @@ A unitary and deterministic theory of quantum measurements
 measurement
 Fermionic adiabatic quantum computing
 fermionic
+Old black hole archives (superseded by other papers: submitted, published)
+black_hole_archives
+Old quantum computation archives (superseded by other papers: submitted, published)
+quantum_computation_archives
 Philosophy and Social Sciences
 philosophy
 Music (works in progress)
