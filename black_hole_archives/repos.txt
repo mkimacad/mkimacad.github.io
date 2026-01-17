@@ -1,0 +1,4 @@
+Jaynes-Cummings model of a black hole (morphed into the measurement theory paper - addendum in gravity_quantization)
+bh_jaynes_cummings
+Published: Karch-Randall braneworld, factorization problem and small corrections thoerem (morphed into the measurement theory paper)
+braneworld
