@@ -1,5 +1,19 @@
 header:Published in Journal Sophia
 https://doi.org/10.1007/s11841-021-00829-5
+header:Revisited in 2026
+So maybe revising this paper again with the next context in mind.
+Think of this problem. Suppose there is a big bang singularity, and quantum physics turns out not to resolve it - it genuinely exists.
+Is this really an issue - our physical theories tend to extend past infinite-wise as well.
+This paper suggests maybe not. Why?
+Well, let there be a finite timelike path, with a clear beginning. Let's travel backward in time.
+In case a big bang singularity can be thought of as a reverse black hole singularity (now this is the problematic part, but for now assume so), then:
+going backward in time is like falling into a black hole. Meanwhile, external observers see different pictures that do not involve these singularities.
+We are the one who actually arose out of these singularities, so we think of the universe as finite in time.
+But there are other pictures that do not involve these singularities and avoid singularities. 
+They themselves also have their own beginning singularities, but they are different from the usual big bang singularity.
+So this paper handles the idea that is actually quite deeper than I initially imagined.
+But I guess this is pure philosophy, not physics (yet).
+
 header:An idea, revisited five years later
 1. A philosophy of physics paper that also overlaps with philosophy of religion.
 2. Argues that black hole singularities cut down any theoretical observer timelines such that observer-wise infinite time can be made impossible.
