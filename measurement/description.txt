@@ -3,7 +3,14 @@ Yep. And I am moving because it just seems that I cannot find any space in the c
 So if any graduate school wishes to pick me up as their phd student (in today's time, I know this is not how things mostly work, but):
 please contact me via email (mkimacad@gmail.com).
 And will need to update descriptions here, but for now need some time adjusting. So the below is just reflections, not proper descriptions.
-header:1) Classicality.
+header:0) Really trivia (new - January 31, 2026) but.
+Also to be copied to the Jaynes-Cummings model page.
+So instead of the Jaynes-Cummings model to talk about maintaining EFT throughout evaporation,
+we can instead of N SYK black hole exterior systems in their ground state and some arbitrary black hole interior (not necessarily Jaynes-Cummings).
+In that case, we would still see black hole evaporation, no local minima trap due to SYK and so forth.
+The only problem is that in this setup, there is almost surely non-conservation of total non-interaction energy.
+If that is not the concern, then SYK is dual to JT, so this could work better.
+header:1) Classicality. (from here, older than January 31, 2026) 
 WARNING: This is actually nothing directly related to the papers below.
 The problem I had with the conventional story about emergence of classicality, and the one I struggled with, is the question of variance.
 We all know that the quantum state of our macroscopic world is definitely not a coherent state.
