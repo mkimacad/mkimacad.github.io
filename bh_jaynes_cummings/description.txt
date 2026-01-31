@@ -4,7 +4,15 @@ M (number of radiation qubits), N (number of particles in the black hole), reduc
 The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
 
 header:JT gravity-inspired theory of measurements?
-see mkimacad.github.io/measurement 
+see mkimacad.github.io/measurement
+
+AND Really trivia (new - January 31, 2026) but.
+Also copied to the measurement page.
+So instead of the Jaynes-Cummings model to talk about maintaining EFT throughout evaporation,
+we can instead of N SYK black hole exterior systems in their ground state and some arbitrary black hole interior (not necessarily Jaynes-Cummings).
+In that case, we would still see black hole evaporation, no local minima trap due to SYK and so forth.
+The only problem is that in this setup, there is almost surely non-conservation of total non-interaction energy.
+If that is not the concern, then SYK is dual to JT, so this could work better.
 
 header:History (date-wise)
 Paper V1/github.io description: May 25-31, 2025
