@@ -11,8 +11,6 @@ $g(x)=1$ for the no instance of $x$. So $g(x)$ counts as energy value at each $x
 Now instead of trying to search this system, we cool the system with $g$ considered as Hamiltonian.
 Eventually, we know that we can cool system and convergence is exponential.
 However, convergence ratio $\mu$ that is unproved in this paper. (The reason why comes below)
-Furthermore, for this convergence to happen in practice, we need a chaotic interaction. This happens in the realiy commonly but actually engineering it is difficult.
-Think about how difficult it is to simulate SYK.
 This is not even that much of an issue anyway - For this to work for any interesting problem, we would need reservoirs to be at polynomial inverse temperature.
 This is very small temperature, and engineering it requires infinte regress of cooling, which doesn't work.
 That is, we need our reservoirs to be exponentially close to ground states - largely impossible unless reservoirs are too simple to provide anything.
