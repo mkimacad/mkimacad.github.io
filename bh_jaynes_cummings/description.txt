@@ -9,10 +9,11 @@ see mkimacad.github.io/measurement
 AND Really trivia (new - January 31, 2026) but.
 Also copied to the measurement page.
 So instead of the Jaynes-Cummings model to talk about maintaining EFT throughout evaporation,
-we can instead of N SYK black hole exterior systems in their ground state and some arbitrary black hole interior (not necessarily Jaynes-Cummings).
-In that case, we would still see black hole evaporation, no local minima trap due to SYK and so forth.
-The only problem is that in this setup, there is almost surely non-conservation of total non-interaction energy.
-If that is not the concern, then SYK is dual to JT, so this could work better.
+we can instead consider N SYK black hole exterior systems in their ground state and some arbitrary black hole interior (not necessarily Jaynes-Cummings).
+However, we know that the fixed point of repeated Haar-like chaotic channels is a maximally mixed state. (Movassagh and Schenker 2021)
+This is the setup of JT gravity toy models, and this shows why unitarity of black hole evaporation is difficult unless one reservoir is more efficient than M reservoirs for cooling, which seem almost impossible.
+So this means that if we do have efficient cooling to a pure state in JT, then we must understand JT as an ensemble theory.
+In an ensemble theory, we see maximally mixed final (black hole) state, but in an actual theory, we see a final pure state.
 
 header:History (date-wise)
 Paper V1/github.io description: May 25-31, 2025
