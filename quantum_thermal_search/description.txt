@@ -1,50 +1,20 @@
 header:History (date-wise)
 Paper published: May 25, 2024. 
 Initial github.io paper description: May 24, 2025. (Year anniversary)
-"Black hole implementation": June 8, 2025
+Revamp being attempted: from February 10, 2026
 header:Published in Quantum Information Processing
 https://doi.org/10.1007/s11128-024-04413-x
-header:Motivation
-Suppose you have a difficult search problem, say find $x$ that satisfies $g(x)=0$. There are $2^n$ candidate $x$'s, and you expect the number of satisfying $x$ to be close to zero if not zero. The BBBV theorem proves that unstructured quantum search cannot give exponential speedup over classical search. Adiabatic computing hasn't given us much so far. So are we stuck? Maybe quantum thermodynamics may help beyond adiabatic computing?
-header:An idea: connecting ground states with a search problem
-We can treat $g(x)$ as energy, so $g(x)=0$ refers to ground states.
-header:Motivation 2
-Enters the Chen-Huang-Preskill-Zhou (CHPZ) open quantum system algorithm, where it explores how the environment can be used to cool down system $S$. But there is no need to go open, if we can examine in terms of fully closed systems, since every open system is a subsystem of a closed system. This is what is done in the paper.
-header:Setup/Equilibration question
-Suppose you prepare some system $S$ to be in Hamiltonian $H_S$ in the following way:
-$$H_S = \sum_x g(x)|x\rangle\langle x|$$
-This can more easily be imagined in case $S$ is in a maximally mixed state as in the paper - temperature infinite for Hamiltonians with separate ground and excited states. Imagine each classical reality $x$ following classical equations of motion if not interacting with the environment/bath, just that we do not know if there is $x$ that is a ground state with energy different from excited states.
-Can we then interact system $S$ with outside system $BH$ with (Gibbs state) temperature $T_{BH}$ such that if there is $x$ with $g(x)=0$ (ground state differing in energy from excited states), then energy moves away from $S$ to $BH$ resulting in equilibriation at temperature $T_{BH}$?
-header:Key assumption: non-interaction energy conservation
-We expect the assumption to hold for most semiclassical closed systems. There are genuinely quantum cases where non-interaction energy is not served and only total energy is conserved. 
-header:Quick answer
-Of course yes intuitively. Making this precise is one goal of the paper. But we require exponential precision in purity of $BH$ if we want to find the ground state of $S$ this way. This is a challenging task already. So does quantum thermodynamics provide speedup over conventional approaches in search problems? Sort of yes, sort of no so far. Details on these caveats below.
-header:Setup quirks
-Instead of $n$ $BH$ qudits interacting with $S$ together, they interact with $S$ sequentially one-by-one via Hamiltonian $H=H_S+H_{BH}+H_I$. So each $BH$ qudit interaction always starts with initial temperature $T_{BH}$. We can understand this as $n$ random bath qudits locally interacting with $S$ and flying away. (which motivates the toy qudit model part of the braneworld paper - see https://mkimacad.github.io/braneworld .) 
-header:In case BH is in zero temperature
-The whole argument then simplifies, as explored in the toy qudit model of the braneworld paper (see https://mkimacad.github.io/braneworld ). $n$ qudits of BH can only receive energy and it will do so for most interaction Hamiltonians. So system $S$ brushes off energy until it reaches ground state. 
-header:Equilibration speed? (A more general argument is cited in the paper - here a simplified discussion)
-For equilibration speed, one can simplify the discussion by exploring the modified Jaynes-Cummings (JCM) interaction model - $S$ is treated as a two-energy optical cavity with degeneracy over ground and excited states, though $S$ may be a one-energy optical cavity with $2^n$ degenerate states in case $g(x)=1$ for every $x$.
-In case $S$ is a two-energy cavity, then energy flows with $n$ two-state atoms only depend on average energy of system $S$ setting coupling constant $g=1$.
-Down to average energy $E_1/2$ of $S$ with $E_1$ being energy of excited states, JCM interactions still provide sufficient energy flow. But by that point, we should be able to notice some differences from measurement results.
-header:Do we need to simulate Hamiltonian in a quantum computer? (not in the paper)
-It should be noted that cheat keys have been used - assuming JCM interactions as an example, even though we do not know the exact form of $H_S$ and $H_I$, we know how ground states and excited sates of $S$ behave differently under interaction. As long as we are assumed that our Hamiltonian $H$ is of JCM, then even if we do not know ground state of $H_S$ and $H_S$ itself, we can simply simulate in our reality to figure out. This is not conventional quantum computaiton but still some form of quantum computation.
-The zero-temperature $BH$ case is simplest to explain - in most cases, we expect energy to flow out of $S$ if lower ground state of $S$ is available. This is all there is.
-We could say that exponential speedup of quantum thermal search, if not for demanding exponentially-precise purity of $BH$, comes from our fully analog nature being more powerful than qubit gate considerations.
-header:Quantum simulation (not in the paper, and only briefly discussed)
-The real problem with Hamiltonian simulation for the setup here is providing the interaction Hamiltonian in some form such as quasi-blocking encoding unitary, and at this point, the only way this can be done is by essentially reducing the whole setup to quantum walks, which for very small instances of $g(x)=0$ wipes out any possibility of exponential speedup. So analog matters.
-header:Replica wormhole? (trivial here, can skip to the next one)
-Some history for why it was mentioned in the paper: at the time of the writing, I have been working toward the toy qudit model of black holes that is part of the Progress of Physics paper (see https://mkimacad.github.io/braneworld ), and I briefly tinkered with explaining replica wormholes as $n$ implicit "bath" copies that are then truncated to $n=1$ in the limit so that we can think of as if $n=1$. At the time, bath copies were considered to be copies of some black hole, but it turned out that modeling radiation qubits means $n$ initially vacuum states, so $n$ actually should refer to radiations, not copies of the same black hole. See https://mkimacad.github.io/braneworld for brief discussions of replica wormholes (the paper does not discuss them - only the github.io page does).
-header:Toward the modified Jaynes-Cummings (JCM) model and the black hole implementation of quantum thermal search
-The quantum thermal search paper foreshadows the toy qudit model in https://mkimacad.github.io/braneworld and its precise JCM version in https://mkimacad.github.io/bh_jaynes_cummings . Potentially, a black hole thought experiment that utilizes quantum thermal search can be imagined, though it raises some fundamental question about a quantum gravity theory.
-Push system $S$ into a Schwarzschild black hole. Since the black hole horizon is "almost" a vacuum, we know its interaction behavior well despite no knowledge of system Hamiltonian $H_S$ for exterior observers. Following the no-hair principle, for exterior observers, the state of $S$ is absorbed into the state of the black hole interior such that $H_S$ essentially vanishes. This implies some change in black hole interior Hamiltonian $H_{black}$, since additional multiple states now occupy the same energy level, as well as energy level changes due to the energy of $S$. However, this change be done in advance such that the same $H_{black}$ is used throughout the evaporation process. Black hole exterior Hamiltonian is $H_{out}$ (which is previously labelled bath Hamiltonian $H_{BH}$ but re-labelled to avoid confusion).
-The main problem is about how energy conservation is interpreted. Before $S$ enters the black hole, it is infeasible to utilize the ground energy of $S$. 
-1. But if black hole evaporation also involves transferring away the ground energy of $S$, then this provides an example where subsystem ground energy can successfully be harvested. In this scenario, black holes do not help in implementing quantum thermal search. $H_{out}$ needs no correction over time.
-2. An alternative is that black hole evaporates only the excited energy of $S$. In this case, if we are to preserve energy conservation, then as $S$ enters the black hole, eigenvalues of $H_{out}$ need to be corrected such that all energy levels are increased by the ground energy of $S$ (divided by the number of available qudits in case of qudit models). Quantum thermal search can then be implemented. 
-Which one is correct? I believe the answer is latter (no. 2). Integrate all bath qudits and $S$ as one initially exterior field system. Then exterior Hamiltonian $H_{ext}$ can remain uncorrected over the evaporation process, since the ground energy remains the same, and Combine this with $H_{black}$ remaining invariant as well. No. 1 only gets invariance of $H_{out}$ because there is a reduction of the number of systems involved in $H_{ext}$ and this is only an artefact of qudit considerations. Note that we have the 'universe including a black hole' over-counting degrees of freedom for no. 2, but this is actually an expected feature.
-header:Open universe versus closed universe (back to CHPZ)
-Suppose we have an open universe instead. There, we can utilize the environment to implement physical changes involving non-conservation of energy for the systems under control. The systems under control are initially described by thermal states. Can we do better then?
-The initial answer is no. The obvious reason can be seen when we consider the full closed universe that the open universe is part of, and non-interaction energy is being conserved. Consider cooling the main system $S$ to zero temperature. The bath is initially at zero temperature. The extra environment not under control actually makes energy transfer from $S$ to the outside complicated, since the environment is not precisely at ground state, so energy transfer from the environment to $S$ is also possible. So we should not be fooled by non-conservation of energy possibly giving us extra advantages.
-Nevertheless, the realistic universe does have the environment affecting thermodynamic cooling, and CHPZ's complex calculations are more generally applicable in practice.
-header:Addendum
-Note that search problems get re-examined classically within contexts of deep learning in https://mkimacad.github.io/imaginary_time_DL .
+header:Original paper
+So the original paper is remarkedly simple and actually quite limited in it statement.
+The setup is simple. You have $g(x) = 0$ (yes) for a very limited number of $x$ (with exponentially small probability if all x are uniformly likely).
+$g(x)=1$ for the no instance of $x$. So $g(x)$ counts as energy value at each $x$.
+Now instead of trying to search this system, we cool the system with $g$ considered as Hamiltonian.
+Eventually, we know that we can cool system and convergence is exponential.
+However, convergence ratio $\mu$ that is unproved in this paper. (The reason why comes below)
+Furthermore, for this convergence to happen in practice, we need a chaotic interaction. This happens in the realiy commonly but actually engineering it is difficult.
+Think about how difficult it is to simulate SYK.
+This is not even that much of an issue anyway - For this to work for any interesting problem, we would need reservoirs to be at polynomial inverse temperature.
+This is very small temperature, and engineering it requires infinte regress of cooling, which doesn't work.
+That is, we need our reservoirs to be exponentially close to ground states - largely impossible unless reservoirs are too simple to provide anything.
+So we can stop here, and dismiss the possibility of using quantum cooling to solve NP-complete problems in largely unstructured ways.
+But of course we probably aren't happy stopping here. Can we go further from the original paper?
