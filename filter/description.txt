@@ -1,0 +1,16 @@
+header:being updated
+being updated
+header:Building blocks
+A) Encoding an NP-complete problem into a sum f(t) of cosine functions w/ period T: RMS therefore completely determined. LCU and amplitude amplification iterations bounded (not exponential).
+The conventional graph traversal way of encoding f(t) will have problems - amplifying LCU will require exponential steps. So a different approach required.
+Basically, the problem's reduced to checking whether the zero-frequency amplitude's zero or not.
+Exact amplification's needed in this step - however, since we know exact unitary $U_f$ from $|0\rangle$ to $|\Psi_0\rangle \propto \sum_{t=0}^{T-1} f(t)|t\rangle$, this is not a problem. 
+B-1) Whether $|\Psi_0\rangle \propto \sum_{t=0}^{T-1} f(t)|t\rangle$ can be filtered efficiently to zero frequency data even when there are exponentially many frequencies.
+While not widely known, we already know that quantum signal processing's superior to classical signal processing.
+No need to check exact amplitude of zero frequency - just need checking existence.
+Idea: at the end, $|\omega=0\rangle$ measured after quantum Fourier transform -> zero frequency exists. Otherwise, not existing.
+For that purpose, quantum signal processing's extremely efficient!
+B-2) We don't need exact amplitude amplification. As long as we can boost the zero-frequency signal whenever it exists by some constant ratio, we're fine.
+We only need exact amplification when constructing $|\Psi_0\rangle. The design of constructing fixed-point oblivious amplitude amplification relies on quantum signal processing's polynomial construction.
+Basically, we design a quantum filter directly within LCU/amplification steps.
+B-3) When designing quantum filter, the reminder's that maximum attenuation ratio directly corresponds to success probability of each iteration. So need to assure that it's some non-zero constant.
