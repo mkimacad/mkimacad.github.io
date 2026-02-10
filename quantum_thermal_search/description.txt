@@ -18,3 +18,5 @@ This is very small temperature, and engineering it requires infinte regress of c
 That is, we need our reservoirs to be exponentially close to ground states - largely impossible unless reservoirs are too simple to provide anything.
 So we can stop here, and dismiss the possibility of using quantum cooling to solve NP-complete problems in largely unstructured ways.
 But of course we probably aren't happy stopping here. Can we go further from the original paper?
+header:Fermi golden rule
+To first order, any interaction transition amplitude is described by the Fermi golden rule. 
