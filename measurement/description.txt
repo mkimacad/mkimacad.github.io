@@ -3,14 +3,14 @@ Yep. And I am moving because it just seems that I cannot find any space in the c
 So if any graduate school wishes to pick me up as their phd student (in today's time, I know this is not how things mostly work, but):
 please contact me via email (mkimacad@gmail.com).
 And will need to update descriptions here, but for now need some time adjusting. So the below is just reflections, not proper descriptions.
-header:0) Really trivia (new - January 31, 2026) but.
+header:0) Really trivia (new - February 11, 2026) but.
 Also to be copied to the Jaynes-Cummings model page.
 So instead of the Jaynes-Cummings model to talk about maintaining EFT throughout evaporation,
-we can instead consider N SYK black hole exterior systems in their ground state and some arbitrary black hole interior (not necessarily Jaynes-Cummings).
-However, we know that the fixed point of repeated Haar-like chaotic channels is a maximally mixed state. (Movassagh and Schenker 2021)
-This is the setup of JT gravity toy models, and this shows why unitarity of black hole evaporation is difficult unless one reservoir is more efficient than M reservoirs for cooling, which seem almost impossible.
-So this means that if we do have efficient cooling to a pure state in JT, then we must understand JT as an ensemble theory.
-In an ensemble theory, we see maximally mixed final (black hole) state, but in an actual theory, we see a final pure state.
+we can instead consider JT gravity black hole coupled to M reservoirs initially at zero temperature, sequentially interacting.
+Because JT black holes have positive specific heat, and we use fresh reservoirs repeatedly, a JT black hole will cool to zero temperature.
+However, this toy model has no mean of showing where the conventional (monotonic) entanglement (increase) problem arises.
+Furthermore, it is definitely inapplicable to Schwarzschild black hole cases.
+(Side note: we have to distinguish maximal mixing that does not respect conservaion of non-interaction energy with maximal mixing that respects conservation.)
 header:1) Classicality. (from here, older than January 31, 2026) 
 WARNING: This is actually nothing directly related to the papers below.
 The problem I had with the conventional story about emergence of classicality, and the one I struggled with, is the question of variance.
