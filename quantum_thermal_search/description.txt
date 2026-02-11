@@ -23,15 +23,4 @@ header:Fermi golden rule and unitarity considerations (+ small corrections-like 
 To first order, any interaction transition amplitude is described by the Fermi golden rule. The following term basically determines transition probability
 $$\sum_{yes,no,reservoir}|\langle yes|H_{int}|no\rangle|^2$$
 So if this value can be sufficiently large, then we can guarantee good convergence ratio $\mu$.
-But this seems implausible - consider chaotic interaction. Then there are still exponentially many pathways of no-no transitions relative to no-yes transitions.
-In fact, we can prove implausibility from the unitarity perspective. Suppose some initial state is cast as $\sqrt{1-\epsilon}|no\rangle+\sqrt{\epsilon}|yes\rangle$.
-Then, unitary $U$ evolves respects norm such that for very small $\epsilon$, the entire final outcome is largely unaffected by initial parts of $|yes\rangle$.
-With only initial $|no\rangle$ parts, the 'problem' system evolves to a maximally mixed state, so the final outcome is very close to a maximally mixed state -no change. $\mu$ is exponentially close to 0 - almost no change. 
-This holds regardless of open or closed system. So no interesting dynamics can arise from quantum cooling.
-There is not much we can do by cooling, and indeed this is the main lesson of the small corrections theorem in black hole physics.
-If you believe that locally only small corrections are made, then accumulation of small corrections is only small.
-You don't get to escape by arguing about us working within EFT unless you say EFT is actually not unitary.
-The small corrections-like theorems are about necessity of large corrections to EFT for black hole evaporation to work, and this point is often misunderstood.
-header:Toward black holes
-As stated above, this applies generally to black holes as well.
-Cooling is difficult, and it tends to move the system 
+But this seems implausible.
