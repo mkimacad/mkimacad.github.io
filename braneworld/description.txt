@@ -11,7 +11,7 @@ The braneworld paper says - nothing more, nothing less - six points that are act
 2. In the boundary theory, we cannot apply the small corrections theorem. This is partially by definition, but also because bulk and boundary have different views of localization and Hilbert space factorization (Terashima results).
 3. Despite the bulk Hilbert space factorization being invalid, we can still talk of entanglement entropy in the boundary, since the bulk and the boundary have different views of Hilbert space factorization.
 4. The Page curve can therefore be described in the boundary, but in the bulk it is invalid. 
-Despite the eventual breakdown of bulk EFT, semiclassical gravity can be more robust such that entanglement wedge calculations remain largely valid.
+Despite the eventual breakdown of bulk EFT, semiclassical background spacetime can be more robust such that entanglement wedge calculations remain largely valid.
 5. In the boundary, it's much easier to think of a mechanism of purity restoration for black holes.
 6. Holography of information in the bulk is compatible with the Page curve in the boundary.
 Now to the quantum measurement model paper (see https://mkimacad.github.io/measurement ):
