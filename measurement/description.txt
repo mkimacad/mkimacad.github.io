@@ -1,11 +1,14 @@
-header:Descriptions forthcoming but meanwhile some reflections
-Yep. And I am moving because it just seems that I cannot find any space in the current university.
-So if any graduate school wishes to pick me up as their phd student (in today's time, I know this is not how things mostly work, but):
-please contact me via email (mkimacad@gmail.com).
-And will need to update descriptions here, but for now need some time adjusting. So the below is just reflections, not proper descriptions.
+header:History
+(To be updated)
 
-header:Background from the braneworld paper + replica wormhole background (February 12, 2026)
-The braneworld paper says - nothing more, nothing less - six points that are actually a single point (see https://mkimacad.github.io/braneworld ):
+header:Implementing common descriptions for braneworld, measurement, Jaynes-Cummings papers (February 12, 2026)
+The same github.io contents shared for the three papers:
+braneworld paper ( https://mkimacad.github.io/braneworld )
+unitary quantum measurement model paper ( https://mkimacad.github.io/measurement )
+Jaynes-Cummings model of a black hole, which is largely subsumed to the measurement paper ( https://mkimacad.github.io/bh_jaynes_cummings )
+
+header:Braneworld paper summary
+The braneworld paper says - nothing more, nothing less - six points that are actually a single point:
 1. The reason why we can break the small corrections theorem (of Samir D. Mathur) in the mainstream approach is that Hilbert space factorization breaks down in bulk gravity.
 2. In the boundary theory, we cannot apply the small corrections theorem. This is partially by definition, but also because bulk and boundary have different views of localization and Hilbert space factorization (Terashima results).
 3. Despite the bulk Hilbert space factorization being invalid, we can still talk of entanglement entropy in the boundary, since the bulk and the boundary have different views of Hilbert space factorization.
@@ -13,104 +16,57 @@ The braneworld paper says - nothing more, nothing less - six points that are act
 Despite the eventual breakdown of bulk EFT, semiclassical background spacetime can be more robust such that entanglement wedge calculations remain largely valid.
 5. In the boundary, it's much easier to think of a mechanism of purity restoration for black holes.
 6. Holography of information in the bulk is compatible with the Page curve in the boundary.
-Now to the quantum measurement model paper (see https://mkimacad.github.io/measurement ):
-For replica wormholes, this is not a surprise, since Hilbert space factorization breaks down in the bulk.
-Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS.
-Bulk EFT can break. The problem really arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
-Unitary JT gravity and its Hilbert space factorization are perfectly fine without replica wormholes.
-It is more that if we view JT as holographic dual, then since it is only an EFT view of the boundary theory, Hilbert space factorization can break down.
-JT gravity EFT becomes no longer valid when Hilbert space factorization breaks down, and indeed an ensemble view of JT gravity is consistent with this.
-A single instance diverges significantly from the ensemble average such that it makes no sense to apply the ensemble theory - JT gravity EFT.
-So it makes no sense to talk about JT gravity EFT creating firewalls - we have to distinguish between the semiclassical spacetime (+ entanglement wedge results) and JT gravity EFT.
-These two papers are consistent with each other.
-And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model.
 
-header:(Less important for this paper, but a good background) the Jaynes-Cummings toy model of a black hole?
-(see https://mkimacad.github.io/bh_jaynes_cummings .)
-The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument ( https://mkimacad.github.io/braneworld ).
-If there is a unique ground state of a black hole such that interactions simply vanish on this state,
-then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
-It can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
-With these corrections, entanglement entropy eventually decreases to zero.
-Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+header:Unitary quantum measurement model paper summary
+1. For replica wormholes, the arguments in the braneworld paper are not surprising, sharing the idea that Hilbert space factorization breaks down in the bulk.
+2. Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS. Bulk EFT can break in this scenario.
+3. The controversy regarding replica wormholes only arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
+4. Unitary JT gravity and its Hilbert space factorization are perfectly fine without replica wormholes, and it is incorrect to say JT gravity requires non-perturbative corrections.
+5. It is more that if we view JT as holographic dual, then since it is only an EFT view of the boundary theory, Hilbert space factorization can break down.
+6. JT gravity EFT becomes no longer valid when Hilbert space factorization breaks down, and indeed an ensemble view of JT gravity is consistent with this.
+7. A single instance diverges significantly from the ensemble average such that it makes no sense to apply the ensemble theory - JT gravity EFT.
+8. So it makes no sense to talk about JT gravity EFT creating firewalls - we have to distinguish between the semiclassical spacetime (+ entanglement wedge results) and JT gravity EFT.
+9. These two papers (braneworld paper and quantum measurement paper) are consistent with each other.
+10 (most importantly). And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model. (This is due to Zurek's envariance papers.)
 
-header:Another really trivia (new - February 11, 2026)
-Also to be copied to the Jaynes-Cummings model page.
-So instead of the Jaynes-Cummings model to talk about maintaining EFT throughout evaporation,
-we can instead consider JT gravity black hole coupled to M reservoirs initially at zero temperature, sequentially interacting.
-Because JT black holes have positive specific heat, and we use fresh reservoirs repeatedly, a JT black hole will cool to zero temperature.
-However, this toy model has no mean of showing where the conventional (monotonic) entanglement (increase) problem arises.
-Furthermore, it is definitely inapplicable to Schwarzschild black hole cases.
-(Side note: we have to distinguish maximal mixing that does not respect conservaion of non-interaction energy with maximal mixing that respects conservation.)
-header:1) Classicality. (from here, older than January 31, 2026) 
-WARNING: This is actually nothing directly related to the papers below.
-The problem I had with the conventional story about emergence of classicality, and the one I struggled with, is the question of variance.
-We all know that the quantum state of our macroscopic world is definitely not a coherent state.
-Now we are all told this story about quantum harmonic oscillators being able to approximate our world locally.
-But that does not license us to think that quantum states are coherent states.
-What the above story does, when we justify classical mechanics, is the incoherent dance between harmonic oscillator models and classical mechanical worlds.
-If we are describing some perturbations to the classical harmonic oscillator world for the ideal classical world, then we are probably fine using coherent states.
-But we have classical mechanics as dynamics to justify from quantum physics, which means the world is already outside the domain of harmonic oscillators.
-Locally and in static and kinematics sense, this may work. Not really so as dynamics.
-And even when we accept the quantum harmonic oscillator picture, why particularly coherent states?
-The classical world is supposed to be emergent, not reliant on some microscopic state being `correct'.
+header:Janyes-Cummings model of a black hole paper summary
+1. The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument.
+2. Within the toy model: if there is a unique ground state of a black hole such that interactions simply vanish on this state, then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
+3. Within the toy model: it can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
+4. Within the toy model: with these ground state corrections, entanglement entropy eventually decreases to zero.
+5. Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+6. We can use any M reservoirs at zero temperature, impose conservation of total non-interacting energy, to cool down a black hole to its ground state.
+However, the first problem is that in case a black hole is like a system with exponentially many excited states then it is generally very difficult to find a good interaction Hamiltonian such that cooling time is not exponential. It is this issue that the Jaynes-Cummings model overcomes. 
+Even if the first problem is not actually an issue, most setups cannot provide a toy explanation of why bulk EFT becomes invalid at late time evaporation or how bulk EFT may be saved in light of troubles.
 
-But aren't we guaranteed that on average, classical mechanics hold from quantum mechanics? 
-Yes.
-But this is not enough. Think of this way. A heavily localized state will have large variance on momentum.
-A classical state features small variance on both momentum and position.
-Now you can rely on the average, but the problem is that momentum add up, not average out. So variance actually increases.
-Basic statistics, assuming no covariance between random variables:
-$$Var(\sum_k a_kX_k) = \sum_k a_k^2 Var(X_k)$$
-On average, if we set $a_k=1/n$ then variance goes by $1/n$ (coefficient-wise $1/n^2$) so the variance will continue to drop by averaging.
-But this is about total momentum. For position, we should be looking at distance away from the average position.
-While the average position stabilizes as $n \to \infty$, this variance stabilizes to a non-finite value trivially (if you know stat). So we are in trouble.
-Start from a low single-particle position variance and have a problem in momentum.
-Start from a large single-particle position variance and position variance never disappears.
-It is this question of variance that troubled me significantly, and I have been puzzled...
-Until now.
+header:(Beyond the papers) Can error correction avoid the small corrections theorem directly in the bulk?
+1. An error corrections approach (Petz map, for example) typically is about the logical Hilbert space being smaller than the physical Hilbert space.
+2. Furthermore, it typically tends to be about an ability of some subspace redundantly encoding another subspace.
+3. If small corrections to the physical theory can encode all information, then Petz map can save purity and unitarity in the logical Hilbert space. Argument: while exponentially small, there are exponentially many correction terms in one matrix, and when appropriately collected, we can restore full information to restore purity even when the state is approximately maximally mixed.
+4. While this may work, the real question is about how semiclassicality breaks.
+We can accept that the physical Hilbert space is only semiclassical such that the exterior logical Hilbert space is actual.
+But how does the semiclassical picture break down such that only the exterior logical Hilbert space is valid?
+This can only be answered direclty in the physical Hilbert space - the answer provided by the braneworld paper is that bulk Hilbert space factorization breaks down: booundary Hilbert space factorization does not correspond well to bulk Hilbert space factorization.
+Therefore, error corrections cannot alone avoid the small corrections theorem.
+5. When gravity acts as a Haar-random operation, the approximate fixed point is roughly maximally mixed, though some variance from this fixed point is there - however, variance is extremely small whenever the dimension of the black hole exterior is large. This is expected - small corrections. (see Movassagh and Shenker 2021 for the exact result.)
+6. If we want to avoid the Haar-random analysis, we can drop the chaotic assumption as implicitly done in the ensemble approach - a single instance becomes so different from the ensemble chaotic behavior such that each instance does not have chaotic behaviors.
+7. Alternatively, we can deny that each Haar-random operation does not rely on the entanglement between the interior and the exterior - some violation of locality.
 
-What I have in mind now is what other people may initially think as already known - the environment consistently measuring some quantum state such that classicality holds path-wise if we zoom out enough. 
-Now there are some problems with this idea - it relies on quantum measurements.. which probably should be explained by properly identifying the classical domain anyway. So we are sorting of explaining things by the ones that are in need of an explanations.
-As somehow the classical world emerges, supposedly non-unitary quantum measurements are automatically being done according to the aforementioned explanation..
-Which is so wrong.
-This issue is now less of a problem if there does exists a unitary account of quantum measurements, and in fact in case such an account exists, we can outline when a quantum world becomes visible to the classical world classically and remains largely invisible.
+8 (side note). It can also be noted that a failure of error correction for describing late-time black hole interiors is often understood as the physical Hilbert space of the interior becoming lower than the logical interior Hilbert space. We can pick the exterior code subspace to avoid this issue.
 
-header:2) Trivia
-A) I think Ted Jacobson's thermodynamic spacetime 'sort of' foreshadowed this ensemble theory approach to quantum gravity - he got it for wrong reasons, though.
-This casts general relativity as an ensemble reflection - in normal times, GR is correct, but for black holes, GR might be wrong.
-Except GR being wrong is yet to be supported, so a more reasonable idea would be the one I propose in my paper.
-
-B) If you think about energy conservation in quantum mechanics, it actually sort of breaks down whenever measurements are done. Where does that energy and its variaton go? Maybe quantum gravity has an answer for this, and it would be correct.
-
-C) If (quantum) EFT breaks down as is necessary for islands/replica wormholes, then most analysis about massive gravitons in islands/replica wormholes break down.
-You need more than EFT analysis - a full string-theoretic analysis is required. I do not think anyone has done that satisfactorily.
-
-header: 3) An ensemble theory is a sort-of psi-epistemic theory. Doesn't it provide some shortcuts?
-Of course this only makes sense if one does accept some theory to be an ensemble theory.
-But if this is accepted, then an ensemble theory is sort-of a psi-epistemic theory.
-I can claim that because an ensemble theory is only an effective theory, no more than one knowledge (epistemic) state ever maps to the same ontic reality.
-(Instead, it's more that multiple actual states map to the same effective coarse-grained knowledge state.)
-But what if an ensemble theory is taken too far, we add `non-perturbative' corrections and so forth?
-Then it would be difficult not to go in conflict with psi-ontology theorems.
-By adding non-perturbative corrections, either one do not believe in an 'ensemble' theory, or something else.
-
-header: 4) We do not need another measurement theory. We already have one.
-Context - right after the AMPS firewall paper. Firewalls requiring a new measurement theory and all that. But really, firewalls already have their measurement theory inherently. So no need for that. The Born rule is safe in a unitary fashion. Unless you need to collapse quantum states immediately.
-
-header: 5) Everyone should have a renewed interest in quantum computing!
-JT/RMT -> now effective postselection feasible if we can figure out the right theory out of the ensemble. But the quantum computation that this right theory does cannot be replaced by classical computing. Massive advantage.
-
-header: 6) Discreteness of string theory
-The results of this paper partially come from discrete aspects of string theory (eg. discrete symmetry) that normally does not appear in quantum field theory.
-
-header: 7) Some trivia.
-Lately (December, 2025), I discovered a series of papers by Alexey Kryukov via philsci-archive. The paper contents actually differ from this paper despite initial illusions of similarity.
-From what I understand, Kryukov's papers attempt to derive the Born rule from the (prior) normal distribution on minimum-uncertainty quasi-classical states.
-Of course this is with the assumption that transition probability somewhat relates to some distance measure.
-And then Kryukov finds that the Born rule is the only consistent one.
-The results are beautiful, though in a way this is largely a result of the powerful assumption that transition probability relates to some distance measure, and that part is the one hard to justify in purely physical terms.
-The normal distribution prior can be justified as a random walk of a particle approximating a Brownian motion, whch supposedly resembles the classical analog of a measurement process, with random Hamiltonians picked from a Gaussian Hamiltonian ensemble.
-(Kryukov also proves that the Schrodinger equation collapses to classical mechanics whenever evolution is restricted to the classical state manifold.
-That proof works mostly as: when the "wavepacket spread" part is removed, we can obtain classical mechanics from quantum mechanics.)
-
+header:(Beyond the papers) Can fine-grained Hilbert space avoid the small corrections theorem?
+1. This essentially corresponds to an argument that the black hole information problem only exists in quantum gravity and should only be cast in quantum gravity.
+2. The small corrections theorem IS about why this argument alone is insufficient, but the "qubit" formulation has turned out to be fairly controversial.
+Nevertheless, if we accept the qubit formulation, then accumulation of small corrections theorem remains small such that monotonic entanglement entropy increase cannot be avoided.
+Despite being cast in EFT, the theorem works exactly because the premise of the theorem is that only small corrections to an EFT state are made at each "turn" when the full quantum gravity state is mapped to EFT.
+The extended small corrections theorem more clearly outlines this aspect.
+3. The non-perturbative effect argument to entropy calculations is not a valid unitary argument, though this requires a discussion of replica wormholes.
+4. A mixed EFT state is always very close in terms of "simple observables" to some pure EFT state.
+(See Suvrat Raju's review on the information problem - also, this can be cast as an application of ETH - eignestate thermalization hypothesis.) 
+Generically, this is a large correction, so it breaks the small corrections premise.
+It is this path that the small corrections theorem is sometimes brushed aside.
+However, this is a flawed argument, unless more is assumed.
+We can of course correct the initial mixed state to a pure state, invoking ETH w/ simple observables. However, are we supposed to correct dynamics and evolution as well?
+Because if we do not provide large dynamic corrections when evolving an EFT state, then the small corrections theorem remains valid.
+And it is this dynamic correction part that ETH cannot alone explain, because it is a static or kinematic result, not a dynamic result.
+It is this dynamic correction that is to be explained, and we cannot just solve even the EFT-wise information problem by assuming a larger fine-grained Hilbert space.
