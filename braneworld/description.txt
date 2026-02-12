@@ -26,6 +26,15 @@ So it makes no sense to talk about JT gravity EFT creating firewalls - we have t
 These two papers are consistent with each other.
 And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model.
 
+header:(Less important for this paper, but a good background) the Jaynes-Cummings toy model of a black hole?
+(see https://mkimacad.github.io/bh_jaynes_cummings .)
+The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument ( https://mkimacad.github.io/braneworld ).
+If there is a unique ground state of a black hole such that interactions simply vanish on this state,
+then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
+It can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
+With these corrections, entanglement entropy eventually decreases to zero.
+Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+
 header:Main lessons
 1) Non-gravitational observables, conventional Hilbert space factorization should work. But no assurance for the bulk gravity side.
 Information on the black hole interior eventually needs to escape (entanglement structure is not enough), so this is a good thing.
