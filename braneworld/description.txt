@@ -59,5 +59,18 @@ Therefore, error corrections cannot alone avoid the small corrections theorem.
 8 (side note). It can also be noted that a failure of error correction for describing late-time black hole interiors is often understood as the physical Hilbert space of the interior becoming lower than the logical interior Hilbert space. We can pick the exterior code subspace to avoid this issue.
 
 header:(Beyond the papers) Can fine-grained Hilbert space avoid the small corrections theorem?
-
-
+1. This essentially corresponds to an argument that the black hole information problem only exists in quantum gravity and should only be cast in quantum gravity.
+2. The small corrections theorem IS about why this argument alone is insufficient, but the "qubit" formulation has turned out to be fairly controversial.
+Nevertheless, if we accept the qubit formulation, then accumulation of small corrections theorem remains small such that monotonic entanglement entropy increase cannot be avoided.
+Despite being cast in EFT, the theorem works exactly because the premise of the theorem is that only small corrections to an EFT state are made at each "turn" when the full quantum gravity state is mapped to EFT.
+The extended small corrections theorem more clearly outlines this aspect.
+3. The non-perturbative effect argument to entropy calculations is not a valid unitary argument, though this requires a discussion of replica wormholes.
+4. A mixed EFT state is always very close in terms of "simple observables" to some pure EFT state.
+(See Suvrat Raju's review on the information problem - also, this can be cast as an application of ETH - eignestate thermalization hypothesis.) 
+Generically, this is a large correction, so it breaks the small corrections premise.
+It is this path that the small corrections theorem is sometimes brushed aside.
+However, this is a flawed argument, unless more is assumed.
+We can of course correct the initial mixed state to a pure state, invoking ETH w/ simple observables. However, are we supposed to correct dynamics and evolution as well?
+Because if we do not provide large dynamic corrections when evolving an EFT state, then the small corrections theorem remains valid.
+And it is this dynamic correction part that ETH cannot alone explain, because it is a static or kinematic result, not a dynamic result.
+It is this dynamic correction that is to be explained, and we cannot just solve even the EFT-wise information problem by assuming a larger fine-grained Hilbert space.
