@@ -1,12 +1,18 @@
 header:History (date-wise)
 Published: February 27, 2025
 Github.io paper description: May 24-27,2025
-New description attempt: February 12, 2026
+New description: February 12, 2026
 header:Published in Fortschritte der Physik - Progress of Physics
 https://doi.org/10.1002/prop.202400194
 
-header:A new summary attempt (February 12, 2026)
-The braneworld paper says - nothing more, nothing less - six points that are actually a single point (see https://mkimacad.github.io/braneworld ):
+header:Implementing common descriptions for braneworld, measurement, Jaynes-Cummings papers (February 12, 2026)
+The same github.io contents shared for the three papers:
+braneworld paper ( https://mkimacad.github.io/braneworld )
+unitary quantum measurement model paper ( https://mkimacad.github.io/measurement )
+Jaynes-Cummings model of a black hole, which is largely subsumed to the measurement paper ( https://mkimacad.github.io/bh_jaynes_cummings )
+
+header:Braneworld paper summary
+The braneworld paper says - nothing more, nothing less - six points that are actually a single point:
 1. The reason why we can break the small corrections theorem (of Samir D. Mathur) in the mainstream approach is that Hilbert space factorization breaks down in bulk gravity.
 2. In the boundary theory, we cannot apply the small corrections theorem. This is partially by definition, but also because bulk and boundary have different views of localization and Hilbert space factorization (Terashima results).
 3. Despite the bulk Hilbert space factorization being invalid, we can still talk of entanglement entropy in the boundary, since the bulk and the boundary have different views of Hilbert space factorization.
@@ -15,7 +21,7 @@ Despite the eventual breakdown of bulk EFT, semiclassical background spacetime c
 5. In the boundary, it's much easier to think of a mechanism of purity restoration for black holes.
 6. Holography of information in the bulk is compatible with the Page curve in the boundary.
 
-header:Now to the quantum measurement model paper (see https://mkimacad.github.io/measurement )
+header:Unitary quantum measurement model paper summary
 1. For replica wormholes, the arguments in the braneworld paper are not surprising, sharing the idea that Hilbert space factorization breaks down in the bulk.
 2. Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS. Bulk EFT can break in this scenario.
 3. The controversy regarding replica wormholes only arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
@@ -25,18 +31,19 @@ header:Now to the quantum measurement model paper (see https://mkimacad.github.i
 7. A single instance diverges significantly from the ensemble average such that it makes no sense to apply the ensemble theory - JT gravity EFT.
 8. So it makes no sense to talk about JT gravity EFT creating firewalls - we have to distinguish between the semiclassical spacetime (+ entanglement wedge results) and JT gravity EFT.
 9. These two papers (braneworld paper and quantum measurement paper) are consistent with each other.
-10 (most importantly). And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model.
+10 (most importantly). And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model. (This is due to Zurek's envariance papers.)
 
-header:(Beyond this paper) the Jaynes-Cummings toy model of a black hole?
-(see https://mkimacad.github.io/bh_jaynes_cummings .)
-The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument ( https://mkimacad.github.io/braneworld ).
-If there is a unique ground state of a black hole such that interactions simply vanish on this state,
-then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
-It can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
-With these corrections, entanglement entropy eventually decreases to zero.
-Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+header:Janyes-Cummings model of a black hole paper summary
+1. The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument.
+2. Within the toy model: if there is a unique ground state of a black hole such that interactions simply vanish on this state, then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
+3. Within the toy model: it can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
+4. Within the toy model: with these ground state corrections, entanglement entropy eventually decreases to zero.
+5. Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+6. We can use any M reservoirs at zero temperature, impose conservation of total non-interacting energy, to cool down a black hole to its ground state.
+However, the first problem is that in case a black hole is like a system with exponentially many excited states then it is generally very difficult to find a good interaction Hamiltonian such that cooling time is not exponential. It is this issue that the Jaynes-Cummings model overcomes. 
+Even if the first problem is not actually an issue, most setups cannot provide a toy explanation of why bulk EFT becomes invalid at late time evaporation or how bulk EFT may be saved in light of troubles.
 
-header:(Beyond this paper) Can error correction avoid the small corrections theorem directly in the bulk?
+header:(Beyond the papers) Can error correction avoid the small corrections theorem directly in the bulk?
 1. An error corrections approach (Petz map, for example) typically is about the logical Hilbert space being smaller than the physical Hilbert space.
 2. Furthermore, it typically tends to be about an ability of some subspace redundantly encoding another subspace.
 3. If small corrections to the physical theory can encode all information, then Petz map can save purity and unitarity in the logical Hilbert space. Argument: while exponentially small, there are exponentially many correction terms in one matrix, and when appropriately collected, we can restore full information to restore purity even when the state is approximately maximally mixed.
@@ -51,6 +58,6 @@ Therefore, error corrections cannot alone avoid the small corrections theorem.
 
 8 (side note). It can also be noted that a failure of error correction for describing late-time black hole interiors is often understood as the physical Hilbert space of the interior becoming lower than the logical interior Hilbert space. We can pick the exterior code subspace to avoid this issue.
 
-header:(Beyond this paper) Can fine-grained Hilbert space avoid the small corrections theorem?
+header:(Beyond the papers) Can fine-grained Hilbert space avoid the small corrections theorem?
 
 
