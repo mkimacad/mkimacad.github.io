@@ -27,7 +27,7 @@ And the quantum measurement model paper further proceeds to suggest that if a fi
 
 header:(Less important for this paper, but a good background) the Jaynes-Cummings toy model of a black hole?
 (see https://mkimacad.github.io/bh_jaynes_cummings .)
-The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument ( https://mkimacad.github.io/measurement ).
+The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument ( https://mkimacad.github.io/braneworld ).
 If there is a unique ground state of a black hole such that interactions simply vanish on this state,
 then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
 It can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
