@@ -36,7 +36,7 @@ It can be shown that without these ground state corrections, entanglement entrop
 With these corrections, entanglement entropy eventually decreases to zero.
 Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
 
-AND Really trivia (new - February 11, 2026) but.
+header:AND Really trivia (new - February 11, 2026) but.
 Also copied to the measurement page.
 So instead of the Jaynes-Cummings model to talk about maintaining EFT throughout evaporation,
 we can instead consider JT gravity black hole coupled to M reservoirs initially at zero temperature, sequentially interacting.
