@@ -1,13 +1,15 @@
-header:On simulation code (baseline: codes/jaynes_improved.py)
-Main parameters at the end (currently line 368 # parameters):
-M (number of radiation qubits), N (number of particles in the black hole), reduc (multiplicative factor by which interaction time is reduced).
-The codes model the interaction Hamiltonian only, but this is fine since "free Hamiltonians" are irrelevant in interactions here.
+header:History
+Paper V1/github.io description: May 25-31, 2025
+New descriptions: June 3, 2025 and complete revamp: February 12, 2026
 
-header:JT gravity-inspired theory of measurements?
-see mkimacad.github.io/measurement
+header:Implementing common descriptions for braneworld, measurement, Jaynes-Cummings papers (February 12, 2026)
+The same github.io contents shared for the three papers:
+braneworld paper ( https://mkimacad.github.io/braneworld )
+unitary quantum measurement model paper ( https://mkimacad.github.io/measurement )
+Jaynes-Cummings model of a black hole, which is largely subsumed to the measurement paper ( https://mkimacad.github.io/bh_jaynes_cummings )
 
-header:Background from the braneworld paper + replica wormhole background (February 12, 2026)
-The braneworld paper says - nothing more, nothing less - six points that are actually a single point (see https://mkimacad.github.io/braneworld ):
+header:Braneworld paper summary
+The braneworld paper says - nothing more, nothing less - six points that are actually a single point:
 1. The reason why we can break the small corrections theorem (of Samir D. Mathur) in the mainstream approach is that Hilbert space factorization breaks down in bulk gravity.
 2. In the boundary theory, we cannot apply the small corrections theorem. This is partially by definition, but also because bulk and boundary have different views of localization and Hilbert space factorization (Terashima results).
 3. Despite the bulk Hilbert space factorization being invalid, we can still talk of entanglement entropy in the boundary, since the bulk and the boundary have different views of Hilbert space factorization.
@@ -15,103 +17,57 @@ The braneworld paper says - nothing more, nothing less - six points that are act
 Despite the eventual breakdown of bulk EFT, semiclassical background spacetime can be more robust such that entanglement wedge calculations remain largely valid.
 5. In the boundary, it's much easier to think of a mechanism of purity restoration for black holes.
 6. Holography of information in the bulk is compatible with the Page curve in the boundary.
-Now to the quantum measurement model paper (see https://mkimacad.github.io/measurement ):
-For replica wormholes, this is not a surprise, since Hilbert space factorization breaks down in the bulk.
-Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS.
-Bulk EFT can break. The problem really arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
-Unitary JT gravity and its Hilbert space factorization are perfectly fine without replica wormholes.
-It is more that if we view JT as holographic dual, then since it is only an EFT view of the boundary theory, Hilbert space factorization can break down.
-JT gravity EFT becomes no longer valid when Hilbert space factorization breaks down, and indeed an ensemble view of JT gravity is consistent with this.
-A single instance diverges significantly from the ensemble average such that it makes no sense to apply the ensemble theory - JT gravity EFT.
-So it makes no sense to talk about JT gravity EFT creating firewalls - we have to distinguish between the semiclassical spacetime (+ entanglement wedge results) and JT gravity EFT.
-These two papers are consistent with each other.
-And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model.
 
-header:Summary
-The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument ( https://mkimacad.github.io/braneworld ).
-(This paper is largely subsumed into https://mkimacad.github.io/measurement .)
-If there is a unique ground state of a black hole such that interactions simply vanish on this state,
-then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
-It can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
-With these corrections, entanglement entropy eventually decreases to zero.
-Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+header:Unitary quantum measurement model paper summary
+1. For replica wormholes, the arguments in the braneworld paper are not surprising, sharing the idea that Hilbert space factorization breaks down in the bulk.
+2. Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS. Bulk EFT can break in this scenario.
+3. The controversy regarding replica wormholes only arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
+4. Unitary JT gravity and its Hilbert space factorization are perfectly fine without replica wormholes, and it is incorrect to say JT gravity requires non-perturbative corrections.
+5. It is more that if we view JT as holographic dual, then since it is only an EFT view of the boundary theory, Hilbert space factorization can break down.
+6. JT gravity EFT becomes no longer valid when Hilbert space factorization breaks down, and indeed an ensemble view of JT gravity is consistent with this.
+7. A single instance diverges significantly from the ensemble average such that it makes no sense to apply the ensemble theory - JT gravity EFT.
+8. So it makes no sense to talk about JT gravity EFT creating firewalls - we have to distinguish between the semiclassical spacetime (+ entanglement wedge results) and JT gravity EFT.
+9. These two papers (braneworld paper and quantum measurement paper) are consistent with each other.
+10 (most importantly). And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model. (This is due to Zurek's envariance papers.)
 
-header:AND Really trivia (new - February 11, 2026) but.
-Also copied to the measurement page.
-So instead of the Jaynes-Cummings model to talk about maintaining EFT throughout evaporation,
-we can instead consider JT gravity black hole coupled to M reservoirs initially at zero temperature, sequentially interacting.
-Because JT black holes have positive specific heat, and we use fresh reservoirs repeatedly, a JT black hole will cool to zero temperature.
-However, this toy model has no mean of showing where the conventional (monotonic) entanglement (increase) problem arises.
-Furthermore, it is definitely inapplicable to Schwarzschild black hole cases.
-(Side note: we have to distinguish maximal mixing that does not respect conservaion of non-interaction energy with maximal mixing that respects conservation.)
+header:Janyes-Cummings model of a black hole paper summary
+1. The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument.
+2. Within the toy model: if there is a unique ground state of a black hole such that interactions simply vanish on this state, then as far as we correct quantum EFT with this ground state correction, quantum EFT may remain perfectly valid.
+3. Within the toy model: it can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
+4. Within the toy model: with these ground state corrections, entanglement entropy eventually decreases to zero.
+5. Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+6. We can use any M reservoirs at zero temperature, impose conservation of total non-interacting energy, to cool down a black hole to its ground state.
+However, the first problem is that in case a black hole is like a system with exponentially many excited states then it is generally very difficult to find a good interaction Hamiltonian such that cooling time is not exponential. It is this issue that the Jaynes-Cummings model overcomes. 
+Even if the first problem is not actually an issue, most setups cannot provide a toy explanation of why bulk EFT becomes invalid at late time evaporation or how bulk EFT may be saved in light of troubles.
 
-header:History (date-wise)
-Paper V1/github.io description: May 25-31, 2025
-A memo on the necessity of gravity quantization, forked to https://mkimacad.github.io/gravity_quantization: May 31-June 2, 2025
-Significantly revised the github.io description, correcting an initially misleading explanation: June 3, 2025 
-header:The main goal of this paper
-1) Show that semiclassical spacetime geometry can be consistent with the Page curve,
-2) the problem with the small corrections theorem + firewall paradox has to do with empty black hole quantum branches in superpositions.
-It is easy to achieve unitarity by violating semiclassical spacetime. Satisfying both goals is what makes the matter difficult. The paper succeeds.
-(No-hair, no electricity, no angular momentum -> semiclassical geometry = semiclassical black hole mass (equivalently, energy).)
-In this Jaynes-Cummings (JCM) model, black hole=(optical) cavity=field, (Hawking) radiations=atom=qubits. $\hslash=1$ is used for convenience.
-header:On "time" in this modified Jaynes-Cummings (JCM) model
-Qubits are not fundamental - they are only entropy/entanglement generators. Time can conveniently be re-scaled to fit the Page curve slopes.
-header:General storylines
-1. Non-interaction energy is conserved. Qubits are initialized with no energy to transfer to the black hole. The black hole probabilistically emits energy via JCM interaction until it reaches its ground state, thereby being purified - unitarity upheld even after complete evaporation.
-2. Meanwhile, with small interaction time, semiclassical spacetime geometry with close to zero variance (via central limit theorem + very low variance of each qubit) can be maintained - semiclassical spacetime preserved.
-3. This qudit model is almost identical to the toy qubit setup used in black hole physics.
-4. The real issue with the black hole information problem is that semiclassical spacetime is often thought to imply that the empty black hole quantum branch of superpositions can be ignored. But contributions of this branch eventually build up, despite semiclassical spacetime. Without the energy lower bound of the black hole, black hole entanglement entropy builds up continuously even in this model.
-5. Nothing wrong with EFT: complete evaporation or not, different horizon vacua. The black hole exterior sees nothing strange (horizon vacuum maintained).
-6. AMPS firewall and the small corrections theorem went astray because infalling observers do not see the interior horizon vacuum, though they sort of do for each classically measured state $|n\rangle$.
-header:JCM interaction setup
-1. The JCM interaction (between one qubit and the black hole) of the model says: if a two-energy radiation qubit is in ground state $|0\rangle$ and the black hole has enegy, then the qubit should gain energy to the excited state. If the qubit is in excited state $|1\rangle$ then the black hole should gain energy. Our initial qubit state is always in $|0\rangle$, so the black hole always loses energy until complete evaporation. Governed by $H_I$.
-2. Each $k$th qubit, initially in $|0\rangle$ interacts sequentially with the black hole for duration of $\Delta t_k$ ("interaction time"). Then the qubit flies away, never interacting with the black hole again.
-3. The initial state of the black hole at $t=0$ is $|N\rangle$, with $a^{\dagger}a|N\rangle = N|N\rangle$, $N \in \mathbb{N}$. The pre-interaction state of a qubit is $|0\rangle$ as aforementioned.
-$$H_{rad} = \omega_a |1\rangle\langle 1|$$
-$$H_{BH} = \omega_a a^{\dagger}a$$
-with $[a,a^{\dagger}]=1$ and $[a,a]=[a^{\dagger},a^{\dagger}]=0$. 
-$$H_I = g(|1\rangle\langle 0|a + |0\rangle \langle 1|a^{\dagger})$$
-$g$ and $\omega_a$ are largely irrelevant in this paper.
-header:Models/cases considered
-Variable interaction time case: $\Delta t_k$ is determined by $\langle n \rangle$, the average excitation number of the black hole.
-Fixed interaction time case: $\Delta t_k$ is determined by $N$, the initial particle number of the black hole.
-Interaction time reduction: $\Delta t_k$ can be reduced by $k_r$ (reduc in the codes) to better induce semiclassicality of spacetime.
-Simplified model: Replacing JCM interaction with a more simplified interaction unitary $U$ - for all $|n\rangle$ ($n\in \mathbb{N}$) of the black hole, same entanglement behavior except for $n=0$ (no entanglement).
-header:Simulation results
-The model simulations go as follows:
-img:imgs/nosimple_ex1_1.png
-img:imgs/nosimple_ex1_2.png
-img:imgs/nosimple_ex2_1.png
-img:imgs/nosimple_ex2_2.png
-img:imgs/reduced_time_ex1_1.png
-img:imgs/reduced_time_ex1_2.png
-We confirm the same qualitative result for the simplified model:
-img:imgs/simple_ex1.png
-img:imgs/simple_ex2.png
-header:On necessity of quantum gravity (possibly in v2 of the paper, or a separate paper)
-See https://mkimacad.github.io/gravity_quantization as the main reference: the JCM model of this paper could be thought of as a thought experiment in the necessity of quantum gravity.
-header:Is this a consequence of no hair? (possibly in v2 of the paper)
-Sort of yes. If we had degenerate (ie. multiple) ground states, then entanglement entropy could be much larger at late times. So apparently, no hair actually helps us to solve the information problem. (Analyzing the case of degenerate ground states is also a wonderful future topic.)
-header:On weirdness of semiclassicality (possibly in v2 of the paper, replacing the previously misleading explanation in this github.io page, though not the paper)
-A significant reason why we have so many problems understanding black holes being roughly semiclassical is that entropy decreases due to effects of the empty black hole branch, but the significance of the empty black hole branch seems to instead suggest high energy variance "classically". It is this classical intuition that is wrong in quantum mechanics due to quantum correlations. (Inevitability of entropy and energy variance decreases can be seen from the fact that the number of available black hole microstates decreases significantly at late times.)
-The picture we have is that at early times, the central limit theorem (CLT) dominates such that we can add up normal distributions of sub-intervals. As the direction of entropy reverses at late times, this CLT picture no longer holds and variance is actually lower than the maximum variance reached at early times. (Recall that our outcomes and eigenstates are all energy eigenstates. So entropy variance is tied to energy variance.) So as the black hole evaporates, deviations from complete semiclassicality are suppressed enough to assure the validity of the semiclassical picture.
-(Note that at early times, Var(X+Y) = Var(X)+Var(Y)+2Cov(X,Y), but the covariance part can be ignored since the entanglement structure does not change much from one interval to another.)
-header:The JCM model 'models' absorption as well (not in the paper, nor needed, but possibly in v2)
-If a qubit is initialized in $|1\rangle$, then we have the black hole absorbing energy on average instead (the black hole attracts matter-energy), later releasing it back once other qubits are mostly on $|0\rangle$.
-header:On temperature-based re-scaling of interaction time and abrupt vacuum change (possibly in v2 of the paper)
-While this paper scales interaction time quasi-uniformly, we can adjust interaction time such that it varies with the semiclassical temperature of the black hole. As the black hole becomes smaller, temperature increases, which leads to an abrupt vacuum change right before or after complete evaporation, unless we believe in final remnants. Therefore, a potential counter-argument that the abrupt 'vacuum change' does not arise cannot hold. There is no smooth tranisition to the approximately flat-space horizon. This is a well-understood and established point, so should not be controversial, and indeed the necessity of this abrupt change without remnants has inspired some to accept remnants instead.
-header:Extra talks: replica wormholes and Hilbert space factorization (not in the paper)
-There could also be workarounds that minimize the partial breakdown of semiclassicality. Essentially, the issue is that the black hole does not exist for some quantum branches, so these branches need to be taken out to the exterior, if we are following the traditional qubit pair picture. This may be achieved by the ideas like replica wormholes - see discussions in https://mkimacad.github.io/braneworld , though note that in https://doi.org/10.1016/j.physletb.2024.139130 , Khodahami and Azizi (2024) argues that firewalls can be generated with replica wormholes. If this holds generally, the interior horizon vacuum is not really saved.
-Portraying the empty black hole outcome in a superposition within the black hole interior locally is impossible unless some degrees of freedom that were previously assumed to exist is discarded. This effectively causes the EFT Hilbert space to change, along with its factorization. The JCM model did not require such a change, because we are not too concerned with the local reprsentation of the interior. The Hilbert space factorization issue is therefore not an artefact of Karch-Randall braneworld and is definitely not restricted to gauge theories.
-header:Some trivial matters: Initial "cavity"/black hole state choice
-In this paper $|N\rangle$ is chosen as an initial state. We can go more realistically and choose a 'Gaussian' state of different excitation states (which fits a semiclassical state better) without much difference.
-header:Do we need to replicate the Page curve, given holography of information?
-See discussions in https://mkimacad.github.io/braneworld , but some of them are replicated here. In short, confirmation by our familiar local non-gravitational horizon observables is important. Holography of information can be or is correct, but there may still be pathologies around black hole horizons that require understanding. We cannot simply invoke unitarity of quantum physics or AdS/CFT to resolve the information problem, and this is essentially the same thing.
-header:Is black hole complementarity or a special 'boundary of a boundary' setup like Karch-Randall braneworld necessary?
-No. But they provide convenient ways of directly connecting to quantum gravity calculations.
-header:Digression: "remnants" of incomplete fragments that may become relevant
-(Also quantization issues, if we do not properly correct states. Complications after complications. It does not seem like these complications are just for black hole setups.)
-(And the JCM model of this paper also makes us the very condition of classicality within large-n classicality, but I will stop here for now.)
-header: Addendum
-Currently working toward V2.B that incorporates parts of the braneworld paper as well that is to be uploaded to arXiv. 
+header:(Beyond the papers) Can error correction avoid the small corrections theorem directly in the bulk?
+1. An error corrections approach (Petz map, for example) typically is about the logical Hilbert space being smaller than the physical Hilbert space.
+2. Furthermore, it typically tends to be about an ability of some subspace redundantly encoding another subspace.
+3. If small corrections to the physical theory can encode all information, then Petz map can save purity and unitarity in the logical Hilbert space. Argument: while exponentially small, there are exponentially many correction terms in one matrix, and when appropriately collected, we can restore full information to restore purity even when the state is approximately maximally mixed.
+4. While this may work, the real question is about how semiclassicality breaks.
+We can accept that the physical Hilbert space is only semiclassical such that the exterior logical Hilbert space is actual.
+But how does the semiclassical picture break down such that only the exterior logical Hilbert space is valid?
+This can only be answered direclty in the physical Hilbert space - the answer provided by the braneworld paper is that bulk Hilbert space factorization breaks down: booundary Hilbert space factorization does not correspond well to bulk Hilbert space factorization.
+Therefore, error corrections cannot alone avoid the small corrections theorem.
+5. When gravity acts as a Haar-random operation, the approximate fixed point is roughly maximally mixed, though some variance from this fixed point is there - however, variance is extremely small whenever the dimension of the black hole exterior is large. This is expected - small corrections. (see Movassagh and Shenker 2021 for the exact result.)
+6. If we want to avoid the Haar-random analysis, we can drop the chaotic assumption as implicitly done in the ensemble approach - a single instance becomes so different from the ensemble chaotic behavior such that each instance does not have chaotic behaviors.
+7. Alternatively, we can deny that each Haar-random operation does not rely on the entanglement between the interior and the exterior - some violation of locality.
+
+8 (side note). It can also be noted that a failure of error correction for describing late-time black hole interiors is often understood as the physical Hilbert space of the interior becoming lower than the logical interior Hilbert space. We can pick the exterior code subspace to avoid this issue.
+
+header:(Beyond the papers) Can fine-grained Hilbert space avoid the small corrections theorem?
+1. This essentially corresponds to an argument that the black hole information problem only exists in quantum gravity and should only be cast in quantum gravity.
+2. The small corrections theorem IS about why this argument alone is insufficient, but the "qubit" formulation has turned out to be fairly controversial.
+Nevertheless, if we accept the qubit formulation, then accumulation of small corrections theorem remains small such that monotonic entanglement entropy increase cannot be avoided.
+Despite being cast in EFT, the theorem works exactly because the premise of the theorem is that only small corrections to an EFT state are made at each "turn" when the full quantum gravity state is mapped to EFT.
+The extended small corrections theorem more clearly outlines this aspect.
+3. The non-perturbative effect argument to entropy calculations is not a valid unitary argument, though this requires a discussion of replica wormholes.
+4. A mixed EFT state is always very close in terms of "simple observables" to some pure EFT state.
+(See Suvrat Raju's review on the information problem - also, this can be cast as an application of ETH - eignestate thermalization hypothesis.) 
+Generically, this is a large correction, so it breaks the small corrections premise.
+It is this path that the small corrections theorem is sometimes brushed aside.
+However, this is a flawed argument, unless more is assumed.
+We can of course correct the initial mixed state to a pure state, invoking ETH w/ simple observables. However, are we supposed to correct dynamics and evolution as well?
+Because if we do not provide large dynamic corrections when evolving an EFT state, then the small corrections theorem remains valid.
+And it is this dynamic correction part that ETH cannot alone explain, because it is a static or kinematic result, not a dynamic result.
+It is this dynamic correction that is to be explained, and we cannot just solve even the EFT-wise information problem by assuming a larger fine-grained Hilbert space.
