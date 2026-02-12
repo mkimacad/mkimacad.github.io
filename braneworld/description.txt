@@ -14,18 +14,18 @@ The braneworld paper says - nothing more, nothing less - six points that are act
 Despite the eventual breakdown of bulk EFT, semiclassical background spacetime can be more robust such that entanglement wedge calculations remain largely valid.
 5. In the boundary, it's much easier to think of a mechanism of purity restoration for black holes.
 6. Holography of information in the bulk is compatible with the Page curve in the boundary.
+
 header:Now to the quantum measurement model paper (see https://mkimacad.github.io/measurement )
-For replica wormholes, the arguments in the braneworld paper are not surprising, sharing the idea that Hilbert space factorization breaks down in the bulk.
-Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS.
-Bulk EFT can break.
-The controversy regarding replica wormholes only arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
-Unitary JT gravity and its Hilbert space factorization are perfectly fine without replica wormholes.
-It is more that if we view JT as holographic dual, then since it is only an EFT view of the boundary theory, Hilbert space factorization can break down.
-JT gravity EFT becomes no longer valid when Hilbert space factorization breaks down, and indeed an ensemble view of JT gravity is consistent with this.
-A single instance diverges significantly from the ensemble average such that it makes no sense to apply the ensemble theory - JT gravity EFT.
-So it makes no sense to talk about JT gravity EFT creating firewalls - we have to distinguish between the semiclassical spacetime (+ entanglement wedge results) and JT gravity EFT.
-These two papers are consistent with each other.
-And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model.
+1. For replica wormholes, the arguments in the braneworld paper are not surprising, sharing the idea that Hilbert space factorization breaks down in the bulk.
+2. Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS. Bulk EFT can break in this scenario.
+3. The controversy regarding replica wormholes only arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
+4. Unitary JT gravity and its Hilbert space factorization are perfectly fine without replica wormholes, and it is incorrect to say JT gravity requires non-perturbative corrections.
+5. It is more that if we view JT as holographic dual, then since it is only an EFT view of the boundary theory, Hilbert space factorization can break down.
+6. JT gravity EFT becomes no longer valid when Hilbert space factorization breaks down, and indeed an ensemble view of JT gravity is consistent with this.
+7. A single instance diverges significantly from the ensemble average such that it makes no sense to apply the ensemble theory - JT gravity EFT.
+8. So it makes no sense to talk about JT gravity EFT creating firewalls - we have to distinguish between the semiclassical spacetime (+ entanglement wedge results) and JT gravity EFT.
+9. These two papers (braneworld paper and quantum measurement paper) are consistent with each other.
+10 (most importantly). And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model.
 
 header:(Beyond this paper) the Jaynes-Cummings toy model of a black hole?
 (see https://mkimacad.github.io/bh_jaynes_cummings .)
@@ -36,5 +36,21 @@ It can be shown that without these ground state corrections, entanglement entrop
 With these corrections, entanglement entropy eventually decreases to zero.
 Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
 
-header:Can error correction or fine-grained Hilbert space avoid the small corrections theorem?
+header:(Beyond this paper) Can error correction avoid the small corrections theorem directly in the bulk?
+1. An error corrections approach (Petz map, for example) typically is about the logical Hilbert space being smaller than the physical Hilbert space.
+2. Furthermore, it typically tends to be about an ability of some subspace redundantly encoding another subspace.
+3. If small corrections to the physical theory can encode all information, then Petz map can save purity and unitarity in the logical Hilbert space. Argument: while exponentially small, there are exponentially many correction terms in one matrix, and when appropriately collected, we can restore full information to restore purity even when the state is approximately maximally mixed.
+4. While this may work, the real question is about how semiclassicality breaks.
+We can accept that the physical Hilbert space is only semiclassical such that the exterior logical Hilbert space is actual.
+But how does the semiclassical picture break down such that only the exterior logical Hilbert space is valid?
+This can only be answered direclty in the physical Hilbert space - the answer provided by the braneworld paper is that bulk Hilbert space factorization breaks down: booundary Hilbert space factorization does not correspond well to bulk Hilbert space factorization.
+Therefore, error corrections cannot alone avoid the small corrections theorem.
+5. When gravity acts as a Haar-random operation, the approximate fixed point is roughly maximally mixed, though some variance from this fixed point is there - however, variance is extremely small whenever the dimension of the black hole exterior is large. This is expected - small corrections. (see Movassagh and Shenker 2021 for the exact result.)
+6. If we want to avoid the Haar-random analysis, we can drop the chaotic assumption as implicitly done in the ensemble approach - a single instance becomes so different from the ensemble chaotic behavior such that each instance does not have chaotic behaviors.
+7. Alternatively, we can deny that each Haar-random operation does not rely on the entanglement between the interior and the exterior - some violation of locality.
+
+8 (side note). It can also be noted that a failure of error correction for describing late-time black hole interiors is often understood as the physical Hilbert space of the interior becoming lower than the logical interior Hilbert space. We can pick the exterior code subspace to avoid this issue.
+
+header:(Beyond this paper) Can fine-grained Hilbert space avoid the small corrections theorem?
+
 
