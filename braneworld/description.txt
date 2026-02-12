@@ -14,10 +14,11 @@ The braneworld paper says - nothing more, nothing less - six points that are act
 Despite the eventual breakdown of bulk EFT, semiclassical background spacetime can be more robust such that entanglement wedge calculations remain largely valid.
 5. In the boundary, it's much easier to think of a mechanism of purity restoration for black holes.
 6. Holography of information in the bulk is compatible with the Page curve in the boundary.
-Now to the quantum measurement model paper (see https://mkimacad.github.io/measurement ):
-For replica wormholes, this is not a surprise, since Hilbert space factorization breaks down in the bulk.
+header:Now to the quantum measurement model paper (see https://mkimacad.github.io/measurement )
+For replica wormholes, the arguments in the braneworld paper are not surprising, sharing the idea that Hilbert space factorization breaks down in the bulk.
 Replica wormholes are not problematic if we accept that holography can be non-trivial with patches of AdS instead of global (or Poincare) AdS.
-Bulk EFT can break. The problem really arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
+Bulk EFT can break.
+The controversy regarding replica wormholes only arises whenever one says replica wormholes are non-perturbative consequences of (for example) JT gravity.
 Unitary JT gravity and its Hilbert space factorization are perfectly fine without replica wormholes.
 It is more that if we view JT as holographic dual, then since it is only an EFT view of the boundary theory, Hilbert space factorization can break down.
 JT gravity EFT becomes no longer valid when Hilbert space factorization breaks down, and indeed an ensemble view of JT gravity is consistent with this.
@@ -26,7 +27,7 @@ So it makes no sense to talk about JT gravity EFT creating firewalls - we have t
 These two papers are consistent with each other.
 And the quantum measurement model paper further proceeds to suggest that if a final ensemble theory (EFT) state is a maximally mixed state while an actual instance is a pure state, regardless of an initial low-energy EFT state (as to not perturb the initial background spacetime), then we have a unitary quantum measurement model.
 
-header:(Less important for this paper, but a good background) the Jaynes-Cummings toy model of a black hole?
+header:(Beyond this paper) the Jaynes-Cummings toy model of a black hole?
 (see https://mkimacad.github.io/bh_jaynes_cummings .)
 The Jaynes-Cummings toy model of a black hole in this paper refines the braneworld paper argument ( https://mkimacad.github.io/braneworld ).
 If there is a unique ground state of a black hole such that interactions simply vanish on this state,
@@ -34,3 +35,6 @@ then as far as we correct quantum EFT with this ground state correction, quantum
 It can be shown that without these ground state corrections, entanglement entropy simply monotonically increases.
 With these corrections, entanglement entropy eventually decreases to zero.
 Therefore, it may be possible to save (somewhat) the continued validity of bulk EFT and bulk Hilbert space factorization.
+
+header:Can error correction or fine-grained Hilbert space avoid the small corrections theorem?
+
