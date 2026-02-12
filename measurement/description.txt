@@ -1,5 +1,6 @@
 header:History
 (To be updated)
+(Potentially copying classicality discussions from old_description.txt)
 
 header:Implementing common descriptions for braneworld, measurement, Jaynes-Cummings papers (February 12, 2026)
 The same github.io contents shared for the three papers:
