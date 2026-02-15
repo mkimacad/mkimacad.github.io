@@ -11,22 +11,35 @@ import io
 torch.set_float32_matmul_precision('high')
 
 # ==========================================
-# 1. Native SATLIB Academic Downloader
+# 1. Native SATLIB Academic Downloader + Synthetic Generator
 # ==========================================
 
 def fetch_satlib_direct(M=50, target_sat=True, num_instances=3, seed=42):
+    """Download instances from SATLIB for sizes 20-250 variables"""
     random.seed(seed)
     
     sat_map = {
         20: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf20-91.tar.gz",
         50: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf50-218.tar.gz",
         75: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf75-325.tar.gz",
-        100: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf100-430.tar.gz"
+        100: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf100-430.tar.gz",
+        125: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf125-538.tar.gz",
+        150: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf150-645.tar.gz",
+        175: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf175-753.tar.gz",
+        200: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf200-860.tar.gz",
+        225: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf225-960.tar.gz",
+        250: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf250-1065.tar.gz"
     }
     unsat_map = {
         50: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf50-218.tar.gz",
         75: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf75-325.tar.gz",
-        100: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf100-430.tar.gz"
+        100: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf100-430.tar.gz",
+        125: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf125-538.tar.gz",
+        150: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf150-645.tar.gz",
+        175: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf175-753.tar.gz",
+        200: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf200-860.tar.gz",
+        225: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf225-960.tar.gz",
+        250: "https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uuf250-1065.tar.gz"
     }
     
     if target_sat and M not in sat_map: M = 50
@@ -54,6 +67,89 @@ def fetch_satlib_direct(M=50, target_sat=True, num_instances=3, seed=42):
             extracted_cnfs.append((dimacs_text, label, m.name))
             
     return extracted_cnfs
+
+
+def generate_random_3sat(num_vars, clause_ratio=4.26, num_instances=3, seed=42, target_sat=True):
+    """
+    Generate synthetic random 3-SAT instances for arbitrary sizes (e.g., 500-1000 variables).
+    
+    Args:
+        num_vars: Number of variables
+        clause_ratio: Clauses-to-variables ratio (4.26 is phase transition for 3-SAT)
+        num_instances: Number of instances to generate
+        seed: Random seed
+        target_sat: If True, generate near phase transition (harder), if False generate overconstrained
+    
+    Returns:
+        List of (dimacs_text, label, filename) tuples
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    
+    # Adjust clause ratio based on satisfiability target
+    if target_sat:
+        # Slightly below phase transition for satisfiable instances
+        actual_ratio = clause_ratio * 0.95
+        label = "SAT (synthetic)"
+    else:
+        # Above phase transition for unsatisfiable instances
+        actual_ratio = clause_ratio * 1.1
+        label = "UNSAT (synthetic)"
+    
+    num_clauses = int(num_vars * actual_ratio)
+    
+    print(f"\n[!] Generating {num_instances} synthetic random 3-SAT instances...")
+    print(f"[!] Variables: {num_vars}, Clauses: {num_clauses}, Ratio: {actual_ratio:.2f}")
+    
+    extracted_cnfs = []
+    
+    for inst_idx in range(num_instances):
+        clauses = []
+        attempted = set()
+        
+        # Generate random 3-SAT clauses
+        while len(clauses) < num_clauses:
+            # Randomly select 3 distinct variables
+            vars_indices = random.sample(range(num_vars), 3)
+            
+            # Randomly negate each literal
+            literals = []
+            for var_idx in vars_indices:
+                if random.random() < 0.5:
+                    literals.append(var_idx + 1)  # Positive literal
+                else:
+                    literals.append(-(var_idx + 1))  # Negative literal
+            
+            # Check if clause is tautological (contains both x and -x)
+            abs_lits = [abs(lit) for lit in literals]
+            if len(abs_lits) != len(set(abs_lits)):
+                continue  # Skip tautological clauses
+            
+            # Create a canonical form to avoid duplicates
+            clause_tuple = tuple(sorted(literals, key=abs))
+            if clause_tuple in attempted:
+                continue
+            
+            attempted.add(clause_tuple)
+            clauses.append(literals)
+        
+        # Generate DIMACS format
+        dimacs_lines = []
+        dimacs_lines.append(f"c Random 3-SAT instance {inst_idx+1}")
+        dimacs_lines.append(f"c Generated with {num_vars} variables, {num_clauses} clauses")
+        dimacs_lines.append(f"p cnf {num_vars} {num_clauses}")
+        
+        for clause in clauses:
+            clause_str = " ".join(map(str, clause)) + " 0"
+            dimacs_lines.append(clause_str)
+        
+        dimacs_text = "\n".join(dimacs_lines)
+        filename = f"synthetic_3sat_n{num_vars}_m{num_clauses}_{inst_idx+1:03d}.cnf"
+        
+        extracted_cnfs.append((dimacs_text, label, filename))
+    
+    return extracted_cnfs
+
 
 def parse_dimacs(dimacs_str):
     parsed_clauses, parsed_signs = [], []
@@ -253,14 +349,36 @@ def reset_weights(m):
     if hasattr(m, 'reset_parameters'):
         m.reset_parameters()
 
-def run_satlib_evaluation(M_target=50, target_sat=True, num_instances=3, dataset_seed=42, 
-                          batch_size=2048, clip_grad_norm=1.0, 
+def run_satlib_evaluation(M_target=500, target_sat=True, num_instances=3, dataset_seed=42, 
+                          use_synthetic=False, batch_size=2048, clip_grad_norm=1.0, 
                           print_ratio=0.05, assignment_print_ratio=0.5, base_entropy_coef=0.1):
+    """
+    Run SAT evaluation with SATLIB or synthetic datasets.
+    
+    Args:
+        M_target: Number of variables (20-250 for SATLIB, 500-1000+ for synthetic)
+        target_sat: Generate SAT or UNSAT instances
+        num_instances: Number of instances to evaluate
+        dataset_seed: Random seed for dataset generation
+        use_synthetic: If True, generate synthetic instances; if False, use SATLIB
+        batch_size: Batch size for training
+        clip_grad_norm: Gradient clipping norm
+        print_ratio: Fraction of clauses to print
+        assignment_print_ratio: Fraction of assignment to print
+        base_entropy_coef: Base entropy coefficient
+    """
                            
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Running on GPU Acceleration: {device}")
     
-    cnfs = fetch_satlib_direct(M=M_target, target_sat=target_sat, num_instances=num_instances, seed=dataset_seed)
+    # Fetch or generate instances
+    if use_synthetic or M_target > 250:
+        print(f"\n[!] Using SYNTHETIC random 3-SAT generator for {M_target} variables")
+        cnfs = generate_random_3sat(M_target, clause_ratio=4.26, num_instances=num_instances, 
+                                     seed=dataset_seed, target_sat=target_sat)
+    else:
+        print(f"\n[!] Using SATLIB database for {M_target} variables")
+        cnfs = fetch_satlib_direct(M=M_target, target_sat=target_sat, num_instances=num_instances, seed=dataset_seed)
     
     # =================================================================
     # PRE-COMPILATION PHASE (Standard Triton, No CUDA Graphs)
@@ -277,7 +395,7 @@ def run_satlib_evaluation(M_target=50, target_sat=True, num_instances=3, dataset
     
     for idx, (dimacs_text, gt_label, filename) in enumerate(cnfs):
         print(f"\n{'='*80}")
-        print(f"  Evaluating SATLIB Instance {idx+1}/{num_instances} | File: {filename} | Seed: {dataset_seed}")
+        print(f"  Evaluating Instance {idx+1}/{num_instances} | File: {filename} | Seed: {dataset_seed}")
         print(f"{'='*80}")
         
         parsed_clauses, parsed_signs, M = parse_dimacs(dimacs_text)
@@ -288,7 +406,7 @@ def run_satlib_evaluation(M_target=50, target_sat=True, num_instances=3, dataset
         clauses, signs = clauses.to(device), signs.to(device)
         
         beta_start = 0.1
-        beta_end = float(M ** 2) 
+        beta_end = float(M) 
         epochs = int(M * 200 + 2000)
         
         print(f"\n[Dynamic Scaling Physics]")
@@ -359,8 +477,8 @@ def run_satlib_evaluation(M_target=50, target_sat=True, num_instances=3, dataset
             if best_energy == 0:
                 print(">> SUCCESS: Found a perfect satisfying assignment!")
             else:
-                if gt_label == "UNSAT":
-                    print(">> [VERIFIED UNSAT]: The network failed to find 0 energy, which perfectly aligns with SATLIB's UNSAT designation.")
+                if "UNSAT" in gt_label:
+                    print(">> [VERIFIED UNSAT]: The network failed to find 0 energy, which perfectly aligns with the UNSAT designation.")
                 else:
                     print(">> FAILED: Problem was labeled SAT, but the network was trapped in a local minimum.")
                 
@@ -382,14 +500,52 @@ def run_satlib_evaluation(M_target=50, target_sat=True, num_instances=3, dataset
             plot_physics_metrics(C_ij, q_batch, idx + 1, filename)
 
 if __name__ == "__main__":
+    # Example 1: Generate synthetic instances with 500 variables
+    print("="*80)
+    print("EXAMPLE 1: Synthetic Random 3-SAT with 500 Variables")
+    print("="*80)
     run_satlib_evaluation(
-        M_target=50,              
+        M_target=500,              # Synthetic generation for larger sizes
         target_sat=True,          
         num_instances=3,           
         dataset_seed=42,          
+        use_synthetic=True,        # Use synthetic generator
         batch_size=2048, 
         clip_grad_norm=1.0, 
-        print_ratio=0.1,          
-        assignment_print_ratio=1.0,
+        print_ratio=0.02,          # Print fewer clauses for large instances
+        assignment_print_ratio=0.1, # Print fewer variables
+        base_entropy_coef=0.1     
+    )
+    
+    # Example 2: Generate synthetic instances with 1000 variables
+    print("\n" + "="*80)
+    print("EXAMPLE 2: Synthetic Random 3-SAT with 1000 Variables")
+    print("="*80)
+    run_satlib_evaluation(
+        M_target=1000,             # Even larger synthetic instances
+        target_sat=True,          
+        num_instances=2,           # Fewer instances due to computational cost
+        dataset_seed=42,          
+        use_synthetic=True,        
+        batch_size=2048, 
+        clip_grad_norm=1.0, 
+        print_ratio=0.01,          
+        assignment_print_ratio=0.05,
+        base_entropy_coef=0.1     
+    )
+
+    print("\n" + "="*80)
+    print("EXAMPLE 3: SATLIB Dataset with 250 Variables")
+    print("="*80)
+    run_satlib_evaluation(
+        M_target=250,              # Largest SATLIB dataset
+        target_sat=True,          
+        num_instances=3,           
+        dataset_seed=42,          
+        use_synthetic=False,       # Use real SATLIB data
+        batch_size=2048, 
+        clip_grad_norm=1.0, 
+        print_ratio=0.05,          
+        assignment_print_ratio=0.5,
         base_entropy_coef=0.1     
     )
