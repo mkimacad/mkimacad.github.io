@@ -1,1 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economics and Social Sciences (Minseong Kim)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #007acc;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            line-height: 1.3;
+        }
+
+        .project-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .project-link {
+            flex: 1;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .github-link {
+            background: #333;
+            color: white;
+        }
+
+        .github-link:hover {
+            background: #555;
+        }
+
+        .pages-link {
+            background: #007acc;
+            color: white;
+        }
+
+        .pages-link:hover {
+            background: #005a99;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            padding: 40px;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #d32f2f;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .no-projects {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            margin-top: 50px;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .project-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Minseong Kim</h1>
+            <p>Economics and social science research projects</p>
+        </div>
+
+        <div id="loadingIndicator" class="loading pulse" style="display: block;">
+            Loading projects...
+        </div>
+        
+        <div id="errorMessage" class="error" style="display: none;"></div>
+        
+        <div id="projectsContainer" class="projects-grid"></div>
+        
+        <div id="noProjects" class="no-projects" style="display: none;">
+            No projects found. Add project names and repository names to repos.txt file (two lines per project).
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect username from URL if this is username.github.io
+        function detectUsername() {
+            const hostname = window.location.hostname;
+            if (hostname.endsWith('.github.io') && hostname !== 'github.io') {
+                const username = hostname.split('.')[0];
+                if (username && username !== 'www') {
+                    return username;
+                }
+            }
+            return null;
+        }
+
+        async function loadProjects() {
+            const username = detectUsername();
+            
+            if (!username) {
+                showError('Could not detect GitHub username from URL. Make sure this page is hosted on username.github.io');
+                return;
+            }
+
+            showLoading(true);
+            hideError();
+            clearProjects();
+
+            try {
+                // Use fetch to read repos.txt file
+                console.log('Reading repos.txt...');
+                const response = await fetch('repos.txt');
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch repos.txt: ${response.status} ${response.statusText}`);
+                }
+                
+                const reposText = await response.text();
+                
+                // Parse projects (two lines each: project name, then repo name)
+                const lines = reposText
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line && !line.startsWith('#'))
+                    .filter(line => line.length > 0);
+
+                console.log('Found lines:', lines);
+
+                if (lines.length === 0) {
+                    showNoProjects();
+                    return;
+                }
+
+                if (lines.length % 2 !== 0) {
+                    throw new Error('repos.txt must have an even number of lines (project name followed by repo name)');
+                }
+
+                // Create project objects from pairs of lines
+                const projects = [];
+                for (let i = 0; i < lines.length; i += 2) {
+                    const projectName = lines[i];
+                    const repoName = lines[i + 1];
+                    
+                    // Clean up repo name (remove any extra characters)
+                    const cleanRepoName = repoName.replace(/[^a-zA-Z0-9\-_.]/g, '');
+                    
+                    projects.push({
+                        name: cleanRepoName,
+                        displayName: projectName,
+                        description: `sub-repo: ${cleanRepoName}`,
+                        url: `https://${username}.github.io/${cleanRepoName}`,
+                        github_url: `https://github.com/${username}/${username}.github.io/tree/main/${cleanRepoName}`
+                    });
+                }
+
+                console.log('Created projects:', projects);
+
+                showLoading(false);
+                displayProjects(projects);
+
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                showLoading(false);
+                if (error.message.includes('repos.txt') || error.message.includes('404')) {
+                    showError('repos.txt file not found. Please create a repos.txt file with project names and repository names (two lines per project).');
+                } else {
+                    showError(`Error loading projects: ${error.message}`);
+                }
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('projectsContainer');
+            
+            if (projects.length === 0) {
+                showNoProjects();
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="project-card">
+                    <div class="project-title">
+                        ${project.displayName}
+                    </div>
+                    <div class="project-description">
+                        ${project.description}
+                    </div>
+                    <div class="project-links">
+                        <a href="${project.github_url}" target="_blank" class="project-link github-link">
+                            GitHub
+                        </a>
+                        <a href="${project.url}" target="_blank" class="project-link pages-link">
+                            Live Demo
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function clearProjects() {
+            document.getElementById('projectsContainer').innerHTML = '';
+            document.getElementById('noProjects').style.display = 'none';
+        }
+
+        function showNoProjects() {
+            showLoading(false);
+            document.getElementById('noProjects').style.display = 'block';
+        }
+
+        // Load projects when page loads
+        window.addEventListener('load', loadProjects);
+    </script>
+</body>
+</html>
