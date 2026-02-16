@@ -4,6 +4,8 @@ On the nature of quantum probability: sleeping beauty, chainstore, black holes
 quantum_probability
 New Keynesian Phillips curve
 inflation_wedge
+Cambridge Capital Debate
+cambridge_capital_debate
 Computational theory of the firm (very rough and incomplete draft)
 industrial_organization
 Published: Paradox of infinite time?
