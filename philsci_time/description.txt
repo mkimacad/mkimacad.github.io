@@ -1,37 +1,21 @@
 header:Published in Journal Sophia
 https://doi.org/10.1007/s11841-021-00829-5
-header:Revisited in 2026
-So maybe revising this paper again with the next context in mind.
-Think of this problem. Suppose there is a big bang singularity, and quantum physics turns out not to resolve it - it genuinely exists.
-Is this really an issue - our physical theories tend to extend past infinite-wise as well.
-This paper suggests maybe not. Why?
-Well, let there be a finite timelike path, with a clear beginning. Let's travel backward in time.
-In case a big bang singularity can be thought of as a reverse black hole singularity (now this is the problematic part, but for now assume so), then:
-going backward in time is like falling into a black hole. Meanwhile, external observers see different pictures that do not involve these singularities.
-We are the one who actually arose out of these singularities, so we think of the universe as finite in time.
-But there are other pictures that do not involve these singularities and avoid singularities. 
-They themselves also have their own beginning singularities, but they are different from the usual big bang singularity.
-So this paper handles the idea that is actually quite deeper than I initially imagined.
-But I guess this is pure philosophy, not physics (yet).
+header:Again descriptions revised in 2026 (from the email I sent)
+1) It deals with a version of KCA that connects with the paradox of infinity (in particular, William Lane Craig's). There are doubts as to whether the paradox of infinity ("infinite time or time infinity does not make sense") is a valid paradox. Why is a real number line not sufficient? In the article, I simply avoid this issue, and say: suppose the paradox of infinity is valid - so what?
 
-header:An idea, revisited five years later
-1. A philosophy of physics paper that also overlaps with philosophy of religion.
-2. Argues that black hole singularities cut down any theoretical observer timelines such that observer-wise infinite time can be made impossible.
-3. Different observer 'finite' timelines are mutually compatible within a quantum gravity theory, practically giving us an infinite timeline but not exactly.
-4. Therefore, potential paradoxes relating to infinite time may not be the best way to formulate a necessity proof of God. 
-5. But if the paradoxes relating to infinite time are genuine paradoxes, then black hole singularities may be blessings instead of curses.
-6. Black hole singularities then do not just represent incompleteness of the classical picture. They may be fundamental necessities for logical consistency.
-7. This makes us think of ideas like holography of information: instead of trying to complete the picture of the black hole interior separately, consider reconstructions instead.
-8. Focusing theorems are not properly discussed here, but they are beneficial for the purpose here.
-9. Early paper, could have been written much better now.
-10. **Unfortunately important as well: This is not an atheist argument. I am a theist myself, though bound by scientific justifications.**
-header:An extended discussion (11)
-In the "pop science debate" where "dogs ate my homework stuff" "how dare I read your paper?" memes got popular (but I mean obviously, show me the EFT Lagrangian is always a reasonable question to ask for such theories? Especially since consistency of the Shiab operator is being questioned..), Piers Morgan actually asks a good question - is past infinity really imaginable?
-This paper runs independently of this question - it instead says that even if every observer has a finite timeline, this does not mean there has to be a universal beginning.
-It could be true that the universe can have past infinity that no observer can ever have access to, in fashion of a real line. The below just points out that things may not be that simple.
-The issue is that we are not so sure whether time can really be understood as a single real line. In black hole physics, some choice of coordinates creates coordinate singularties or past and future infinity as coordinate artefacts. We can continue to extend beyond these points.
-Are 'perceived' past and future infinity similarly extendible? For example, if past infinity has some limit state, it is possible that we can evolve this limit state backward again without remaining static. In ordinal time, this would create something like $\omega+\omega$, if we connect the future infinity of World 1 with the past infinity of World 2 (our world) with the same limit state and same physics. 
-The reasons why the above scenario is disallowed would be of its own interest, though interwining with these singularities discussions. Our physics theories on curved spacetime do not seem to completely eliminate it yet. And then the problem of observers at past infinity taking infinite time to reach us be there, but this may eventually all have to do with some being coordinate artefacts, some being singularities cutting down observer timelines and so forth.
-So the point is that the problem is more complicated than one may initially think in terms of a real line. But we do not know for sure, and the naive real line picture of global time may turn out to suffice.
-header:Largely trivial but additional thoughts
-The JCM model (https://mkimacad.github.io/bh_jaynes_cummings ) has a two-system energy flow, you start with empty system 2 that gets filled in from system 1, and system 1 becomes empty, disappears. Just a thought. And thoughts about maximally extended Schwarzschild spacetime too.
+2) Black hole physics in the classical physics picture says that any object falling into a black hole will hit 'end of its worldline' at singularities within finite proper time. You may say, isn't there a quantum story? But quantum superposition is roughly a superposition of different worldline stories, and the fact that any worldline that enters a black hole will hit singularities within finite proper time does not change.
+
+3) Now this does not mean the universe stops, because relativity in physics assures us different views of the world such that external observers that do not fall into a black hole (though they may fall into other black holes) can see the entire black hole evaporating. So from their point of view, there is nothing particularly wrong about the universe.
+
+4) Because black holes will always form at the cosmological scale, any worldline will very likely fall into some black hole one day. This means the proper length of its worldline is also going to be finite.
+With this intuition, if we assume that the probability of any admissible worldline falling into a black hole is basically 1, then every admissible worldline will have finite proper length. This does not mean that the universe has "the end" - for any worldline, there will be another worldline that "watches" it die. So no worldline has infinite proper length and yet the universe is basically infinite. 
+
+5) In other words, there may be only finite-length worldlines, and we may take some limit of these worldlines to grasp the infinite universe, but this limit picture is not a worldline picture and therefore does not have a valid notion of time.
+
+6) Now take this picture to the beginning of the universe, instead of the "end". You can imagine Big Bang or even some radiation that we may approximately take to be particles coming out of black hole evaporation that establish new worldlines. Those do not necessarily suggest the only "beginning moment", because relativity is there. So from other worldline points of view, there may be an external observer that "watches" the birth of these worldlines. This is better to understand with black hole radiation point of view. While worldlines in black holes can no longer be extended, external observers or worldlines watch radiation emitted from the (effective) black hole horizon, which "starts" a new worldline. This worldline will, as other worldlines, fall into a black hole and meet its finite end. That does not mean the world has to have the beginning or the end, as there are other worldlines watching it being created and stopped.
+
+7) The conclusion is that with relativity (and its product, black holes) in physics, even if infinite time or time infinity does not make sense, nothing forces us to accept 'the beginning' or 'the end' of the universe as a logical conclusion. So more is needed - other scientific or logical evidence, or even the idea that we do not need such evidence to support theism.
+Every worldline may have a beginning and an end, but we now see that relativity implies this can be true while the universe is essentially unbounded. 
+
+8) "Everything in the universe" in KCA does/should not include the universe itself. The universe that exists does not have to have a cause even when its constituents all have some cause. 
+(It kind of reminds me of the set of all sets not being a set, and paradoxes that come out of it.)
