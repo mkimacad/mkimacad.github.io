@@ -1,0 +1,3 @@
+header:On small corrections theorem
+This paper discusses why the small corrections theorem is non-trivial, in terms of kinematic corrections (such as those involving eigenstate thermalization hypothesis) against dynamic corrections that the theorem touches on.
+So you cannot use quantum gravity providing large corrections in the actual theory to evade the small corrections theorem.
