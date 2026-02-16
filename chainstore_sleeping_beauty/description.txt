@@ -1,0 +1,3 @@
+header:history
+To be updated, but a brief mention:
+This is morphed from https://mkimacad.github.io/deprecated/quantum_probability , which focused more on philosophical aspects (sorites paradox, quantum probability not being a generalization of classical probability). 
