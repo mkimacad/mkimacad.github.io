@@ -1,13 +1,13 @@
-Li-Qi, Theory-Model (and mental causation etc.)
-li-qi
-On the nature of quantum probability: sleeping beauty, chainstore, black holes
-quantum_probability
 New Keynesian Phillips curve
 inflation_wedge
 Cambridge Capital Debate
 cambridge_capital_debate
+Chainstore paradox and sleeping beauty problem
+chainstore_sleeping_beauty
 Computational theory of the firm (very rough and incomplete draft)
 industrial_organization
+Li-Qi, Theory-Model (and mental causation etc.)
+li-qi
 Published: Paradox of infinite time?
 philsci_time
 South Korean martial law crisis (2022-2025)
