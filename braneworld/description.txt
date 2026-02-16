@@ -11,6 +11,9 @@ braneworld paper ( https://mkimacad.github.io/braneworld )
 unitary quantum measurement model paper ( https://mkimacad.github.io/measurement )
 Jaynes-Cummings model of a black hole, which is largely subsumed to the measurement paper ( https://mkimacad.github.io/bh_jaynes_cummings )
 
+header:On the small corrections theorem
+See https://mkimacad.github.io/small_corrections . 
+
 header:Braneworld paper summary
 The braneworld paper says - nothing more, nothing less - six points that are actually a single point:
 1. The reason why we can break the small corrections theorem (of Samir D. Mathur) in the mainstream approach is that Hilbert space factorization breaks down in bulk gravity.
