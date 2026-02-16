@@ -10,7 +10,9 @@ Old black hole archives (superseded by other papers: submitted, published)
 black_hole_archives
 Old quantum computation archives (superseded by other papers: submitted, published)
 quantum_computation_archives
-Philosophy and Social Sciences
+Economics and Social Sciences
+economics
+Philosophy and Humanities
 philosophy
 Music (works in progress)
 music
