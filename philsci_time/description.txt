@@ -1,6 +1,6 @@
 header:Published in Journal Sophia
 https://doi.org/10.1007/s11841-021-00829-5
-header:Again descriptions revised in 2026 (from the email I sent)
+header:Again descriptions revised in 2026 (from an email I sent)
 1) It deals with a version of KCA that connects with the paradox of infinity (in particular, William Lane Craig's). There are doubts as to whether the paradox of infinity ("infinite time or time infinity does not make sense") is a valid paradox. Why is a real number line not sufficient? In the article, I simply avoid this issue, and say: suppose the paradox of infinity is valid - so what?
 
 2) Black hole physics in the classical physics picture says that any object falling into a black hole will hit 'end of its worldline' at singularities within finite proper time. You may say, isn't there a quantum story? But quantum superposition is roughly a superposition of different worldline stories, and the fact that any worldline that enters a black hole will hit singularities within finite proper time does not change.
