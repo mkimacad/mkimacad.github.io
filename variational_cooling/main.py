@@ -15,7 +15,6 @@ torch.set_float32_matmul_precision('high')
 # ==========================================
 
 def fetch_satlib_direct(M=50, target_sat=True, num_instances=3, seed=42):
-    """Download instances from SATLIB for sizes 20-250 variables"""
     random.seed(seed)
     
     sat_map = {
@@ -68,31 +67,14 @@ def fetch_satlib_direct(M=50, target_sat=True, num_instances=3, seed=42):
             
     return extracted_cnfs
 
-
 def generate_random_3sat(num_vars, clause_ratio=4.26, num_instances=3, seed=42, target_sat=True):
-    """
-    Generate synthetic random 3-SAT instances for arbitrary sizes (e.g., 500-1000 variables).
-    
-    Args:
-        num_vars: Number of variables
-        clause_ratio: Clauses-to-variables ratio (4.26 is phase transition for 3-SAT)
-        num_instances: Number of instances to generate
-        seed: Random seed
-        target_sat: If True, generate near phase transition (harder), if False generate overconstrained
-    
-    Returns:
-        List of (dimacs_text, label, filename) tuples
-    """
     random.seed(seed)
     np.random.seed(seed)
     
-    # Adjust clause ratio based on satisfiability target
     if target_sat:
-        # Slightly below phase transition for satisfiable instances
         actual_ratio = clause_ratio * 0.95
         label = "SAT (synthetic)"
     else:
-        # Above phase transition for unsatisfiable instances
         actual_ratio = clause_ratio * 1.1
         label = "UNSAT (synthetic)"
     
@@ -107,25 +89,20 @@ def generate_random_3sat(num_vars, clause_ratio=4.26, num_instances=3, seed=42, 
         clauses = []
         attempted = set()
         
-        # Generate random 3-SAT clauses
         while len(clauses) < num_clauses:
-            # Randomly select 3 distinct variables
             vars_indices = random.sample(range(num_vars), 3)
             
-            # Randomly negate each literal
             literals = []
             for var_idx in vars_indices:
                 if random.random() < 0.5:
-                    literals.append(var_idx + 1)  # Positive literal
+                    literals.append(var_idx + 1)
                 else:
-                    literals.append(-(var_idx + 1))  # Negative literal
+                    literals.append(-(var_idx + 1))
             
-            # Check if clause is tautological (contains both x and -x)
             abs_lits = [abs(lit) for lit in literals]
             if len(abs_lits) != len(set(abs_lits)):
-                continue  # Skip tautological clauses
+                continue
             
-            # Create a canonical form to avoid duplicates
             clause_tuple = tuple(sorted(literals, key=abs))
             if clause_tuple in attempted:
                 continue
@@ -133,7 +110,6 @@ def generate_random_3sat(num_vars, clause_ratio=4.26, num_instances=3, seed=42, 
             attempted.add(clause_tuple)
             clauses.append(literals)
         
-        # Generate DIMACS format
         dimacs_lines = []
         dimacs_lines.append(f"c Random 3-SAT instance {inst_idx+1}")
         dimacs_lines.append(f"c Generated with {num_vars} variables, {num_clauses} clauses")
@@ -149,7 +125,6 @@ def generate_random_3sat(num_vars, clause_ratio=4.26, num_instances=3, seed=42, 
         extracted_cnfs.append((dimacs_text, label, filename))
     
     return extracted_cnfs
-
 
 def parse_dimacs(dimacs_str):
     parsed_clauses, parsed_signs = [], []
@@ -203,8 +178,8 @@ def print_sat_instance(clauses, signs, print_ratio=0.05):
 
 def compute_sat_energy(x, clauses, signs):
     vars_in_clauses = x[:, clauses] 
-    signs_expanded = signs.unsqueeze(0)
-    literals = vars_in_clauses * (1.0 - signs_expanded) + (1.0 - vars_in_clauses) * signs_expanded
+    # OPTIMIZATION 3: Mathematically equivalent to polynomial expansion, but 2x less VRAM and ops.
+    literals = torch.abs(vars_in_clauses - signs.unsqueeze(0))
     violations = torch.prod(1.0 - literals, dim=-1) 
     return violations.sum(dim=-1)
 
@@ -220,18 +195,35 @@ class CausalSelfAttention(nn.Module):
         self.qkv = nn.Linear(embed_dim, 3 * embed_dim)
         self.proj = nn.Linear(embed_dim, embed_dim)
 
-    def forward(self, x, kv_cache=None, cache_idx=0):
+    def forward(self, x, kv_cache=None, cache_idx=0, attn_mask=None):
         B, T, C = x.shape
         qkv = self.qkv(x).reshape(B, T, 3, self.num_heads, self.head_dim).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2] 
         
         if kv_cache is not None:
             past_k, past_v = kv_cache
-            past_k[:, :, cache_idx : cache_idx + T, :] = k
-            past_v[:, :, cache_idx : cache_idx + T, :] = v
-            k_attn = past_k[:, :, : cache_idx + T, :]
-            v_attn = past_v[:, :, : cache_idx + T, :]
-            y = F.scaled_dot_product_attention(q, k_attn, v_attn, is_causal=False)
+            
+            # OPTIMIZATION 1: Fast-path for T=1 with Static Shapes avoids all PyTorch recompilations
+            if T == 1:
+                past_k[:, :, cache_idx, :] = k.squeeze(2)
+                past_v[:, :, cache_idx, :] = v.squeeze(2)
+                
+                # Matmul across the FULL pre-allocated static cache
+                scores = torch.matmul(q, past_k.transpose(-2, -1)) / (self.head_dim ** 0.5)
+                
+                # Broadcasted causal mask hides the uninitialized future blocks
+                if attn_mask is not None:
+                    scores = scores + attn_mask
+                    
+                attn_weights = F.softmax(scores, dim=-1)
+                y = torch.matmul(attn_weights, past_v)
+                
+            else:
+                past_k[:, :, cache_idx : cache_idx + T, :] = k
+                past_v[:, :, cache_idx : cache_idx + T, :] = v
+                k_attn = past_k[:, :, : cache_idx + T, :]
+                v_attn = past_v[:, :, : cache_idx + T, :]
+                y = F.scaled_dot_product_attention(q, k_attn, v_attn, is_causal=False)
         else:
             y = F.scaled_dot_product_attention(q, k, v, is_causal=True)
             
@@ -248,8 +240,8 @@ class TransformerBlock(nn.Module):
             nn.Linear(embed_dim, 4 * embed_dim), nn.GELU(), nn.Linear(4 * embed_dim, embed_dim)
         )
 
-    def forward(self, x, kv_cache=None, cache_idx=0):
-        attn_out = self.attn(self.ln_1(x), kv_cache, cache_idx)
+    def forward(self, x, kv_cache=None, cache_idx=0, attn_mask=None):
+        attn_out = self.attn(self.ln_1(x), kv_cache, cache_idx, attn_mask)
         x = x + attn_out
         x = x + self.mlp(self.ln_2(x))
         return x
@@ -282,22 +274,34 @@ class FastSpinTransformer(nn.Module):
             
         return self.head(self.ln_f(emb)).squeeze(-1)
 
-    def sample_and_log_prob(self, batch_size, device):
+    def sample(self, batch_size, device):
+        # OPTIMIZATION 2: Persistent Allocation prevents gigabytes of empty memory allocation per epoch.
+        if not hasattr(self, "kv_caches") or self.kv_caches[0][0].shape[0] != batch_size:
+            self.kv_caches = []
+            for _ in range(self.num_layers):
+                k_cache = torch.zeros((batch_size, self.num_heads, self.num_vars, self.head_dim), device=device)
+                v_cache = torch.zeros((batch_size, self.num_heads, self.num_vars, self.head_dim), device=device)
+                self.kv_caches.append((k_cache, v_cache))
+                
+        # Precompute the static causal masks to index into, avoiding loop generation 
+        if not hasattr(self, 'step_masks') or self.step_masks.shape[-1] != self.num_vars:
+            causal_mask = torch.tril(torch.ones((self.num_vars, self.num_vars), device=device))
+            causal_mask = torch.where(causal_mask == 1, 0.0, float('-inf'))
+            self.step_masks = causal_mask.view(self.num_vars, 1, 1, 1, self.num_vars)
+
         x_generated = torch.zeros((batch_size, self.num_vars), dtype=torch.long, device=device)
         current_token = torch.full((batch_size, 1), 2, dtype=torch.long, device=device)
         
-        kv_caches = []
-        for _ in range(self.num_layers):
-            k_cache = torch.zeros((batch_size, self.num_heads, self.num_vars, self.head_dim), device=device)
-            v_cache = torch.zeros((batch_size, self.num_heads, self.num_vars, self.head_dim), device=device)
-            kv_caches.append((k_cache, v_cache))
-            
+        all_positions = torch.arange(self.num_vars, device=device).unsqueeze(0).expand(batch_size, self.num_vars)
+        
         for i in range(self.num_vars):
-            pos = torch.tensor([[i]], device=device).expand(batch_size, 1)
+            pos = all_positions[:, i:i+1]
+            attn_mask = self.step_masks[i]
+            
             x = self.token_embed(current_token) + self.pos_embed(pos)
             
             for j, block in enumerate(self.blocks):
-                x = block(x, kv_caches[j], cache_idx=i)
+                x = block(x, self.kv_caches[j], cache_idx=i, attn_mask=attn_mask)
                 
             logits = self.head(self.ln_f(x)).squeeze(-1)
             probs = torch.sigmoid(logits)
@@ -306,11 +310,7 @@ class FastSpinTransformer(nn.Module):
             x_generated[:, i] = next_spin.squeeze(-1)
             current_token = next_spin
             
-        logits_full = self(x_generated)
-        bce = F.binary_cross_entropy_with_logits(logits_full, x_generated.float(), reduction='none')
-        log_probs = -bce.sum(dim=-1)
-        
-        return x_generated.float(), log_probs
+        return x_generated.float()
 
 # ==========================================
 # 3. Plotting Observables
@@ -352,26 +352,14 @@ def reset_weights(m):
 def run_satlib_evaluation(M_target=500, target_sat=True, num_instances=3, dataset_seed=42, 
                           use_synthetic=False, batch_size=2048, clip_grad_norm=1.0, 
                           print_ratio=0.05, assignment_print_ratio=0.5, base_entropy_coef=0.1):
-    """
-    Run SAT evaluation with SATLIB or synthetic datasets.
-    
-    Args:
-        M_target: Number of variables (20-250 for SATLIB, 500-1000+ for synthetic)
-        target_sat: Generate SAT or UNSAT instances
-        num_instances: Number of instances to evaluate
-        dataset_seed: Random seed for dataset generation
-        use_synthetic: If True, generate synthetic instances; if False, use SATLIB
-        batch_size: Batch size for training
-        clip_grad_norm: Gradient clipping norm
-        print_ratio: Fraction of clauses to print
-        assignment_print_ratio: Fraction of assignment to print
-        base_entropy_coef: Base entropy coefficient
-    """
                            
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Running on GPU Acceleration: {device}")
     
-    # Fetch or generate instances
+    use_amp = device.type == 'cuda'
+    ptdtype = torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16
+    scaler = torch.amp.GradScaler(device.type, enabled=(ptdtype==torch.float16))
+    
     if use_synthetic or M_target > 250:
         print(f"\n[!] Using SYNTHETIC random 3-SAT generator for {M_target} variables")
         cnfs = generate_random_3sat(M_target, clause_ratio=4.26, num_instances=num_instances, 
@@ -380,18 +368,16 @@ def run_satlib_evaluation(M_target=500, target_sat=True, num_instances=3, datase
         print(f"\n[!] Using SATLIB database for {M_target} variables")
         cnfs = fetch_satlib_direct(M=M_target, target_sat=target_sat, num_instances=num_instances, seed=dataset_seed)
     
-    # =================================================================
-    # PRE-COMPILATION PHASE (Standard Triton, No CUDA Graphs)
-    # =================================================================
     print(f"\n[!] Pre-allocating and Compiling Transformer in advance for M={M_target}...")
     model = FastSpinTransformer(num_vars=M_target, embed_dim=128, num_heads=4, num_layers=3).to(device)
     
     if torch.__version__ >= "2.0.0" and torch.cuda.is_available():
-        # Standard compilation provides native Triton speedups without memory allocation crashes
-        model = torch.compile(model)
-        model.sample_and_log_prob = torch.compile(model.sample_and_log_prob)
+        # Compile standard forward pass. 
+        # (We intentionally leave model.sample uncompiled, as the static masking allows 
+        # Python's eager mode to sprint through the sequence generation incredibly fast without graph breaks).
+        model.forward = torch.compile(model.forward)
+        
     print(f"[!] Compilation successful. Entering high-speed evaluation loop.\n")
-    # =================================================================
     
     for idx, (dimacs_text, gt_label, filename) in enumerate(cnfs):
         print(f"\n{'='*80}")
@@ -407,7 +393,7 @@ def run_satlib_evaluation(M_target=500, target_sat=True, num_instances=3, datase
         
         beta_start = 0.1
         beta_end = float(M) 
-        epochs = int(M * 200 + 2000)
+        epochs = int(M * 50 + 2000) 
         
         print(f"\n[Dynamic Scaling Physics]")
         print(f" -> System Size (M): {M} Variables")
@@ -419,7 +405,6 @@ def run_satlib_evaluation(M_target=500, target_sat=True, num_instances=3, datase
         
         print_sat_instance(clauses, signs, print_ratio=print_ratio)
         
-        # Reset the weights to completely random initialization for the new instance
         model.apply(reset_weights)
             
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
@@ -430,42 +415,52 @@ def run_satlib_evaluation(M_target=500, target_sat=True, num_instances=3, datase
             model.train()
             fraction = epoch / max(1, epochs - 1)
             beta = beta_start * (beta_end / beta_start) ** fraction
-            current_entropy_coef = base_entropy_coef * (1.0 - fraction)
+            
+            current_entropy_coef = base_entropy_coef * max(0.2, 1.0 - fraction)
             
             with torch.no_grad():
-                x_samples, _ = model.sample_and_log_prob(batch_size, device)
+                with torch.autocast(device_type=device.type, dtype=ptdtype, enabled=use_amp):
+                    x_samples = model.sample(batch_size, device)
                 energies = compute_sat_energy(x_samples, clauses, signs)
                 
-            logits = model(x_samples)
-            bce = F.binary_cross_entropy_with_logits(logits, x_samples, reduction='none')
-            log_probs = -bce.sum(dim=-1)
-            entropy = -log_probs.mean()
-            
-            with torch.no_grad():
-                local_free_energy = beta * energies + log_probs
+            with torch.autocast(device_type=device.type, dtype=ptdtype, enabled=use_amp):
+                logits = model(x_samples)
+                bce = F.binary_cross_entropy_with_logits(logits, x_samples, reduction='none')
+                log_probs = -bce.sum(dim=-1)
+                entropy = -log_probs.mean()
+                
+                local_free_energy = beta * energies + log_probs.detach()
                 baseline = local_free_energy.mean()
                 advantage = local_free_energy - baseline
                 advantage = advantage / (advantage.std() + 1e-8)
                 
-            loss = (log_probs * advantage).mean() - current_entropy_coef * entropy
+                loss = (log_probs * advantage).mean() - current_entropy_coef * entropy
             
-            optimizer.zero_grad()
-            loss.backward()
+            optimizer.zero_grad(set_to_none=True)
+            scaler.scale(loss).backward()
             
             if clip_grad_norm:
+                scaler.unscale_(optimizer)
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=clip_grad_norm)
                 
-            optimizer.step()
+            scaler.step(optimizer)
+            scaler.update()
             scheduler.step()
             
             if epoch % max(1, epochs // 10) == 0 or epoch == epochs - 1:
                 current_lr = scheduler.get_last_lr()[0]
                 print(f"Epoch {epoch:5d}/{epochs} | LR: {current_lr:.1e} | Beta: {beta:9.2f} | Ent: {entropy.item():5.2f} | Mean E: {energies.mean().item():6.2f} | Min E: {energies.min().item():.1f}")
+                
+            if energies.min().item() == 0:
+                print(f"\n>> EARLY STOPPING: Perfect satisfying assignment (0 energy) found at epoch {epoch}!")
+                break
 
         print("\n--- Cooling Complete. Verifying Labels ---")
         model.eval()
         with torch.no_grad():
-            test_samples, _ = model.sample_and_log_prob(batch_size * 2, device)
+            with torch.autocast(device_type=device.type, dtype=ptdtype, enabled=use_amp):
+                # Double batch size for final eval. Will trigger a 1-time re-allocation which is perfectly fine.
+                test_samples = model.sample(batch_size * 2, device)
             test_energies = compute_sat_energy(test_samples, clauses, signs)
             
             min_idx = torch.argmin(test_energies)
@@ -492,60 +487,59 @@ def run_satlib_evaluation(M_target=500, target_sat=True, num_instances=3, datase
             spin_spin = torch.matmul(spins.t(), spins) / (batch_size * 2)
             C_ij = spin_spin - torch.outer(mean_spins, mean_spins)
 
-            replica_1, _ = model.sample_and_log_prob(batch_size * 2, device)
-            replica_2, _ = model.sample_and_log_prob(batch_size * 2, device)
+            with torch.autocast(device_type=device.type, dtype=ptdtype, enabled=use_amp):
+                replica_1 = model.sample(batch_size * 2, device)
+                replica_2 = model.sample(batch_size * 2, device)
             q_batch = ((2.0 * replica_1 - 1.0) * (2.0 * replica_2 - 1.0)).mean(dim=-1)
             
             print(f"Mean Overlap <q>: {q_batch.mean().item():.4f} | Variance Var(q): {q_batch.var().item():.6f}")
             plot_physics_metrics(C_ij, q_batch, idx + 1, filename)
 
 if __name__ == "__main__":
-    # Example 1: Generate synthetic instances with 500 variables
     print("="*80)
     print("EXAMPLE 1: Synthetic Random 3-SAT with 500 Variables")
     print("="*80)
     run_satlib_evaluation(
-        M_target=500,              # Synthetic generation for larger sizes
+        M_target=500,              
         target_sat=True,          
         num_instances=3,           
         dataset_seed=42,          
-        use_synthetic=True,        # Use synthetic generator
+        use_synthetic=True,        
         batch_size=2048, 
         clip_grad_norm=1.0, 
-        print_ratio=0.02,          # Print fewer clauses for large instances
-        assignment_print_ratio=0.1, # Print fewer variables
-        base_entropy_coef=0.1     
+        print_ratio=0.02,          
+        assignment_print_ratio=0.1, 
+        base_entropy_coef=0.5     
     )
     
-    # Example 2: Generate synthetic instances with 1000 variables
     print("\n" + "="*80)
     print("EXAMPLE 2: Synthetic Random 3-SAT with 1000 Variables")
     print("="*80)
     run_satlib_evaluation(
-        M_target=1000,             # Even larger synthetic instances
+        M_target=1000,             
         target_sat=True,          
-        num_instances=2,           # Fewer instances due to computational cost
+        num_instances=2,           
         dataset_seed=42,          
         use_synthetic=True,        
         batch_size=2048, 
         clip_grad_norm=1.0, 
         print_ratio=0.01,          
         assignment_print_ratio=0.05,
-        base_entropy_coef=0.1     
+        base_entropy_coef=0.5    
     )
 
     print("\n" + "="*80)
     print("EXAMPLE 3: SATLIB Dataset with 250 Variables")
     print("="*80)
     run_satlib_evaluation(
-        M_target=250,              # Largest SATLIB dataset
+        M_target=250,              
         target_sat=True,          
         num_instances=3,           
         dataset_seed=42,          
-        use_synthetic=False,       # Use real SATLIB data
+        use_synthetic=False,       
         batch_size=2048, 
         clip_grad_norm=1.0, 
         print_ratio=0.05,          
         assignment_print_ratio=0.5,
-        base_entropy_coef=0.1     
+        base_entropy_coef=0.5   
     )
