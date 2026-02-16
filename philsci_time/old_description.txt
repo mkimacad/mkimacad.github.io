@@ -1,0 +1,37 @@
+header:Published in Journal Sophia
+https://doi.org/10.1007/s11841-021-00829-5
+header:Revisited in 2026
+So maybe revising this paper again with the next context in mind.
+Think of this problem. Suppose there is a big bang singularity, and quantum physics turns out not to resolve it - it genuinely exists.
+Is this really an issue - our physical theories tend to extend past infinite-wise as well.
+This paper suggests maybe not. Why?
+Well, let there be a finite timelike path, with a clear beginning. Let's travel backward in time.
+In case a big bang singularity can be thought of as a reverse black hole singularity (now this is the problematic part, but for now assume so), then:
+going backward in time is like falling into a black hole. Meanwhile, external observers see different pictures that do not involve these singularities.
+We are the one who actually arose out of these singularities, so we think of the universe as finite in time.
+But there are other pictures that do not involve these singularities and avoid singularities. 
+They themselves also have their own beginning singularities, but they are different from the usual big bang singularity.
+So this paper handles the idea that is actually quite deeper than I initially imagined.
+But I guess this is pure philosophy, not physics (yet).
+
+header:An idea, revisited five years later
+1. A philosophy of physics paper that also overlaps with philosophy of religion.
+2. Argues that black hole singularities cut down any theoretical observer timelines such that observer-wise infinite time can be made impossible.
+3. Different observer 'finite' timelines are mutually compatible within a quantum gravity theory, practically giving us an infinite timeline but not exactly.
+4. Therefore, potential paradoxes relating to infinite time may not be the best way to formulate a necessity proof of God. 
+5. But if the paradoxes relating to infinite time are genuine paradoxes, then black hole singularities may be blessings instead of curses.
+6. Black hole singularities then do not just represent incompleteness of the classical picture. They may be fundamental necessities for logical consistency.
+7. This makes us think of ideas like holography of information: instead of trying to complete the picture of the black hole interior separately, consider reconstructions instead.
+8. Focusing theorems are not properly discussed here, but they are beneficial for the purpose here.
+9. Early paper, could have been written much better now.
+10. **Unfortunately important as well: This is not an atheist argument. I am a theist myself, though bound by scientific justifications.**
+header:An extended discussion (11)
+In the "pop science debate" where "dogs ate my homework stuff" "how dare I read your paper?" memes got popular (but I mean obviously, show me the EFT Lagrangian is always a reasonable question to ask for such theories? Especially since consistency of the Shiab operator is being questioned..), Piers Morgan actually asks a good question - is past infinity really imaginable?
+This paper runs independently of this question - it instead says that even if every observer has a finite timeline, this does not mean there has to be a universal beginning.
+It could be true that the universe can have past infinity that no observer can ever have access to, in fashion of a real line. The below just points out that things may not be that simple.
+The issue is that we are not so sure whether time can really be understood as a single real line. In black hole physics, some choice of coordinates creates coordinate singularties or past and future infinity as coordinate artefacts. We can continue to extend beyond these points.
+Are 'perceived' past and future infinity similarly extendible? For example, if past infinity has some limit state, it is possible that we can evolve this limit state backward again without remaining static. In ordinal time, this would create something like $\omega+\omega$, if we connect the future infinity of World 1 with the past infinity of World 2 (our world) with the same limit state and same physics. 
+The reasons why the above scenario is disallowed would be of its own interest, though interwining with these singularities discussions. Our physics theories on curved spacetime do not seem to completely eliminate it yet. And then the problem of observers at past infinity taking infinite time to reach us be there, but this may eventually all have to do with some being coordinate artefacts, some being singularities cutting down observer timelines and so forth.
+So the point is that the problem is more complicated than one may initially think in terms of a real line. But we do not know for sure, and the naive real line picture of global time may turn out to suffice.
+header:Largely trivial but additional thoughts
+The JCM model (https://mkimacad.github.io/bh_jaynes_cummings ) has a two-system energy flow, you start with empty system 2 that gets filled in from system 1, and system 1 becomes empty, disappears. Just a thought. And thoughts about maximally extended Schwarzschild spacetime too.
