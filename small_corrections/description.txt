@@ -5,3 +5,5 @@ This paper discusses why the small corrections theorem is non-trivial, in terms 
 So you cannot use quantum gravity providing large corrections in the actual theory to evade the small corrections theorem.
 header:Reminder - specific heat
 Schwarzschild black hole's specific heat C has $C<0$. However, usually $C > 0$. How many results we transport from $C \geq 0$ cases to $C<0$?
+header:trivia - JT gravity as ensemble (not in the paper)
+If a JT gravity state is an ensemble state, then multiple "ground" or final evaporation states. 
