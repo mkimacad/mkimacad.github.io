@@ -1,3 +1,7 @@
+header:To be updated
+To be updated but meanwhile..
 header:On small corrections theorem
 This paper discusses why the small corrections theorem is non-trivial, in terms of kinematic corrections (such as those involving eigenstate thermalization hypothesis) against dynamic corrections that the theorem touches on.
 So you cannot use quantum gravity providing large corrections in the actual theory to evade the small corrections theorem.
+header:Reminder - specific heat
+Schwarzschild black hole's specific heat C has $C<0$. However, usually $C > 0$. How many results we transport from $C \geq 0$ cases to $C<0$?
