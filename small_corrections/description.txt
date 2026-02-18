@@ -8,4 +8,7 @@ header:Revision idea
 header:Reminder - specific heat
 Schwarzschild black hole's specific heat C has $C<0$. However, usually $C > 0$. How many results we transport from $C \geq 0$ cases to $C<0$?
 header:trivia - JT gravity as ensemble (not in the paper)
-If a JT gravity state is an ensemble state, then multiple "ground" or final evaporation states. 
+If a JT gravity state is an ensemble state, then multiple "ground" or final evaporation states.
+header:A candidate resolution of the information problem?
+Considering classical gravity is an ensemble theory, we do not need to correct EFT - rather, we just need to correct for the "final evaporation" state - this works as high-energy corrections where classically, such emitted radiations would completely evaporate a black hole. This is a conceptually and computationally very difficult correction to achieve within EFT.
+This is a "large correction" to EFT, but except for the "final evaporation" state, all other EFT outcomes remain evolving under EFT. It is the probability of the "final evaporation state" that becomes large as to provide large corrections around the Page time.
