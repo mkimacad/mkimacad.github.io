@@ -1,0 +1,24 @@
+==================================================
+   PART 1: STANDARD FORENSICS (DIGITS & DISPERSION)
+==================================================
+[*] 2BL Test -> Chi-Square: 10.28 | P-Value: 0.3282
+[*] Last Digit Uniformity -> Chi-Square: 9.73 | P-Value: 0.3728
+[*] Variance Test -> Avg StDev between neighborhoods: 5.21%
+
+==================================================
+   PART 2: TESTING CONSPIRACY THEORIES
+==================================================
+[*] 'Constant Gap' Theory -> Mean Gap: +8.63% | StDev: 5.03%
+    (High StDev disproves algorithmic fixed padding)
+[*] 'Algorithmic Ratio' Theory -> R-Squared: 0.9193
+    (8.07% unexplained variance disproves a strict mathematical formula)
+
+[*] '63:36' Theory -> Macroscopic Aggregates:
+    - Gyeonggi: Dem 62.29% | Con 37.71%
+    - Incheon: Dem 63.61% | Con 36.39%
+    - Seoul: Dem 60.31% | Con 39.69%
+    - Microscopic Station Variance (StDev): 22.93%
+    (High microscopic variance proves the 63:36 aggregate is just the Law of Large Numbers)
+
+[*] 'Invalid Vote' Theory -> Correlation: 0.0495 (P-Val: 0.0035)
+    (Correlation near zero proves invalid votes were not weaponized)
