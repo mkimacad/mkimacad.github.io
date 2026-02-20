@@ -25,6 +25,7 @@ The Fermi Golden rule is inapplicable in this regime.
 As a thermal operation, it has to respect conservation of total non-interaction energy, so we must define this unitary in light of each energy shell.
 Within each energy shell, we have a quantum expander (optimal or sub-optimal) as a sub-channel.
 Then thermal equilibration is achieved while leveraging maximal scrambling. We have fast convergence and equilibration.
+Yes, RMT's maximal/exponential scrambling power is gone, but we still have polynomial equilibration time, relative to the number of qubits.
 header:Fermi golden rule regime
 To first order with weak coupling, any interaction transition amplitude is described by the Fermi golden rule.
 The following term basically determines transition probability:
