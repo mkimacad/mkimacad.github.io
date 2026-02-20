@@ -1,0 +1,33 @@
+==================================================
+INITIALIZING CALVO MODEL
+==================================================
+Training Calvo Network (OHEM & Strict Terminal)...
+Calvo Epoch 5000/40000 | Loss: 3.8950e-05
+Calvo Epoch 10000/40000 | Loss: 1.9228e-05
+Calvo Epoch 15000/40000 | Loss: 1.2883e-05
+Calvo Epoch 20000/40000 | Loss: 8.1822e-06
+Calvo Epoch 25000/40000 | Loss: 6.8342e-06
+Calvo Epoch 30000/40000 | Loss: 4.8969e-06
+Calvo Epoch 35000/40000 | Loss: 3.5204e-06
+Calvo Epoch 40000/40000 | Loss: 4.7229e-06
+
+==================================================
+INITIALIZING ROTEMBERG MODEL
+==================================================
+Training Rotemberg Network (OHEM & Strict Terminal)...
+Rotemberg Epoch 5000/40000 | Loss: 2.9577e-03
+Rotemberg Epoch 10000/40000 | Loss: 8.5876e-04
+Rotemberg Epoch 15000/40000 | Loss: 3.0627e-04
+Rotemberg Epoch 20000/40000 | Loss: 2.7813e-04
+Rotemberg Epoch 25000/40000 | Loss: 1.7919e-04
+Rotemberg Epoch 30000/40000 | Loss: 2.8416e-04
+Rotemberg Epoch 35000/40000 | Loss: 1.5894e-04
+Rotemberg Epoch 40000/40000 | Loss: 1.5798e-04
+
+==================================================
+L_inf OOS EVALUATION (10,000 Nodes)
+==================================================
+Tau= 0 | Calvo Max L_inf: 3.2329e-02 | Rotemberg Max L_inf: 2.5770e-02
+Tau= 1 | Calvo Max L_inf: 4.8452e-02 | Rotemberg Max L_inf: 4.0063e-02
+Tau= 7 | Calvo Max L_inf: 7.9970e-02 | Rotemberg Max L_inf: 3.9320e-02
+Tau=15 | Calvo Max L_inf: 4.7132e-02 | Rotemberg Max L_inf: 3.5643e-02
