@@ -1,0 +1,13 @@
+Training Target Model [Nudged to 1.000]...
+  -> Done in 72.0s | Eq Loss: 1.86e-05
+Training Trap Model [Nudged to 0.990]...
+  -> Done in 72.7s | Eq Loss: 1.08e-05
+Training Free Model [Free (No Nudge)]...
+  -> Done in 63.4s | Eq Loss: 8.59e-06
+
+============================================================
+Out-of-Sample (OOS) Structural Performance (Mean Absolute Error)
+============================================================
+Target Nudged   | Log10 Euler: -2.39 | K: 3.03e-03 | Pi: 2.50e-03
+Trap Nudged     | Log10 Euler: -2.54 | K: 1.74e-03 | Pi: 1.26e-03
+Free (No Nudge) | Log10 Euler: -2.56 | K: 1.54e-03 | Pi: 1.25e-03
