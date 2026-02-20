@@ -6,3 +6,5 @@ Chainstore paradox and sleeping beauty problem
 chainstore_sleeping_beauty
 Computational theory of the firm (very rough and incomplete draft)
 industrial_organization
+DSGE Neural Network estimation/simulation (mostly New Keynesian ZLB analysis)
+neural_dsge
