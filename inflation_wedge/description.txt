@@ -2,6 +2,9 @@ header:Now two papers
 To be updated..
 header:To be updated
 to be updated..
+header:future revision plan for the second paper
+1. household discount versus firm discount rate. $\beta_h$ against $\beta_f$. And even if $\beta_f>1$, doesn't change the result in the paper as we take $\theta \to 0$.
+2. 
 header:meanwhile..
 I personally don't get why the Blanchard-Kiyotaki message gets reverberated. It's clear nowadays that we do not need sticky price or some rigidities to have monetary non-neutrality. The paper here is one approach. If we are fine with finitely many equilibria instead of infinitely many, then we can use the Kimball aggregator to create kinks so that finitely many equilibria can be generated, with monetary policy picking one of these equilibria. 
 So why?
