@@ -1,10 +1,16 @@
 header:Now two papers
-To be updated..
+To be updated.. Some comments will appear, but they are all preliminary discussions..
 header:To be updated
 to be updated..
 header:future revision plan for the second paper
 1. household discount versus firm discount rate. $\beta_h$ against $\beta_f$. And even if $\beta_f>1$, doesn't change the result in the paper as we take $\theta \to 0$.
-2. 
+2. Does the result apply in case when ZLB isn't binding, as long as some shock exists? Sort of. The results in this paper depend only on negative output gap. So once we have it, we have a "Calvo" problem.
+The reason for the problem really is, in the end, the Taylor rule but is it really? Is it easy to imagine a rule that would prevent negative output gap? Monetary policy is supposed to reduce variance, so maybe there is a way. But I think this is a generic problem - unless we have a perfect monetary policy that has nominal interest rate set perfectly to keep real interest rate at natural rate of interest, we have a problem.
+Either equilibrium non-existence, or price dispersion affects the aggregate economy greatly but leads to inflation instead of deflation that tends to lift away from ZLB. In a way this is expected - the standard equilibrium selection is all about preventing non-linear convergence toward ZLB ("perils of Taylor rule"), so this inflationary pressure of lifting away from ZLB even when initially stuck at ZLB is a good thing.
+This also raises a question about not just the flexible-price limit but the original flexible-price equilibrium as well. It is only saved from equilibrium indeterminacy because we assume symmetric firms. But we can have price dispersion in a flexible-price model as well, if we introduce firm heterogeneity.
+header:another aspect..
+New Keynesian Calvo models behave badly in that firms prefer low price because they are afraid that they may be caught up in relatively higher price compared to competitors in the future. But this is different from the reality - firms raise prices whenever they see good opportunities but tend to be reluctant in lowering prices. This supposedly operates in the labor market as well, though my understanding is that this tendency is smaller there.
+This typically is patched by introducing different features but I just can't stop thinking that there is something fundamentally wrong about this. It is especially so, given that the paper's results are produced by this issue. And of course the Rotemberg model doesn't save the matter if there is largely equivalence. So maybe our tractable/simplified approach to justifying monetary policy or sticky price / menu costs may be completely wrong.
 header:meanwhile..
 I personally don't get why the Blanchard-Kiyotaki message gets reverberated. It's clear nowadays that we do not need sticky price or some rigidities to have monetary non-neutrality. The paper here is one approach. If we are fine with finitely many equilibria instead of infinitely many, then we can use the Kimball aggregator to create kinks so that finitely many equilibria can be generated, with monetary policy picking one of these equilibria. 
 So why?
