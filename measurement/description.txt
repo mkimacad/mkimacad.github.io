@@ -3,7 +3,7 @@ header:History
 (Potentially copying classicality discussions from old_description.txt)
 
 header:New Update (March 9, 2026) 
-And F'in a-hole physicists. But I have crafted a new measurement theory paper that gets rid of JT gravity mentions - so new paper. No need to mention JT gravity anyway. Updating soon for the new paper.
+And F'in a-hole physicists. But I have crafted a new measurement theory paper that gets rid of JT gravity mentions - so new paper. No need to mention JT gravity anyway. Updating descriptions soon for the new paper. (The manuscript here is already replaced with the new one.)
 
 header:Implementing common descriptions for braneworld, measurement, Jaynes-Cummings papers (February 12, 2026)
 The same github.io contents shared for the three papers:
