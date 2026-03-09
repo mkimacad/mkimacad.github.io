@@ -1,9 +1,7 @@
 Overview (to be updated, the page undergoing overhaul at this point - I need a new home university for my phd! Please contact me (mkimacad@gmail.com) if any university wishes to pick me up as their phd student)
 overviews
-Generic Wigner-Dyson statistics for black holes
+Generic Wigner-Dyson statistics for black holes and a unitary and deterministic theory of quantum measurements
 wigner-dyson
-A unitary and deterministic theory of quantum measurements
-measurement
 Quantum Filtering Computation
 filter
 Old black hole archives (superseded by other papers: submitted, published)
