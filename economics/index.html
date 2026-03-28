@@ -58,6 +58,8 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .project-card::before {
@@ -88,11 +90,13 @@
             margin-bottom: 15px;
             line-height: 1.5;
             font-size: 0.95rem;
+            flex-grow: 1;
         }
 
         .project-links {
             display: flex;
             gap: 12px;
+            margin-top: auto;
         }
 
         .project-link {
@@ -256,17 +260,36 @@
                 const projects = [];
                 for (let i = 0; i < lines.length; i += 2) {
                     const projectName = lines[i];
-                    const repoName = lines[i + 1];
+                    const rawRepoName = lines[i + 1];
+                    
+                    // Check if it has the non_paged/ prefix
+                    const isNonPaged = rawRepoName.startsWith('non_paged/');
+                    
+                    // Remove prefix if it exists before cleaning the name
+                    const baseRepoName = isNonPaged ? rawRepoName.substring(10) : rawRepoName;
                     
                     // Clean up repo name (remove any extra characters)
-                    const cleanRepoName = repoName.replace(/[^a-zA-Z0-9\-_.]/g, '');
+                    const cleanRepoName = baseRepoName.replace(/[^a-zA-Z0-9\-_.]/g, '');
+                    
+                    let github_url, description;
+                    
+                    // Both directory-based and standalone repos use the same GitHub Pages URL structure
+                    const project_url = `https://${username}.github.io/${cleanRepoName}`;
+
+                    if (isNonPaged) {
+                        github_url = `https://github.com/${username}/${cleanRepoName}`;
+                        description = `Repository: ${cleanRepoName}`;
+                    } else {
+                        github_url = `https://github.com/${username}/${username}.github.io/tree/main/${cleanRepoName}`;
+                        description = `Directory: ${cleanRepoName}`;
+                    }
                     
                     projects.push({
                         name: cleanRepoName,
                         displayName: projectName,
-                        description: `sub-repo: ${cleanRepoName}`,
-                        url: `https://${username}.github.io/${cleanRepoName}`,
-                        github_url: `https://github.com/${username}/${username}.github.io/tree/main/${cleanRepoName}`
+                        description: description,
+                        url: project_url,
+                        github_url: github_url
                     });
                 }
 
