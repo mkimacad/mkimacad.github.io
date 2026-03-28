@@ -6,3 +6,5 @@ Chainstore paradox and sleeping beauty problem
 chainstore_sleeping_beauty
 Computational theory of the firm (very rough and incomplete draft)
 industrial_organization
+South Korean Election Forensics (statistics + econometrics)
+non_paged/south_korean_election_forensics
