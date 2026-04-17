@@ -1,2 +1,4 @@
 header:To be updated
 to be updated...
+But:
+This is a direct update/sequel of Quantum Thermal Search
