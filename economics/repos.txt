@@ -1,10 +1,10 @@
-New Keynesian Phillips curve (two papers)
-inflation_wedge
+South Korean Election Forensics (statistics + econometrics)
+non_paged/south_korean_election_forensics
+New Keynesian ZLB (Non-)Paradox of Flexibility
+nk_zlb
 Cambridge Capital Debate
 cambridge_capital_debate
 Chainstore paradox and sleeping beauty problem
 chainstore_sleeping_beauty
 Computational theory of the firm (very rough and incomplete draft)
 industrial_organization
-South Korean Election Forensics (statistics + econometrics)
-non_paged/south_korean_election_forensics
