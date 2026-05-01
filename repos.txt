@@ -4,6 +4,8 @@ Generic Wigner-Dyson statistics for black holes and a unitary and deterministic 
 wigner-dyson
 Quantum Expander Cooling Computation
 quantum_expander
+Small Corrections Theorem
+small_corrections
 Old black hole archives (superseded by other papers: submitted, published)
 black_hole_archives
 Old quantum computation archives (superseded by other papers: submitted, published)
