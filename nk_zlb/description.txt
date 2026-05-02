@@ -1,2 +1,10 @@
 header:To be updated
 To be updated..
+header:future revision plan for the paper
+1. household discount versus firm discount rate. $\beta_h$ against $\beta_f$. And even if $\beta_f>1$, doesn't change the result in the paper as we take $\theta \to 0$.
+2. Does the result apply in case when ZLB isn't binding, as long as some shock exists? Sort of. The results in this paper depend only on negative output gap. So once we have it, we have a "Calvo" problem.
+The reason for the problem really is, in the end, the Taylor rule but is it really? Is it easy to imagine a rule that would prevent negative output gap? Monetary policy is supposed to reduce variance, so maybe there is a way. But I think this is a generic problem - unless we have a perfect monetary policy that has nominal interest rate set perfectly to keep real interest rate at natural rate of interest, we have a problem.
+Either equilibrium non-existence, or price dispersion affects the aggregate economy greatly but leads to inflation instead of deflation that tends to lift away from ZLB. In a way this is expected - the standard equilibrium selection is all about preventing non-linear convergence toward ZLB ("perils of Taylor rule"), so this inflationary pressure of lifting away from ZLB even when initially stuck at ZLB is a good thing.
+This also raises a question about not just the flexible-price limit but the original flexible-price equilibrium as well. It is only saved from equilibrium indeterminacy because we assume symmetric firms. But we can have price dispersion in a flexible-price model as well, if we introduce firm heterogeneity.
+3. We only need firms (with close-to-zero measure) with constant labor restriction to induce equilibrium indeterminacy in flexible-price New Keynesian models.
+Constant labor restriction means real marginal cost is inversely related to price dispersion! (By contrast, usually real marginal cost is proportional to price dispersion.) However, making this consistent is not easy though doable. Usually, the symmetric equilibrium will dominate.
