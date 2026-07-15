@@ -1,4 +1,4 @@
-Overview (to be updated, the page undergoing overhaul at this point - I need a new home university for my phd! Please contact me (mkimacad@gmail.com) if any university wishes to pick me up as their phd student)
+Overview (to be updated)
 overviews
 General Black Hole Mechanism and a toy JCM model
 bh_jaynes_cummings
@@ -6,12 +6,12 @@ Generic Wigner-Dyson statistics for black holes and a unitary and deterministic 
 wigner-dyson
 Small Corrections Theorem
 small_corrections
+Economics and Social Sciences (includes South Korean Election Forensics)
+economics
 Old black hole archives (superseded by other papers: submitted, published)
 black_hole_archives
 Old quantum computation archives (superseded by other papers: submitted, published)
 quantum_computation_archives
-Economics and Social Sciences
-economics
 Philosophy and Humanities
 philosophy
 Music (works in progress)
