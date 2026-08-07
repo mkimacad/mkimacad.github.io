@@ -1,10 +1,8 @@
 Overview (to be updated)
 overviews
-General Black Hole Mechanism and a toy JCM model
-bh_jaynes_cummings
 Generic Wigner-Dyson statistics for black holes and a unitary and deterministic theory of quantum measurements
 wigner-dyson
-Small Corrections Theorem
+Black hole information problem, Born rule from chaos, small corrections theorem
 small_corrections
 Economics and Social Sciences (includes South Korean Election Forensics)
 economics
