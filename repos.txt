@@ -1,7 +1,5 @@
 Overview (to be updated)
 overviews
-Generic Wigner-Dyson statistics for black holes and a unitary and deterministic theory of quantum measurements
-wigner-dyson
 Black hole information problem, Born rule from chaos, small corrections theorem
 small_corrections
 Economics and Social Sciences (includes South Korean Election Forensics)
