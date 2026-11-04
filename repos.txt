@@ -1,5 +1,7 @@
 Overview (to be updated)
 overviews
+GR as a reversible process, paradox of a reversible process
+reversible_gr
 Black hole information problem, Born rule from chaos, small corrections theorem
 small_corrections
 Economics and Social Sciences (includes South Korean Election Forensics)
